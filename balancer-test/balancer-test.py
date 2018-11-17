@@ -188,71 +188,6 @@ class Balancer():
 
         return balancer
 
-    def find_underground_pair(self, position):
-        entity = self.grid[position[1]][position[0]]
-        new_pos = position
-        if entity.type == "output":
-            for i in range(5):
-                new_pos = self.new_position(new_pos, (entity.direction + 4) %8)
-                target = self.grid[new_pos[1]][new_pos[0]]
-                if target.info['prototype'] == 'underground-belt' and target.type == 'input':
-                    return target
-        else:
-            for i in range(5):
-                new_pos = self.new_position(new_pos, entity.direction)
-                target = self.grid[new_pos[1]][new_pos[0]]
-                if target.info['prototype'] == 'underground-belt' and target.type == 'output':
-                    return target
-        return None
-
-    def find_parent_belts(self, position, direction):
-        parents = []
-        this_entity = self.grid[position[1]][position[0]]
-        if this_entity.info['prototype'] == 'underground-belt' and this_entity.type == 'output':
-            entity = self.find_underground_pair(position)
-            if entity is not None:
-                parents.append(entity)
-        elif this_entity.info['prototype'] == 'splitter':
-            new_pos = self.new_position(position, (direction+4)%8)
-            if new_pos is None:
-                return parents
-            x, y = new_pos
-            entity = self.grid[y][x]
-            if entity is None:
-                return parents
-            if entity.direction == direction:
-                if entity.info['prototype'] == 'underground-belt' and entity.type == 'input':
-                    return parents
-                parents.append(entity)
-        else:
-            for i in range(2,8,2):
-                new_pos = self.new_position(position, (direction + i)%8)
-                if new_pos is None:
-                    continue
-                x, y = new_pos
-                entity = self.grid[y][x]
-                if entity is None:
-                    continue
-                if entity.direction == (direction + i + 4)%8:
-                    if entity.info['prototype'] == 'underground-belt' and entity.type == 'input':
-                        continue
-                    parents.append(entity)
-        return parents
-
-    def new_position(self, position, direction):
-        max_x = len(self.grid[0])
-        max_y = len(self.grid)
-        x, y = position
-        if direction == 0:
-            return (x, y-1) if y > 0 else None
-        elif direction == 2:
-            return (x+1, y) if x+1 < max_x else None
-        elif direction == 4:
-            return (x, y+1) if y+1 < max_y else None
-        elif direction == 6:
-            return (x-1, y) if x > 0 else None
-        return None
-
     def connect_splitters(self, splitter1, splitter2):
         belt = Belt()
         self.belts.append(belt)
@@ -263,11 +198,6 @@ class Balancer():
         splitter = Splitter(position=position)
         self.splitters.append(splitter)
         return splitter
-
-    def get_splitter_by_position(self, position):
-        for splitter in self.splitters:
-            if splitter.position == position:
-                return splitter
 
     def add_input(self, splitter):
         belt = Belt()
@@ -283,7 +213,6 @@ class Balancer():
 
     def estimate_iterations(self):
         return (len(self.splitters)*2 + len(self.inputs) + len(self.outputs) + 1) * 4
-
 
     def provide(self, inputs=None):
         if inputs is None:

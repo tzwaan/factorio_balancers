@@ -42,8 +42,6 @@ class Entity(object):
         else:
             self.info = {}
 
-
-
     def __getattr__(self, attr):
         return self.inner_data.get(attr)
 
