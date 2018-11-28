@@ -7,6 +7,10 @@ whether a factorio blueprint is a belt balancer.
 It is able to check a multitude of things: Belt balance, belt throughput,
 and a combination of both.
 
+### Note
+This currently does not support belt sideloading in any form. A blueprint
+containing any kind of sideloading will result in a RuntimeError.
+
 ## Usage
 The file you need to run is "balancer-test.py"
 
@@ -24,7 +28,7 @@ optional arguments:
   -f FILE, --file FILE  The file from which to read the blueprint string
   -nb, --nobalance      If for any reason you don't want to test the balance
                         of the balancer
-  -i NR\_ITERATIONS, --iterations NR\_ITERATIONS
+  -i NR_ITERATIONS, --iterations NR_ITERATIONS
                         The number of iterations you want the simulation to
                         run in each test. If not set, will use an estimation
                         based on the balancer design
