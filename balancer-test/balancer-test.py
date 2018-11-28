@@ -500,14 +500,21 @@ if __name__ == "__main__":
                         help="The number of iterations you want the simulation to run in each test. If not set, will use an estimation based on the balancer design")
     parser.add_argument("-s", "--sweep", dest="sweep", default=False, action='store_true', help="Performs a throughput test on all combinations where exactly 1 or 2 inputs and outputs are used")
     parser.add_argument("-es", "--extensivesweep", dest="extensive", default=False, action='store_true', help="Performs a throughput test on all combinations of the same number of inputs and outputs")
+    parser.add_argument("--string", dest="string", default=False, help="The blueprint string to parse", metavar="STRING")
 
     args = parser.parse_args()
 
-    if args.filename:
-        print(args.filename)
+    if not args.filename and not args.string:
+        print("No file or string specified.")
+        parser.parse_args(['-h'])
+
+    if not args.string:
+        print("Reading blueprint string from ", args.filename)
         file = open(args.filename, 'r')
         string = file.read()
-        print(string)
+        print("The blueprint string: \n", string)
+    else:
+        string = args.string
 
     blueprint = Blueprint.from_exchange_string(string)
     print(blueprint)
