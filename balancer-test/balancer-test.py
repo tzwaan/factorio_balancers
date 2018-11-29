@@ -1,6 +1,6 @@
 from itertools import combinations
 from blueprints import Blueprint
-from blueprinttograph import *
+from blueprinttogrid import *
 import math
 
 
@@ -138,11 +138,11 @@ class Balancer():
         self.outputs = []
 
     @classmethod
-    def from_blueprint(cls, blueprint):
+    def from_blueprint(cls, blueprint, print_result=False):
         balancer = cls()
-        graph = Blueprintgraph.from_blueprint(blueprint)
+        grid = Blueprintgrid.from_blueprint(blueprint)
         splitter_queue = []
-        for splitter in graph.splitters:
+        for splitter in grid.splitters:
             splitter.set_splitter(balancer.add_splitter())
             splitter_queue.append(splitter)
 
@@ -150,11 +150,11 @@ class Balancer():
             splitter = splitter_queue.pop()
 
             if len(splitter.outputs) == 0:
-                print("no outputs")
+                #print("no outputs")
                 balancer.add_output(splitter.splitter)
                 balancer.add_output(splitter.splitter)
             else:
-                print("at least one output: ", splitter.outputs)
+                #print("at least one output: ", splitter.outputs)
                 for output in splitter.outputs:
                     targets = output.trace_belt(forward=True)
                     if len(targets) > 1:
@@ -165,9 +165,9 @@ class Balancer():
                     else:
                         balancer.add_output(splitter.splitter)
 
-                    print(targets, len(targets))
+                    #print(targets, len(targets))
             if len(splitter.inputs) == 0:
-                print("no inputs")
+                #print("no inputs")
                 balancer.add_input(splitter.splitter)
                 balancer.add_input(splitter.splitter)
             else:
@@ -183,9 +183,8 @@ class Balancer():
                     else:
                         balancer.add_input(splitter.splitter)
 
-
-        graph.print_blueprint_graph()
-
+        if print_result:
+            grid.print_blueprint_grid()
         return balancer
 
     def connect_splitters(self, splitter1, splitter2):
@@ -218,7 +217,7 @@ class Balancer():
         if inputs is None:
             inputs = [True] * len(self.inputs)
         elif len(self.inputs) != len(self.inputs):
-            print("Number of inputs doesn't match")
+            #print("Number of inputs doesn't match")
             return
         for i in range(len(self.inputs)):
             if inputs[i]:
@@ -228,7 +227,7 @@ class Balancer():
         if outputs is None:
             outputs = [True] * len(self.outputs)
         elif len(outputs) != len(self.outputs):
-            print("Number of outputs doesn't match")
+            #print("Number of outputs doesn't match")
             return
         output = [0] * len(self.outputs)
         for i in range(len(self.outputs)):
@@ -313,7 +312,7 @@ class Balancer():
         if iterations == 0:
             iterations = self.estimate_iterations()
         if len(self.inputs) < 2 or len(self.outputs) < 2:
-            print("Input or output is only 1 belt. Throughput sweep not possible")
+            #print("Input or output is only 1 belt. Throughput sweep not possible")
             return False
 
         results = []
@@ -403,93 +402,6 @@ class Balancer():
         return output_balanced, input_balanced, full_throughput, full_sweep
 
 
-def test_function(balancer):
-
-    # print("testing splitters")
-
-
-    # splitter1 = balancer.add_splitter()
-    # splitter2 = balancer.add_splitter()
-    # balancer.add_input(splitter1)
-
-    # print("splitter 1: ", splitter1, "splitter 2: ", splitter2)
-    # print(balancer.splitters, balancer.inputs)
-    # balancer.add_output(splitter1)
-    # balancer.add_output(splitter2)
-    # balancer.add_output(splitter2)
-    # balancer.connect_splitters(splitter1, splitter2)
-    # print(balancer.outputs)
-    # for splitter in balancer.splitters:
-    #     print(splitter.inputs)
-
-    # print("splitter inputs: ", splitter1.inputs, splitter2.inputs)
-
-    # balancer.provide([100])
-    # balancer.print_splitters()
-    # balancer.iterate()
-    # balancer.print_splitters()
-    # balancer.iterate()
-    # balancer.print_splitters()
-    # balancer.iterate()
-    # balancer.print_splitters()
-
-    # print(balancer.outputs)
-    # for splitter in balancer.splitters:
-    #     print(splitter.inputs)
-
-    # print(balancer.drain())
-
-
-    sp1 = balancer.add_splitter()
-    sp2 = balancer.add_splitter()
-    sp3 = balancer.add_splitter()
-    sp4 = balancer.add_splitter()
-    # sp5 = balancer.add_splitter()
-    # sp6 = balancer.add_splitter()
-
-    balancer.add_input(sp1)
-    balancer.add_input(sp1)
-    balancer.add_input(sp2)
-    balancer.add_input(sp2)
-
-    # balancer.add_output(sp5)
-    # balancer.add_output(sp5)
-    # balancer.add_output(sp6)
-    # balancer.add_output(sp6)
-    balancer.add_output(sp3)
-    balancer.add_output(sp3)
-    balancer.add_output(sp4)
-    balancer.add_output(sp4)
-
-    balancer.connect_splitters(sp1, sp3)
-    balancer.connect_splitters(sp1, sp4)
-    balancer.connect_splitters(sp2, sp3)
-    balancer.connect_splitters(sp2, sp4)
-    # balancer.connect_splitters(sp4, sp1)
-    # balancer.connect_splitters(sp3, sp5)
-    # balancer.connect_splitters(sp3, sp6)
-    # balancer.connect_splitters(sp4, sp5)
-    # balancer.connect_splitters(sp4, sp6)
-
-    # balancer.provide([100, 100, 0])
-
-    # balancer.iterate()
-    # balancer.print_splitters()
-    # balancer.iterate()
-    # balancer.print_splitters()
-    # balancer.iterate()
-    # balancer.print_splitters()
-    # balancer.iterate()
-    # balancer.print_splitters()
-    # for i in range(100):
-    #     print(i)
-    #     print(balancer.drain([True, True, True]))
-    #     balancer.provide([100, 100, 0])
-    #     balancer.iterate()
-    return balancer
-
-
-
 if __name__ == "__main__":
     from argparse import ArgumentParser
 
@@ -517,17 +429,12 @@ if __name__ == "__main__":
         string = args.string
 
     blueprint = Blueprint.from_exchange_string(string)
-    print(blueprint)
     print(blueprint.materials())
 
     print("\n")
-    blueprint.print_grid_array()
+    #blueprint.print_grid_array()
 
-    balancer = Balancer.from_blueprint(blueprint)
-
-    print(balancer)
-
-    #balancer = test_function(balancer)
+    balancer = Balancer.from_blueprint(blueprint, print_result=True)
 
     balancer.test(balance=args.balance, sweep=args.sweep, extensive_sweep=args.extensive, iterations=args.iterations)
 

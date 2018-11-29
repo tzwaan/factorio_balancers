@@ -248,9 +248,6 @@ class Blueprint(EncodedBlob):
         print(output)
 
 
-
-
-
 class BlueprintBook(EncodedBlob):
     """one Factorio blueprint book, containing zero or more blueprints"""
 
