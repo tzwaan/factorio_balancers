@@ -11,6 +11,12 @@ and a combination of both.
 This currently does not support belt sideloading in any form. A blueprint
 containing any kind of sideloading will result in a RuntimeError.
 
+Splitter filters and priorities are currently ignored.
+
+It is currently assumed (to a degree) that all belts are the same level.
+Balancers with varying belt speeds are untested and not guaranteed to
+be tested correctly.
+
 ## Usage
 The file you need to run is "balancer-test.py"
 
