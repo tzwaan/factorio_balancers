@@ -1,4 +1,3 @@
-from blueprints import Blueprint
 import math
 
 
@@ -20,11 +19,13 @@ class Direction():
             return (-1, 0)
         return (0, 0)
 
+
 class Position():
     def __init__(self, x, y, direction=Direction.up):
         self.x = x
         self.y = y
         self.direction = direction
+
 
 class Blueprintgrid():
     def __init__(self, width=1, height=1):
@@ -39,7 +40,7 @@ class Blueprintgrid():
         max_x = math.ceil(max_x)
         max_y = math.ceil(max_y)
 
-        grid = cls(width=max_x+1, height=max_y+1)
+        grid = cls(width=max_x + 1, height=max_y + 1)
 
         for entity in blueprint.entities:
             if entity.info['prototype'] == 'belt':
@@ -89,17 +90,17 @@ class Blueprintgrid():
             positions = entity.position
         else:
             positions = [entity.position]
-        #print(positions)
+        # print(positions)
 
         for position in positions:
-            #print(position)
+            # print(position)
             self.grid[position.y][position.x] = entity
         entity.set_grid(self)
         self.entities.append(entity)
 
     def process_grid(self):
         for entity in self.entities:
-            #print("processing entity: (%d, %d)", entity.position.x, entity.position.y)
+            # print("processing entity: (%d, %d)", entity.position.x, entity.position.y)
             if isinstance(entity, Grid_underground):
                 entity.find_partner()
                 entity.find_inputs()
@@ -118,7 +119,6 @@ class Blueprintgrid():
                     line += self.grid[y][x].print()
             print(line)
         print("")
-
 
 
 class Grid_entity(object):
@@ -146,7 +146,7 @@ class Grid_entity(object):
         results = []
         if forward:
             if len(self.outputs) == 0:
-                #print("no outputs, returning self", self)
+                # print("no outputs, returning self", self)
                 return [self]
             elif len(self.outputs) > 1:
                 raise RuntimeError("Entity other than splitter with multiple outputs is not possible")
@@ -160,7 +160,6 @@ class Grid_entity(object):
             for inp in self.inputs:
                 results.extend(inp.trace_belt(forward=False))
         return results
-
 
 
 class Grid_splitter(Grid_entity):
@@ -182,16 +181,16 @@ class Grid_splitter(Grid_entity):
 
     def find_inputs(self):
         for position in self.position:
-            #print(position)
+            # print(position)
             dx, dy = Direction.to_delta(position.direction + 4)
             y = position.y + dy
             x = position.x + dx
-            #print(x, y, position.direction)
+            # print(x, y, position.direction)
             if x < 0 or x >= self.blueprintgrid.width or y < 0 or y >= self.blueprintgrid.height:
                 continue
             source = self.grid[y][x]
             if isinstance(source, Grid_entity) and source.direction == self.direction:
-                #print("found input", source)
+                # print("found input", source)
                 if isinstance(source, Grid_underground) and source.type == "input":
                     continue
                 self.inputs.append(source)
@@ -212,18 +211,17 @@ class Grid_belt(Grid_entity):
         elif self.direction == Direction.left:
             return "<"
 
-
     def find_inputs(self):
-        #print("finding inputs, I'm belt (%d, %d)" % (self.position.x, self.position.y))
-        for i in range(2,8,2):
+        # print("finding inputs, I'm belt (%d, %d)" % (self.position.x, self.position.y))
+        for i in range(2, 8, 2):
             dx, dy = Direction.to_delta(self.direction + i)
             x = self.position.x + dx
             y = self.position.y + dy
-            #print(x, y)
+            # print(x, y)
             if x < 0 or x >= self.blueprintgrid.width or y < 0 or y >= self.blueprintgrid.height:
                 continue
             source = self.grid[y][x]
-            if isinstance(source, Grid_entity) and source.direction == (self.direction + i + 4)%8:
+            if isinstance(source, Grid_entity) and source.direction == (self.direction + i + 4) % 8:
                 if isinstance(source, Grid_underground) and source.type == "input":
                     continue
                 # if isinstance(source, Grid_splitter):
@@ -250,15 +248,15 @@ class Grid_underground(Grid_entity):
             dirstep = 4
         else:
             dirstep = 2
-        for i in range(2,8,dirstep):
+        for i in range(2, 8, dirstep):
             dx, dy = Direction.to_delta(self.direction + i)
             x = self.position.x + dx
             y = self.position.y + dy
-            #print("UG belt, my position: (%d, %d)" % (self.position.x, self.position.y), "target: (%d, %d)"%(x,y))
+            # print("UG belt, my position: (%d, %d)" % (self.position.x, self.position.y), "target: (%d, %d)"%(x,y))
             if x < 0 or x >= self.blueprintgrid.width or y < 0 or y >= self.blueprintgrid.height:
                 continue
             source = self.grid[y][x]
-            if isinstance(source, Grid_entity) and source.direction == (self.direction + i + 4)%8:
+            if isinstance(source, Grid_entity) and source.direction == (self.direction + i + 4) % 8:
                 if isinstance(source, Grid_underground) and source.type == "input":
                     continue
                 self.inputs.append(source)
@@ -267,20 +265,20 @@ class Grid_underground(Grid_entity):
     def find_partner(self):
         if self.has_partner:
             return
-        max_distance = 2 + 2*self.speed
+        max_distance = 2 + 2 * self.speed
         if self.type == 'input':
             dx, dy = Direction.to_delta(self.direction)
             for i in range(1, max_distance + 2):
-                y = self.position.y + i*dy
-                x = self.position.x + i*dx
+                y = self.position.y + i * dy
+                x = self.position.x + i * dx
                 if x < 0 or x >= self.blueprintgrid.width or y < 0 or y >= self.blueprintgrid.height:
                     self.has_partner = False
                     return
                 target = self.grid[y][x]
                 if isinstance(target, Grid_underground) and target.direction == self.direction and target.speed == self.speed:
                     if target.type == "output":
-                        #print("found partner")
-                        #print("self: ", self.position.x, self.position.y, "partner: ", x, y)
+                        # print("found partner")
+                        # print("self: ", self.position.x, self.position.y, "partner: ", x, y)
                         self.outputs.append(target)
                         target.inputs.append(self)
                         self.has_partner = True
@@ -291,20 +289,19 @@ class Grid_underground(Grid_entity):
         else:
             dx, dy = Direction.to_delta(self.direction + 4)
             for i in range(1, max_distance + 2):
-                y = self.position.y + i*dy
-                x = self.position.x + i*dx
+                y = self.position.y + i * dy
+                x = self.position.x + i * dx
                 if x < 0 or x >= self.blueprintgrid.width or y < 0 or y >= self.blueprintgrid.height:
                     self.has_partner = False
                     return
                 target = self.grid[y][x]
                 if isinstance(target, Grid_underground) and target.direction == self.direction and target.type == "input" and target.speed == self.speed:
-                    #print("found partner")
-                    #print("self: ", self.position.x, self.position.y, "partner: ", x, y)
+                    # print("found partner")
+                    # print("self: ", self.position.x, self.position.y, "partner: ", x, y)
                     self.inputs.append(target)
                     target.outputs = [self]
                     self.has_partner = True
                     target.has_partner = True
-                    #print("inputs: ", self.inputs, "outputs", target.outputs)
+                    # print("inputs: ", self.inputs, "outputs", target.outputs)
                     return
         self.has_partner = False
-

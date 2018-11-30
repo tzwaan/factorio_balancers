@@ -5,11 +5,10 @@ from progress.bar import Bar
 from fractions import Fraction
 from operator import mul
 from functools import reduce
-import math
 
 
 def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
-    return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
+    return abs(a - b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
 
 def boolean_permutations(number, length):
@@ -19,8 +18,9 @@ def boolean_permutations(number, length):
             result[i] = True
         yield result
 
-def nCk(n,k):
-    return int( reduce(mul, (Fraction(n-i, i+1) for i in range(k)), 1) )
+
+def nCk(n, k):
+    return int(reduce(mul, (Fraction(n - i, i + 1) for i in range(k)), 1))
 
 
 def nr_of_permutations(nr_inputs, nr_outputs, max_nr):
@@ -29,7 +29,7 @@ def nr_of_permutations(nr_inputs, nr_outputs, max_nr):
         max_nr = nr_inputs
     if nr_outputs < max_nr:
         max_nr = nr_outputs
-    for i in range(1, max_nr+1):
+    for i in range(1, max_nr + 1):
         perms += nCk(nr_inputs, i) * nCk(nr_outputs, i)
     return perms
 
@@ -94,8 +94,9 @@ class Belt():
             self.out = output
             self.inp = 0
 
+
 class Splitter():
-    def __init__(self, inputs=[], outputs=[], position=(0,0)):
+    def __init__(self, inputs=[], outputs=[], position=(0, 0)):
         self.inputs = []
         self.outputs = []
         self.position = position
@@ -142,8 +143,10 @@ class Splitter():
                 for belt in available_inputs:
                     belt.out += feedback
 
-            available_inputs = [belt for belt in available_inputs if belt.out > 0]
-            available_outputs = [belt for belt in available_outputs if belt.inp < belt.size]
+            available_inputs = [belt for belt in available_inputs
+                                if belt.out > 0]
+            available_outputs = [belt for belt in available_outputs
+                                 if belt.inp < belt.size]
 
     def print_splitter(self):
         text = "\nSplitter:" + str(self) + "\ninputs: "
@@ -152,9 +155,8 @@ class Splitter():
         print(text)
         text = "outputs: "
         for belt in self.outputs:
-            text += str(belt) + ": " +  str(belt.inp) + " "
+            text += str(belt) + ": " + str(belt.inp) + " "
         print(text + "\n")
-
 
 
 class Balancer():
@@ -177,31 +179,32 @@ class Balancer():
             splitter = splitter_queue.pop()
 
             if len(splitter.outputs) == 0:
-                #print("no outputs")
+                # print("no outputs")
                 balancer.add_output(splitter.splitter)
                 balancer.add_output(splitter.splitter)
             else:
-                #print("at least one output: ", splitter.outputs)
+                # print("at least one output: ", splitter.outputs)
                 for output in splitter.outputs:
                     targets = output.trace_belt(forward=True)
                     if len(targets) > 1:
                         raise RuntimeError("Multiple targets should not be possible")
                     elif isinstance(targets[0], Grid_splitter):
                         if targets[0] in splitter_queue:
-                            balancer.connect_splitters(splitter.splitter, targets[0].splitter)
+                            balancer.connect_splitters(splitter.splitter,
+                                                       targets[0].splitter)
                     else:
                         balancer.add_output(splitter.splitter)
 
-                    #print(targets, len(targets))
+                    # print(targets, len(targets))
             if len(splitter.inputs) == 0:
-                #print("no inputs")
+                # print("no inputs")
                 balancer.add_input(splitter.splitter)
                 balancer.add_input(splitter.splitter)
             else:
                 for input in splitter.inputs:
                     targets = input.trace_belt(forward=False)
-                    #print(splitter.position)
-                    #print("postition: ", splitter.position[0].x, splitter.position[0].y, "self: ", splitter, "targets:", targets)
+                    # print(splitter.position)
+                    # print("postition: ", splitter.position[0].x, splitter.position[0].y, "self: ", splitter, "targets:", targets)
                     if len(targets) > 1:
                         raise RuntimeError("Sideloading is currently not supported")
                     elif isinstance(targets[0], Grid_splitter):
@@ -220,7 +223,7 @@ class Balancer():
         splitter1.add_output(belt)
         splitter2.add_input(belt)
 
-    def add_splitter(self, position=(0,0)):
+    def add_splitter(self, position=(0, 0)):
         splitter = Splitter(position=position)
         self.splitters.append(splitter)
         return splitter
@@ -238,13 +241,13 @@ class Balancer():
         self.outputs.append(belt)
 
     def estimate_iterations(self):
-        return (len(self.splitters)*2 + len(self.inputs) + len(self.outputs) + 1) * 4
+        return (len(self.splitters) * 2 + len(self.inputs) + len(self.outputs) + 1) * 4
 
     def provide(self, inputs=None):
         if inputs is None:
             inputs = [True] * len(self.inputs)
         elif len(self.inputs) != len(self.inputs):
-            #print("Number of inputs doesn't match")
+            # print("Number of inputs doesn't match")
             return
         for i in range(len(self.inputs)):
             if inputs[i]:
@@ -254,7 +257,7 @@ class Balancer():
         if outputs is None:
             outputs = [True] * len(self.outputs)
         elif len(outputs) != len(self.outputs):
-            #print("Number of outputs doesn't match")
+            # print("Number of outputs doesn't match")
             return
         output = [0] * len(self.outputs)
         for i in range(len(self.outputs)):
@@ -286,7 +289,7 @@ class Balancer():
         if iterations == 0:
             iterations = self.estimate_iterations()
         if verbose:
-            bar = MyBar('   -- Progress', max=len(self.inputs)+1, suffix='%(percent)d%%')
+            bar = MyBar('   -- Progress', max=len(self.inputs) + 1, suffix='%(percent)d%%')
         for i in range(len(self.inputs)):
             self.clear()
             inputs = [False] * len(self.inputs)
@@ -324,7 +327,7 @@ class Balancer():
         if iterations == 0:
             iterations = self.estimate_iterations()
         if verbose:
-            bar = MyBar('   -- Progress', max=len(self.outputs)+1, suffix='%(percent)d%%')
+            bar = MyBar('   -- Progress', max=len(self.outputs) + 1, suffix='%(percent)d%%')
         for i in range(len(self.outputs)):
             self.fill()
             drain = [False] * len(self.outputs)
@@ -359,7 +362,7 @@ class Balancer():
         if iterations == 0:
             iterations = self.estimate_iterations()
         if len(self.inputs) < 2 or len(self.outputs) < 2:
-            #print("Input or output is only 1 belt. Throughput sweep not possible")
+            # print("Input or output is only 1 belt. Throughput sweep not possible")
             return False
 
         results = []
@@ -405,7 +408,6 @@ class Balancer():
         if worst_result is not None:
             return worst_result
         return True
-
 
     def test(self, iterations=0, balance=True, throughput=True, sweep=False, extensive_sweep=False, verbose=False):
         self.clear()
@@ -510,7 +512,7 @@ if __name__ == "__main__":
         print(blueprint.materials())
         print("\n")
 
-    #blueprint.print_grid_array()
+    # blueprint.print_grid_array()
 
     balancer = Balancer.from_blueprint(blueprint, print_result=args.verbose)
 
