@@ -17,6 +17,9 @@ It is currently assumed (to a degree) that all belts are the same level.
 Balancers with varying belt speeds are untested and not guaranteed to
 be tested correctly.
 
+## Requirements
+This requires the "progress" package which is available on pip.
+
 ## Usage
 The file you need to run is "balancer-test.py"
 

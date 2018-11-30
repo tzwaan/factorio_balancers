@@ -1,6 +1,10 @@
 from itertools import combinations
 from blueprints import Blueprint
 from blueprinttogrid import *
+from progress.bar import Bar
+from fractions import Fraction
+from operator import mul
+from functools import reduce
 import math
 
 
@@ -14,6 +18,29 @@ def boolean_permutations(number, length):
         for i in inputs:
             result[i] = True
         yield result
+
+def nCk(n,k):
+    return int( reduce(mul, (Fraction(n-i, i+1) for i in range(k)), 1) )
+
+
+def nr_of_permutations(nr_inputs, nr_outputs, max_nr):
+    perms = 0
+    if nr_inputs < max_nr:
+        max_nr = nr_inputs
+    if nr_outputs < max_nr:
+        max_nr = nr_outputs
+    for i in range(1, max_nr+1):
+        perms += nCk(nr_inputs, i) * nCk(nr_outputs, i)
+    return perms
+
+
+class MyBar(Bar):
+    def finish(self, clear=True):
+        if clear:
+            self.clearln()
+            print('\x1b[?25h', end='')
+        else:
+            super().finish()
 
 
 class Belt():
@@ -255,9 +282,11 @@ class Balancer():
         for belt in self.belts:
             belt.fill()
 
-    def test_output_balance(self, iterations=0):
+    def test_output_balance(self, iterations=0, verbose=False):
         if iterations == 0:
             iterations = self.estimate_iterations()
+        if verbose:
+            bar = MyBar('   -- Progress', max=len(self.inputs)+1, suffix='%(percent)d%%')
         for i in range(len(self.inputs)):
             self.clear()
             inputs = [False] * len(self.inputs)
@@ -270,7 +299,11 @@ class Balancer():
             result = balancer.drain()
             for amount, _ in result[1:]:
                 if not isclose(result[0][0], amount):
+                    if verbose:
+                        bar.finish()
                     return False
+            if verbose:
+                bar.next()
         self.clear()
         for i in range(iterations):
             balancer.drain()
@@ -279,13 +312,19 @@ class Balancer():
         result = balancer.drain()
         for number, _ in result[1:]:
             if not isclose(result[0][0], number):
+                if verbose:
+                    bar.finish()
                 return False
+        if verbose:
+            bar.finish()
 
         return True
 
-    def test_input_balance(self, iterations=0):
+    def test_input_balance(self, iterations=0, verbose=False):
         if iterations == 0:
             iterations = self.estimate_iterations()
+        if verbose:
+            bar = MyBar('   -- Progress', max=len(self.outputs)+1, suffix='%(percent)d%%')
         for i in range(len(self.outputs)):
             self.fill()
             drain = [False] * len(self.outputs)
@@ -297,7 +336,11 @@ class Balancer():
                 balancer.drain(drain)
             for belt in self.inputs[1:]:
                 if not isclose(self.inputs[0].inp, belt.inp):
+                    if verbose:
+                        bar.finish()
                     return False
+            if verbose:
+                bar.next()
         self.fill()
         for i in range(iterations):
             balancer.provide()
@@ -305,10 +348,14 @@ class Balancer():
             balancer.drain()
         for belt in self.inputs[1:]:
             if not isclose(self.inputs[0].inp, belt.inp):
+                if verbose:
+                    bar.finish()
                 return False
+        if verbose:
+            bar.finish()
         return True
 
-    def throughput_sweep(self, extensive=False, iterations=0):
+    def throughput_sweep(self, extensive=False, iterations=0, verbose=False):
         if iterations == 0:
             iterations = self.estimate_iterations()
         if len(self.inputs) < 2 or len(self.outputs) < 2:
@@ -316,42 +363,54 @@ class Balancer():
             return False
 
         results = []
-        if not extensive:
-            for inputs in boolean_permutations(2, len(self.inputs)):
-                for outputs in boolean_permutations(2, len(self.outputs)):
-                    results.append(self.test_throughput(inputs, outputs))
-
+        if extensive:
+            i_range = range(1, len(self.inputs))
+            if verbose:
+                bar = MyBar('   -- Progress', max=nr_of_permutations(len(self.inputs), len(self.outputs), len(self.inputs)))
         else:
-            for i in range(1, len(self.inputs)):
-                if i > len(self.outputs):
-                    break
-                for inputs in boolean_permutations(i, len(self.inputs)):
-                    for outputs in boolean_permutations(i, len(self.outputs)):
-                        results.append(self.test_throughput(inputs, outputs))
-
+            i_range = range(1, 3)
+            if verbose:
+                bar = MyBar('   -- Progress', max=nr_of_permutations(len(self.inputs), len(self.outputs), 2))
+        for i in i_range:
+            if i > len(self.outputs):
+                break
+            for inputs in boolean_permutations(i, len(self.inputs)):
+                for outputs in boolean_permutations(i, len(self.outputs)):
+                    results.append(self.test_throughput(inputs, outputs))
+                    if verbose:
+                        bar.next()
+        if verbose:
+            bar.finish()
         return results
 
-    def test_throughput(self, inputs=None, outputs=None, iterations=0):
+    def test_throughput(self, inputs=None, outputs=None, iterations=0, verbose=False):
         if iterations == 0:
             iterations = self.estimate_iterations()
         self.clear()
+        if verbose:
+            bar = MyBar('   -- Progress', max=iterations, suffix='%(percent)d%%')
         for i in range(iterations):
             balancer.provide(inputs)
             balancer.iterate()
             result = balancer.drain(outputs)
+            if verbose:
+                bar.next()
         worst_result = None
         for number, percentage in result:
             if percentage is not None and not isclose(percentage, 100):
                 if worst_result is None or percentage < worst_result:
                     worst_result = percentage
+        if verbose:
+            bar.finish()
         if worst_result is not None:
             return worst_result
         return True
 
 
-    def test(self, iterations=0, balance=True, throughput=True, sweep=False, extensive_sweep=False):
+    def test(self, iterations=0, balance=True, throughput=True, sweep=False, extensive_sweep=False, verbose=False):
         self.clear()
-        print("Testing a %d - %d balancer." % (len(self.inputs), len(self.outputs)))
+        if verbose:
+            print("Testing a %d - %d balancer." % (len(self.inputs), len(self.outputs)))
 
         output_balanced = None
         input_balanced = None
@@ -359,46 +418,61 @@ class Balancer():
         full_sweep = None
 
         if balance:
-            print("\n  Testing balance.")
-            if self.test_output_balance(iterations=iterations):
-                print("   -- Output is balanced.")
+            if verbose:
+                print("\n  Testing balance.")
+            if self.test_output_balance(iterations=iterations, verbose=verbose):
+                if verbose:
+                    print("   -- Output is balanced.")
                 output_balanced = True
             else:
-                print("   -- Output is NOT balanced.")
+                if verbose:
+                    print("   -- Output is NOT balanced.")
                 output_balanced = False
 
-            if self.test_input_balance(iterations=iterations):
-                print("   -- Input is balanced.")
+            if self.test_input_balance(iterations=iterations, verbose=verbose):
+                if verbose:
+                    print("   -- Input is balanced.")
                 input_balanced = True
             else:
-                print("   -- Input is NOT balanced.")
+                if verbose:
+                    print("   -- Input is NOT balanced.")
                 input_balanced = False
 
         if throughput:
-            full_throughput = self.test_throughput(iterations=iterations)
-            print("\n  Testing regular throughput.")
+            full_throughput = self.test_throughput(iterations=iterations, verbose=verbose)
+            if verbose:
+                print("\n  Testing regular throughput.")
             if full_throughput is True:
-                print("   -- Full throughput on regular use")
+                if verbose:
+                    print("   -- Full throughput on regular use")
             else:
-                print("   -- Limited throughput to %1.2f%% on regular use on at least one of the outputs." % full_throughput)
+                if verbose:
+                    print("   -- Limited throughput to %1.2f%% on regular use on at least one of the outputs." % full_throughput)
 
         if sweep or extensive_sweep:
-            print("\n  Extensive throughput test.")
-            full_sweep = self.throughput_sweep(extensive=extensive_sweep, iterations=iterations)
+            if extensive_sweep:
+                if verbose:
+                    print("\n  Extensive throughput sweep.")
+            else:
+                if verbose:
+                    print("\n  Regular throughput sweep.")
+            full_sweep = self.throughput_sweep(extensive=extensive_sweep, iterations=iterations, verbose=verbose)
             largest_bottleneck = None
             for throughput in full_sweep:
                 if throughput is not True and (largest_bottleneck is None or throughput < largest_bottleneck):
                     largest_bottleneck = throughput
             if largest_bottleneck is None:
                 if sweep:
-                    print("   -- No bottlenecks with any combinations of 1 or 2 inputs and outputs.")
+                    if verbose:
+                        print("   -- No bottlenecks with any combinations of 1 or 2 inputs and outputs.")
                 else:
-                    print("   -- No bottlenecks with any combinations of any number of inputs and outputs.")
+                    if verbose:
+                        print("   -- No bottlenecks with any combinations of any number of inputs and outputs.")
             else:
-                print("   -- At least one bottleneck exists that limits throughput to %1.2f%%." % largest_bottleneck)
-
-
-        print("\n")
+                if verbose:
+                    print("   -- At least one bottleneck exists that limits throughput to %1.2f%%." % largest_bottleneck)
+        if verbose:
+            print("\n")
         return output_balanced, input_balanced, full_throughput, full_sweep
 
 
@@ -413,6 +487,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--sweep", dest="sweep", default=False, action='store_true', help="Performs a throughput test on all combinations where exactly 1 or 2 inputs and outputs are used")
     parser.add_argument("-es", "--extensivesweep", dest="extensive", default=False, action='store_true', help="Performs a throughput test on all combinations of the same number of inputs and outputs")
     parser.add_argument("--string", dest="string", default=False, help="The blueprint string to parse", metavar="STRING")
+    parser.add_argument("--silent", dest="verbose", default=True, action='store_false', help="Tell the script not to write intermediate data to the screen.\nNote: this prints raw function results on exit that are very user-unfriendly.")
 
     args = parser.parse_args()
 
@@ -421,21 +496,24 @@ if __name__ == "__main__":
         parser.parse_args(['-h'])
 
     if not args.string:
-        print("Reading blueprint string from ", args.filename)
+        if args.verbose:
+            print("Reading blueprint string from ", args.filename)
         file = open(args.filename, 'r')
         string = file.read()
-        print("The blueprint string: \n", string)
+        if args.verbose:
+            print("The blueprint string: \n", string)
     else:
         string = args.string
 
     blueprint = Blueprint.from_exchange_string(string)
-    print(blueprint.materials())
+    if args.verbose:
+        print(blueprint.materials())
+        print("\n")
 
-    print("\n")
     #blueprint.print_grid_array()
 
-    balancer = Balancer.from_blueprint(blueprint, print_result=True)
+    balancer = Balancer.from_blueprint(blueprint, print_result=args.verbose)
 
-    balancer.test(balance=args.balance, sweep=args.sweep, extensive_sweep=args.extensive, iterations=args.iterations)
-
-
+    results = balancer.test(balance=args.balance, sweep=args.sweep, extensive_sweep=args.extensive, iterations=args.iterations, verbose=args.verbose)
+    if not args.verbose:
+        print(results)
