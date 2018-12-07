@@ -1,6 +1,6 @@
 from itertools import combinations
 from blueprints import Blueprint
-from blueprinttogrid import *
+from blueprinttogrid import Grid_splitter, Blueprintgrid
 from progress.bar import Bar
 from fractions import Fraction
 from operator import mul
