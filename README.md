@@ -7,6 +7,9 @@ whether a factorio blueprint is a belt balancer.
 It is able to check a multitude of things: Belt balance, belt throughput,
 and a combination of both.
 
+Website for balancers with this program integrated coming soon at
+[factoriobalancers.com](http://factoriobalancers.com)
+
 ### Note
 This currently does not support belt sideloading in any form. A blueprint
 containing any kind of sideloading will result in a RuntimeError.
@@ -23,7 +26,7 @@ This requires the "progress" package which is available on pip.
 ## Usage
 The file you need to run is "balancer-test.py"
 
-#### The following is the output of: 
+#### The following is the output of:
 > $ balancer-test.py -h
 
 ```
