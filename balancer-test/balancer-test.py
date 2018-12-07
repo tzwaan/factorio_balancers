@@ -7,7 +7,7 @@ from operator import mul
 from functools import reduce
 
 
-def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
+def isclose(a, b, rel_tol=1e-06, abs_tol=0.0):
     return abs(a - b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
 
@@ -70,6 +70,7 @@ class Belt():
         if amount is None or amount > self.size:
             amount = self.size
         self.inp = amount
+        return amount
 
     def fill(self):
         self.inp = self.size
@@ -244,6 +245,7 @@ class Balancer():
         return (len(self.splitters) * 2 + len(self.inputs) + len(self.outputs) + 1) * 4
 
     def provide(self, inputs=None):
+        total = 0
         if inputs is None:
             inputs = [True] * len(self.inputs)
         elif len(self.inputs) != len(self.inputs):
@@ -251,7 +253,8 @@ class Balancer():
             return
         for i in range(len(self.inputs)):
             if inputs[i]:
-                self.inputs[i].provide()
+                total += self.inputs[i].provide()
+        return total
 
     def drain(self, outputs=None):
         if outputs is None:
@@ -392,6 +395,7 @@ class Balancer():
         self.clear()
         if verbose:
             bar = MyBar('   -- Progress', max=iterations, suffix='%(percent)d%%')
+        input_amount = balancer.provide(inputs)
         for i in range(iterations):
             balancer.provide(inputs)
             balancer.iterate()
@@ -399,12 +403,17 @@ class Balancer():
             if verbose:
                 bar.next()
         worst_result = None
+        output_amount = 0
         for number, percentage in result:
+            if number is not None:
+                output_amount += number
             if percentage is not None and not isclose(percentage, 100):
                 if worst_result is None or percentage < worst_result:
                     worst_result = percentage
         if verbose:
             bar.finish()
+        if isclose(input_amount, output_amount):
+            return True
         if worst_result is not None:
             return worst_result
         return True
@@ -506,6 +515,9 @@ if __name__ == "__main__":
             print("The blueprint string: \n", string)
     else:
         string = args.string
+
+    if args.iterations > 0:
+        print("Nr of iterations: ", args.iterations)
 
     blueprint = Blueprint.from_exchange_string(string)
     if args.verbose:
