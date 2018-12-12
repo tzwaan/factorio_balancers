@@ -98,17 +98,104 @@ class Belt():
 
 class Splitter():
     def __init__(self, inputs=[], outputs=[], position=(0, 0)):
-        self.inputs = []
-        self.outputs = []
+        self._input_left = None
+        self._input_right = None
+        self._input_priority = None
+        self._num_inputs = None
+
+        self._output_left = None
+        self._output_right = None
+        self._output_priority = None
+        self._num_outputs = 0
         self.position = position
 
-    def add_output(self, belt):
-        self.outputs.append(belt)
+    def add_output(self, belt, side=None, priority=False):
+        if side is not None and side != 'left' and side != 'right':
+            print("Invalid side of splitter")
+            return
+        if side is None:
+            if self._output_left is None:
+                side = "left"
+            elif self._output_right is None:
+                side = "right"
+
+        if side == "left":
+            if self._output_left is not None:
+                print("Side already connected")
+                return
+            self._output_left = belt
+            if priority:
+                self._output_priority = "left"
+        elif side == "right":
+            if self._output_right is not None:
+                print("Side already connected")
+                return
+            self._output_right = belt
+            if priority:
+                self._output_priority = "right"
+
         belt.set_input_splitter(self)
 
-    def add_input(self, belt):
-        self.inputs.append(belt)
+    def set_input_priority(self, side=None):
+        if side != "left" and side != "right":
+            side = None
+        self._input_priority = side
+
+    def set_output_priority(self, side=None):
+        if side != "left" and side != "right":
+            side = None
+        self._output_priority = side
+
+    def add_input(self, belt, side=None, priority=False):
+        if side is not None and side != 'left' and side != 'right':
+            print("Invalid side of splitter")
+            return
+        if side is None:
+            if self._input_left is None:
+                side = "left"
+            elif self._input_right is None:
+                side = "right"
+
+        if side == "left":
+            if self._input_left is not None:
+                print("Side already connected")
+                return
+            self._input_left = belt
+            if priority:
+                self._input_priority = "left"
+        elif side == "right":
+            if self._input_right is not None:
+                print("Side already connected")
+                return
+            self._input_right = belt
+            if priority:
+                self._input_priority = "right"
+
         belt.set_output_splitter(self)
+
+    def get_inputs(self, empty=True):
+        inputs = []
+        if self._input_left is not None:
+            if self._input_left.out > 0 or empty:
+                inputs.append(self._input_left)
+        if self._input_right is not None:
+            if self._input_right.out > 0 or empty:
+                inputs.append(self._input_right)
+        return inputs
+
+    inputs = property(get_inputs)
+
+    def get_outputs(self, full=True):
+        outputs = []
+        if self._output_left is not None:
+            if self._output_left.inp < self._output_left.size or full:
+                outputs.append(self._output_left)
+        if self._output_right is not None:
+            if self._output_right.inp < self._output_right.size or full:
+                outputs.append(self._output_right)
+        return outputs
+
+    outputs = property(get_outputs)
 
     @staticmethod
     def get_smallest_input(available_inputs):
@@ -119,6 +206,51 @@ class Splitter():
         return smallest_amount
 
     def split(self):
+        inputs = self.get_inputs(empty=False)
+        outputs = self.get_outputs(full=False)
+        input_priority = self._input_priority is not None
+        output_priority = self._output_priority is not None
+        while inputs and outputs:
+            moving_total = 0
+            rest = 0
+            if self._input_priority == "left":
+                moving_total, _ = self._input_left.drain()
+            elif self._input_priority == "right":
+                moving_total, _ = self._input_right.drain()
+            if moving_total == 0:
+                smallest = min(inputs, key=lambda belt: belt.out).out
+                input_priority = False
+
+                for belt in inputs:
+                    belt.out -= smallest
+                    moving_total += smallest
+
+            if output_priority:
+                if self._output_priority == "left":
+                    rest = self._output_left.add(moving_total)
+                elif self._output_priority == "right":
+                    rest = self._output_right.add(moving_total)
+                if rest == moving_total:
+                    output_priority = False
+                moving_total = rest
+
+            feed = moving_total / len(outputs)
+            for belt in outputs:
+                rest += belt.add(feed)
+            if rest > 0:
+                if input_priority:
+                    if self._input_priority == "left":
+                        rest = self._input_left.add(rest)
+                    elif self._input_priority == "right":
+                        rest = self._input_right.add(rest)
+                feedback = rest / len(inputs)
+                for belt in inputs:
+                    belt.out += feedback
+
+            inputs = [belt for belt in inputs if belt.out > 0]
+            outputs = [belt for belt in outputs if belt.inp < belt.size]
+
+    def old_split(self):
         available_outputs = []
         available_inputs = []
         for belt in self.outputs:
@@ -370,7 +502,7 @@ class Balancer():
 
         results = []
         if extensive:
-            i_range = range(1, len(self.inputs))
+            i_range = range(1, min(len(self.inputs), len(self.outputs)) + 1)
             if verbose:
                 bar = MyBar('   -- Progress', max=nr_of_permutations(len(self.inputs), len(self.outputs), len(self.inputs)))
         else:
@@ -378,8 +510,6 @@ class Balancer():
             if verbose:
                 bar = MyBar('   -- Progress', max=nr_of_permutations(len(self.inputs), len(self.outputs), 2))
         for i in i_range:
-            if i > len(self.outputs):
-                break
             for inputs in boolean_permutations(i, len(self.inputs)):
                 for outputs in boolean_permutations(i, len(self.outputs)):
                     results.append(self.test_throughput(inputs, outputs))
