@@ -5,6 +5,8 @@ from progress.bar import Bar
 from fractions import Fraction
 from operator import mul
 from functools import reduce
+import numpy as np
+np.set_printoptions(precision=2, suppress=True)
 
 
 def isclose(a, b, rel_tol=1e-06, abs_tol=0.0):
@@ -21,6 +23,22 @@ def boolean_permutations(number, length):
 
 def nCk(n, k):
     return int(reduce(mul, (Fraction(n - i, i + 1) for i in range(k)), 1))
+
+
+def limit_matrix(matrix, shape, value=2.0):
+    i_max, j_max = matrix.shape
+    print(shape)
+
+    for j in range(shape[0], shape[0] + shape[1]):
+        total = 0
+        for i in range(0, shape[0] + shape[1]):
+            total += matrix[i][j]
+            if matrix[i][j] > value:
+                matrix[i][j] = value
+        if total > value:
+            for i in range(i_max):
+                matrix[i][j] /= (total / value)
+    return matrix
 
 
 def nr_of_permutations(nr_inputs, nr_outputs, max_nr):
@@ -108,6 +126,7 @@ class Splitter():
         self._output_priority = None
         self._num_outputs = 0
         self.position = position
+        self.id = -1
 
     def add_output(self, belt, side=None, priority=False):
         if side is not None and side != 'left' and side != 'right':
@@ -420,6 +439,42 @@ class Balancer():
         for belt in self.belts:
             belt.fill()
 
+    def to_matrix(self, throughput=False):
+        num_inputs = len(self.inputs)
+        num_outputs = len(self.outputs)
+        num_splitters = len(self.splitters)
+        for i, splitter in enumerate(self.splitters):
+            splitter.id = i
+        size = num_inputs + num_outputs + num_splitters
+        matrix = np.zeros((size, size))
+
+        for i, inp in enumerate(self.inputs):
+            if throughput:
+                matrix[i][i] = 1
+            matrix[num_inputs + inp.out_splitter.id][i] = 1
+        for i, out in enumerate(self.outputs):
+            print(out.inp_splitter.id)
+            if throughput:
+                divide = 1
+            else:
+                divide = len(out.inp_splitter.outputs)
+            matrix[num_inputs + num_splitters + i][num_inputs + out.inp_splitter.id] = 1 / divide
+        for splitter in self.splitters:
+            if throughput:
+                divide = 1
+            else:
+                divide = len(splitter.outputs)
+            for out in splitter.outputs:
+                print(out.out_splitter, splitter.id)
+                if out.out_splitter:
+                    matrix[num_inputs + out.out_splitter.id][num_inputs + splitter.id] = 1 / divide
+        for i in range(num_outputs):
+            if throughput:
+                matrix[num_inputs + num_splitters + i][num_inputs + num_splitters + i] = 0
+            else:
+                matrix[num_inputs + num_splitters + i][num_inputs + num_splitters + i] = 1
+        return matrix, (num_inputs, num_splitters, num_outputs)
+
     def test_output_balance(self, iterations=0, verbose=False):
         if iterations == 0:
             iterations = self.estimate_iterations()
@@ -629,6 +684,7 @@ if __name__ == "__main__":
     parser.add_argument("-es", "--extensivesweep", dest="extensive", default=False, action='store_true', help="Performs a throughput test on all combinations of the same number of inputs and outputs")
     parser.add_argument("--string", dest="string", default=False, help="The blueprint string to parse", metavar="STRING")
     parser.add_argument("--silent", dest="verbose", default=True, action='store_false', help="Tell the script not to write intermediate data to the screen.\nNote: this prints raw function results on exit that are very user-unfriendly.")
+    parser.add_argument("-m", "--matrix", dest="matrix", default=False, action='store_true', help="Use a matrix for the calculations instead of the classic graph implementation.")
 
     args = parser.parse_args()
 
@@ -658,6 +714,26 @@ if __name__ == "__main__":
 
     balancer = Balancer.from_blueprint(blueprint, print_result=args.verbose)
 
-    results = balancer.test(balance=args.balance, sweep=args.sweep, extensive_sweep=args.extensive, iterations=args.iterations, verbose=args.verbose)
-    if not args.verbose:
-        print(results)
+    if args.matrix:
+        matrix, shape = balancer.to_matrix()
+        matrix_throughput, shape_throughput = balancer.to_matrix(throughput=True)
+        print(matrix)
+        print(shape)
+        print(shape_throughput)
+
+        for i in range(args.iterations):
+            matrix = np.dot(matrix, matrix)
+        print(matrix)
+
+        size = matrix.shape[0]
+
+        print(matrix_throughput)
+        for i in range(args.iterations):
+            matrix_throughput = np.dot(matrix_throughput, matrix_throughput)
+            # matrix_throughput = limit_matrix(matrix_throughput, shape, value=1)
+        print(matrix_throughput)
+
+    else:
+        results = balancer.test(balance=args.balance, sweep=args.sweep, extensive_sweep=args.extensive, iterations=args.iterations, verbose=args.verbose)
+        if not args.verbose:
+            print(results)
