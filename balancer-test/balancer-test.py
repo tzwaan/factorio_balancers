@@ -496,9 +496,6 @@ class Balancer():
     def throughput_sweep(self, extensive=False, iterations=0, verbose=False):
         if iterations == 0:
             iterations = self.estimate_iterations()
-        if len(self.inputs) < 2 or len(self.outputs) < 2:
-            # print("Input or output is only 1 belt. Throughput sweep not possible")
-            return False
 
         results = []
         if extensive:
