@@ -33,6 +33,10 @@ import math
 from defaultentities import entity_data
 
 
+class InvalidExchangeStringException(Exception):
+    pass
+
+
 class Entity(object):
     def __init__(self, data=None):
         self.data = data or {}
@@ -71,7 +75,7 @@ class Entity(object):
     def get_ascii(self):
         if self.name in entity_data and 'ascii' in entity_data[self.name]:
             direction = self.direction
-            ascii_array = entity_data[self.name]['ascii'][direction//2]
+            ascii_array = entity_data[self.name]['ascii'][direction // 2]
         else:
             ascii_array = [["X"]]
         return ascii_array
@@ -101,10 +105,17 @@ class EncodedBlob(object):
     @classmethod
     def from_exchange_string(cls, exchange_str):
         version_byte = exchange_str[0]
-        decoded = base64.b64decode(exchange_str[1:])
-        json_str = zlib.decompress(decoded).decode("UTF-8")
+        try:
+            decoded = base64.b64decode(exchange_str[1:])
+        except (TypeError, base64.binascii.Error):
+            raise InvalidExchangeStringException
+
+        try:
+            json_str = zlib.decompress(decoded).decode("UTF-8")
+        except zlib.error:
+            raise InvalidExchangeStringException
         data = json.loads(json_str, object_pairs_hook=collections.OrderedDict)
-        return cls(data = data, version_byte = version_byte)
+        return cls(data=data, version_byte=version_byte)
 
     @classmethod
     def from_exchange_file(cls, filename):
@@ -114,7 +125,7 @@ class EncodedBlob(object):
     def from_json_string(cls, json_str):
         data = json.loads(json_str, object_pairs_hook=collections.OrderedDict)
         version_byte = data.pop("version_byte", None)
-        return cls(data = data, version_byte = version_byte)
+        return cls(data=data, version_byte=version_byte)
 
     @classmethod
     def from_json_file(cls, filename):
@@ -123,7 +134,7 @@ class EncodedBlob(object):
     def to_exchange_string(self, **kwargs):
         if self.version_byte is None:
             raise RuntimeError(
-        "Attempted to convert to exchange string with no version_byte")
+                "Attempted to convert to exchange string with no version_byte")
         json_str = self.to_json_string(**kwargs)
         compressed = zlib.compress(json_str, 9)
         encoded = base64.b64encode(compressed)
@@ -147,11 +158,23 @@ class EncodedBlob(object):
     def to_json_file(self, filename, **kwargs):
         open(filename, "w").write(self.to_json_string(**kwargs))
 
+
 class Blueprint(EncodedBlob):
     """one Factorio blueprint"""
     def __init__(self, data=None, version_byte=None):
         super().__init__(data, version_byte)
         self.objectify_entities()
+
+    def is_filtered(self, whitelist=[], blacklist=[]):
+        if whitelist:
+            for entity in self.entities:
+                if entity.info['prototype'] not in whitelist:
+                    return False
+        if blacklist:
+            for entity in self.entities:
+                if entity.info['prototype'] in blacklist:
+                    return False
+        return True
 
     def remove_entity_numbers(self):
         """Remove blueprint.data["blueprint"]["entities"][*]["entity_number"]"""
@@ -160,7 +183,7 @@ class Blueprint(EncodedBlob):
             number = entity.pop("entity_number", None)
             # replace_entity_numbers assumes sequential numbers starting at 1
             # this assert will trigger bug reports if that assumption is wrong
-            assert number == next_number or number == None
+            assert number == next_number or number is None
             next_number = next_number + 1
 
     def replace_entity_numbers(self):
@@ -195,7 +218,7 @@ class Blueprint(EncodedBlob):
             entity.position['x'] -= lowest_x
             entity.position['y'] -= lowest_y
 
-        return highest_x-lowest_x, highest_y-lowest_y
+        return highest_x - lowest_x, highest_y - lowest_y
 
     def objectify_entities(self):
         self.entities = list(map(
@@ -216,7 +239,7 @@ class Blueprint(EncodedBlob):
         max_x, max_y = self.make_positive_positions()
         max_x = math.ceil(max_x)
         max_y = math.ceil(max_y)
-        grid = [[None for x in range(max_x+1)] for y in range(max_y+1)]
+        grid = [[None for x in range(max_x + 1)] for y in range(max_y + 1)]
 
         for entity in self.entities:
             grid[math.floor(entity.position['y'])][math.floor(entity.position['x'])] = entity
@@ -237,8 +260,10 @@ class Blueprint(EncodedBlob):
                 ascii_array = entity.get_ascii()
                 for j, ascii_line in enumerate(ascii_array):
                     for i, character in enumerate(ascii_line):
-                        output_grid[math.floor(entity.position['y'])+j] \
-                                   [math.floor(entity.position['x'])+i] = character + "\u001b[0m"
+                        output_grid[
+                            math.floor(entity.position['y']) + j
+                        ][
+                            math.floor(entity.position['x']) + i] = character + "\u001b[0m"
         output = ""
         for line in output_grid:
             for entity in line:
@@ -279,7 +304,7 @@ class BlueprintBook(EncodedBlob):
             number = blueprint.data.pop("index", None)
             # replace_indexes assumes sequential numbers starting at 0
             # this assert will trigger bug reports if that assumption is wrong
-            assert number == next_number or number == None
+            assert number == next_number or number is None
             next_number = next_number + 1
 
     def replace_indexes(self):
@@ -287,4 +312,3 @@ class BlueprintBook(EncodedBlob):
         for blueprint in self.blueprints:
             blueprint.data["index"] = number
             number = number + 1
-

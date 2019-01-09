@@ -1,5 +1,5 @@
 from itertools import combinations
-from blueprints import Blueprint
+from blueprints import Blueprint, InvalidExchangeStringException
 from blueprinttogrid import Grid_splitter, Blueprintgrid
 from progress.bar import Bar
 from fractions import Fraction
@@ -299,6 +299,40 @@ class Balancer():
         self.inputs = []
         self.outputs = []
 
+    @staticmethod
+    def valid_string(string):
+        try:
+            blueprint = Blueprint.from_exchange_string(string)
+        except InvalidExchangeStringException:
+            return False
+        return blueprint.is_filtered(
+            whitelist=['belt', 'splitter', 'underground-belt'])
+
+    @staticmethod
+    def valid_blueprint(blueprint):
+        return blueprint.is_filtered(
+            whitelist=['belt', 'splitter', 'underground-belt'])
+
+    @classmethod
+    def from_exchange_string(cls, string, print_result=False):
+        try:
+            blueprint = Blueprint.from_exchange_string(string)
+        except InvalidExchangeStringException:
+            if print_result:
+                print("Not a valid exchange string")
+            raise InvalidExchangeStringException
+
+        if Balancer.valid_blueprint(blueprint):
+            if print_result:
+                print("This is a valid blueprint for a potential balancer.\n")
+        else:
+            if print_result:
+                print("This blueprint is not valid")
+            raise InvalidExchangeStringException
+
+        balancer = cls.from_blueprint(blueprint, print_result=print_result)
+        return balancer
+
     @classmethod
     def from_blueprint(cls, blueprint, print_result=False):
         balancer = cls()
@@ -350,11 +384,11 @@ class Balancer():
             grid.print_blueprint_grid()
         return balancer
 
-    def connect_splitters(self, splitter1, splitter2):
+    def connect_splitters(self, splitter1, splitter2, input_priority=False, output_priority=False):
         belt = Belt()
         self.belts.append(belt)
-        splitter1.add_output(belt)
-        splitter2.add_input(belt)
+        splitter1.add_output(belt, priority=output_priority)
+        splitter2.add_input(belt, priority=input_priority)
 
     def add_splitter(self, position=(0, 0)):
         splitter = Splitter(position=position)
@@ -431,10 +465,10 @@ class Balancer():
             inputs[i] = True
 
             for i in range(iterations):
-                balancer.drain()
-                balancer.provide(inputs)
-                balancer.iterate()
-            result = balancer.drain()
+                self.drain()
+                self.provide(inputs)
+                self.iterate()
+            result = self.drain()
             for amount, _ in result[1:]:
                 if not isclose(result[0][0], amount):
                     if verbose:
@@ -444,10 +478,10 @@ class Balancer():
                 bar.next()
         self.clear()
         for i in range(iterations):
-            balancer.drain()
-            balancer.provide()
-            balancer.iterate()
-        result = balancer.drain()
+            self.drain()
+            self.provide()
+            self.iterate()
+        result = self.drain()
         for number, _ in result[1:]:
             if not isclose(result[0][0], number):
                 if verbose:
@@ -469,9 +503,9 @@ class Balancer():
             drain[i] = True
 
             for i in range(iterations):
-                balancer.provide()
-                balancer.iterate()
-                balancer.drain(drain)
+                self.provide()
+                self.iterate()
+                self.drain(drain)
             for belt in self.inputs[1:]:
                 if not isclose(self.inputs[0].inp, belt.inp):
                     if verbose:
@@ -481,9 +515,9 @@ class Balancer():
                 bar.next()
         self.fill()
         for i in range(iterations):
-            balancer.provide()
-            balancer.iterate()
-            balancer.drain()
+            self.provide()
+            self.iterate()
+            self.drain()
         for belt in self.inputs[1:]:
             if not isclose(self.inputs[0].inp, belt.inp):
                 if verbose:
@@ -522,11 +556,11 @@ class Balancer():
         self.clear()
         if verbose:
             bar = MyBar('   -- Progress', max=iterations, suffix='%(percent)d%%')
-        input_amount = balancer.provide(inputs)
+        input_amount = self.provide(inputs)
         for i in range(iterations):
-            balancer.provide(inputs)
-            balancer.iterate()
-            result = balancer.drain(outputs)
+            self.provide(inputs)
+            self.iterate()
+            result = self.drain(outputs)
             if verbose:
                 bar.next()
         worst_result = None
@@ -613,6 +647,29 @@ class Balancer():
             print("\n")
         return output_balanced, input_balanced, full_throughput, full_sweep
 
+    @classmethod
+    def debug(cls):
+        balancer = cls()
+        splitter1 = balancer.add_splitter()
+        splitter2 = balancer.add_splitter()
+        splitter3 = balancer.add_splitter()
+        splitter4 = balancer.add_splitter()
+
+        balancer.add_output(splitter1)
+        balancer.add_output(splitter1)
+        balancer.add_output(splitter2)
+
+        balancer.connect_splitters(splitter2, splitter4)
+        balancer.connect_splitters(splitter3, splitter1, input_priority=True)
+        balancer.connect_splitters(splitter3, splitter2, input_priority=True)
+        balancer.connect_splitters(splitter4, splitter1)
+        balancer.connect_splitters(splitter4, splitter2)
+
+        balancer.add_input(splitter3)
+        balancer.add_input(splitter3)
+
+        balancer.test(verbose=True, sweep=True)
+
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
@@ -626,8 +683,19 @@ if __name__ == "__main__":
     parser.add_argument("-es", "--extensivesweep", dest="extensive", default=False, action='store_true', help="Performs a throughput test on all combinations of the same number of inputs and outputs")
     parser.add_argument("--string", dest="string", default=False, help="The blueprint string to parse", metavar="STRING")
     parser.add_argument("--silent", dest="verbose", default=True, action='store_false', help="Tell the script not to write intermediate data to the screen.\nNote: this prints raw function results on exit that are very user-unfriendly.")
+    parser.add_argument("--debug", dest="debug", default=False, action="store_true", help="Calls the debug function, used for debugging... duh...")
 
     args = parser.parse_args()
+
+    if args.debug:
+        if args.filename:
+            file = open(args.filename, 'r')
+            string = file.read()
+            if args.verbose:
+                print("The blueprint string: \n", string)
+
+        Balancer.debug()
+        exit()
 
     if not args.filename and not args.string:
         print("No file or string specified.")
@@ -646,14 +714,12 @@ if __name__ == "__main__":
     if args.iterations > 0:
         print("Nr of iterations: ", args.iterations)
 
-    blueprint = Blueprint.from_exchange_string(string)
-    if args.verbose:
-        print(blueprint.materials())
-        print("\n")
-
-    # blueprint.print_grid_array()
-
-    balancer = Balancer.from_blueprint(blueprint, print_result=args.verbose)
+    try:
+        balancer = Balancer.from_exchange_string(string, print_result=args.verbose)
+    except InvalidExchangeStringException:
+        print("Error - Either the string was formatted wrong, or the blueprint contained non-belt entities.")
+        print("Exiting.")
+        exit()
 
     results = balancer.test(balance=args.balance, sweep=args.sweep, extensive_sweep=args.extensive, iterations=args.iterations, verbose=args.verbose)
     if not args.verbose:

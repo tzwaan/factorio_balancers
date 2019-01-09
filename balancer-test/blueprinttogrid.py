@@ -60,7 +60,9 @@ class Blueprintgrid():
                                           entity.direction))
 
                 splitter = Grid_splitter(position=positions,
-                                         speed=entity.info['transport-speed'])
+                                         speed=entity.info['transport-speed'],
+                                         input_priority=entity.input_priority,
+                                         output_priority=entity.output_priority)
                 grid.add_entity(splitter)
             elif entity.info['prototype'] == 'underground-belt':
                 position = Position(entity.position['x'],
@@ -163,8 +165,10 @@ class Grid_entity(object):
 
 
 class Grid_splitter(Grid_entity):
-    def __init__(self, **kwargs):
+    def __init__(self, input_priority=None, output_priority=None, **kwargs):
         super().__init__(**kwargs)
+        self.input_priority = input_priority
+        self.output_priority = output_priority
 
     @property
     def direction(self):
@@ -175,6 +179,8 @@ class Grid_splitter(Grid_entity):
 
     def set_splitter(self, splitter):
         self.splitter = splitter
+        self.splitter.set_input_priority(self.input_priority)
+        self.splitter.set_output_priority(self.output_priority)
 
     def trace_belt(self, forward=True):
         return [self]
