@@ -1,6 +1,6 @@
 from itertools import combinations
-from blueprints import Blueprint, InvalidExchangeStringException
-from blueprinttogrid import Grid_splitter, Blueprintgrid
+from .blueprints import Blueprint, InvalidExchangeStringException
+from .blueprinttogrid import Grid_splitter, Blueprintgrid
 from progress.bar import Bar
 from fractions import Fraction
 from operator import mul
@@ -631,6 +631,10 @@ class Balancer():
                 if throughput is not True and (largest_bottleneck is None or throughput < largest_bottleneck):
                     largest_bottleneck = throughput
             if largest_bottleneck is None:
+                if extensive_sweep:
+                    results['throughput_unlimited'] = True
+                else:
+                    results['throughput_unlimited_candidate'] = True
                 if sweep:
                     if verbose:
                         print("   -- No bottlenecks with any combinations of 1 or 2 inputs and outputs.")
@@ -638,6 +642,10 @@ class Balancer():
                     if verbose:
                         print("   -- No bottlenecks with any combinations of any number of inputs and outputs.")
             else:
+                if extensive_sweep:
+                    results['throughput_unlimited'] = False
+                else:
+                    results['throughput_unlimited_candidate'] = False
                 if verbose:
                     print("   -- At least one bottleneck exists that limits throughput to %1.2f%%." % largest_bottleneck)
         if verbose:
