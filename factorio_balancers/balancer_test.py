@@ -584,10 +584,7 @@ class Balancer():
         if verbose:
             print("Testing a %d - %d balancer." % (len(self.inputs), len(self.outputs)))
 
-        output_balanced = None
-        input_balanced = None
-        full_throughput = None
-        full_sweep = None
+        results = {}
 
         if balance:
             if verbose:
@@ -595,31 +592,31 @@ class Balancer():
             if self.test_output_balance(iterations=iterations, verbose=verbose):
                 if verbose:
                     print("   -- Output is balanced.")
-                output_balanced = True
+                results['output_balanced'] = True
             else:
                 if verbose:
                     print("   -- Output is NOT balanced.")
-                output_balanced = False
+                results['output_balanced'] = False
 
             if self.test_input_balance(iterations=iterations, verbose=verbose):
                 if verbose:
                     print("   -- Input is balanced.")
-                input_balanced = True
+                results['input_balanced'] = True
             else:
                 if verbose:
                     print("   -- Input is NOT balanced.")
-                input_balanced = False
+                results['input_balanced'] = False
 
         if throughput:
-            full_throughput = self.test_throughput(iterations=iterations, verbose=verbose)
+            results['full_throughput'] = self.test_throughput(iterations=iterations, verbose=verbose)
             if verbose:
                 print("\n  Testing regular throughput.")
-            if full_throughput is True:
+            if results['full_throughput'] is True:
                 if verbose:
                     print("   -- Full throughput on regular use")
             else:
                 if verbose:
-                    print("   -- Limited throughput to %1.2f%% on regular use on at least one of the outputs." % full_throughput)
+                    print("   -- Limited throughput to %1.2f%% on regular use on at least one of the outputs." % results['full_throughput'])
 
         if sweep or extensive_sweep:
             if extensive_sweep:
@@ -628,9 +625,9 @@ class Balancer():
             else:
                 if verbose:
                     print("\n  Regular throughput sweep.")
-            full_sweep = self.throughput_sweep(extensive=extensive_sweep, iterations=iterations, verbose=verbose)
+            results["throughput_sweep"] = self.throughput_sweep(extensive=extensive_sweep, iterations=iterations, verbose=verbose)
             largest_bottleneck = None
-            for throughput in full_sweep:
+            for throughput in results["throughput_sweep"]:
                 if throughput is not True and (largest_bottleneck is None or throughput < largest_bottleneck):
                     largest_bottleneck = throughput
             if largest_bottleneck is None:
@@ -645,7 +642,7 @@ class Balancer():
                     print("   -- At least one bottleneck exists that limits throughput to %1.2f%%." % largest_bottleneck)
         if verbose:
             print("\n")
-        return output_balanced, input_balanced, full_throughput, full_sweep
+        return results
 
     @classmethod
     def debug(cls):
