@@ -1,6 +1,6 @@
 from itertools import combinations
-from blueprints import Blueprint, InvalidExchangeStringException
-from blueprinttogrid import Grid_splitter, Blueprintgrid
+from factorio_balancers.blueprints import Blueprint, InvalidExchangeStringException
+from factorio_balancers.blueprinttogrid import Grid_splitter, Blueprintgrid
 from progress.bar import Bar
 from fractions import Fraction
 from operator import mul
@@ -298,6 +298,14 @@ class Balancer():
         self.belts = []
         self.inputs = []
         self.outputs = []
+
+    @property
+    def nr_inputs(self):
+        return len(self.inputs)
+
+    @property
+    def nr_outputs(self):
+        return len(self.outputs)
 
     @staticmethod
     def valid_string(string):
@@ -608,15 +616,18 @@ class Balancer():
                 results['input_balanced'] = False
 
         if throughput:
-            results['full_throughput'] = self.test_throughput(iterations=iterations, verbose=verbose)
+            temp_result = self.test_throughput(iterations=iterations, verbose=verbose)
             if verbose:
                 print("\n  Testing regular throughput.")
-            if results['full_throughput'] is True:
+            if temp_result is True:
+                results['full_throughput'] = True
                 if verbose:
                     print("   -- Full throughput on regular use")
             else:
+                results['full_throughput'] = False
+                results['full_throughput_bottleneck'] = temp_result
                 if verbose:
-                    print("   -- Limited throughput to %1.2f%% on regular use on at least one of the outputs." % results['full_throughput'])
+                    print("   -- Limited throughput to %1.2f%% on regular use on at least one of the outputs." % results['regular_throughput_bottleneck'])
 
         if sweep or extensive_sweep:
             if extensive_sweep:
@@ -646,6 +657,7 @@ class Balancer():
                     results['throughput_unlimited'] = False
                 else:
                     results['throughput_unlimited_candidate'] = False
+                results["largest_bottleneck"] = largest_bottleneck
                 if verbose:
                     print("   -- At least one bottleneck exists that limits throughput to %1.2f%%." % largest_bottleneck)
         if verbose:

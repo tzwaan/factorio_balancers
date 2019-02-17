@@ -30,7 +30,7 @@ import collections
 import json
 import zlib
 import math
-from defaultentities import entity_data
+from factorio_balancers.defaultentities import entity_data
 
 
 class InvalidExchangeStringException(Exception):
