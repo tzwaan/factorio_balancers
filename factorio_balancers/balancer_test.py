@@ -1,5 +1,6 @@
 from itertools import combinations
-from factorio_balancers.blueprints import Blueprint, InvalidExchangeStringException
+from factorio_balancers.blueprints import Blueprint, InvalidExchangeString
+from factorio_balancers import Belt
 from factorio_balancers.blueprinttogrid import Grid_splitter, Blueprintgrid
 from progress.bar import Bar
 from fractions import Fraction
@@ -41,59 +42,6 @@ class MyBar(Bar):
             print('\x1b[?25h', end='')
         else:
             super().finish()
-
-
-class Belt():
-    def __init__(self, size=100, inp=None, out=None):
-        self.size = size
-        self.inp_splitter = inp
-        self.out_splitter = out
-        self.inp = 0
-        self.out = 0
-
-    def set_input_splitter(self, splitter):
-        self.inp_splitter = splitter
-
-    def set_output_splitter(self, splitter):
-        self.out_splitter = splitter
-
-    def add(self, amount):
-        if self.inp + amount > self.size:
-            rest = self.inp + amount - self.size
-            self.inp = self.size
-            return rest
-        else:
-            self.inp += amount
-            return 0
-
-    def provide(self, amount=None):
-        if amount is None or amount > self.size:
-            amount = self.size
-        self.inp = amount
-        return amount
-
-    def fill(self):
-        self.inp = self.size
-        self.out = self.size
-
-    def clear(self):
-        self.inp = 0
-        self.out = 0
-
-    def drain(self):
-        amount = self.out
-        self.out = 0
-        percentage = (amount / self.size) * 100
-        return amount, percentage
-
-    def transfer(self):
-        output = self.inp + self.out
-        if output > self.size:
-            self.out = self.size
-            self.inp = output - self.size
-        else:
-            self.out = output
-            self.inp = 0
 
 
 class Splitter():
@@ -311,7 +259,7 @@ class Balancer():
     def valid_string(string):
         try:
             blueprint = Blueprint.from_exchange_string(string)
-        except InvalidExchangeStringException:
+        except InvalidExchangeString:
             return False
         return blueprint.is_filtered(
             whitelist=['belt', 'splitter', 'underground-belt'])
@@ -323,12 +271,7 @@ class Balancer():
 
     @classmethod
     def from_exchange_string(cls, string, print_result=False):
-        try:
-            blueprint = Blueprint.from_exchange_string(string)
-        except InvalidExchangeStringException:
-            if print_result:
-                print("Not a valid exchange string")
-            raise InvalidExchangeStringException
+        blueprint = Blueprint.from_exchange_string(string)
 
         if Balancer.valid_blueprint(blueprint):
             if print_result:
@@ -336,7 +279,7 @@ class Balancer():
         else:
             if print_result:
                 print("This blueprint is not valid")
-            raise InvalidExchangeStringException
+            raise InvalidExchangeString
 
         balancer = cls.from_blueprint(blueprint, print_result=print_result)
         return balancer
@@ -733,7 +676,7 @@ if __name__ == "__main__":
 
     try:
         balancer = Balancer.from_exchange_string(string, print_result=args.verbose)
-    except InvalidExchangeStringException:
+    except InvalidExchangeString:
         print("Error - Either the string was formatted wrong, or the blueprint contained non-belt entities.")
         print("Exiting.")
         exit()
