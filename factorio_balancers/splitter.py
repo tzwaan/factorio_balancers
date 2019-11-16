@@ -2,9 +2,9 @@
 
 class Splitter():
     def __init__(self, entity=None, lane_balance_side=None):
-        self._entity = entity
-        if self._entity is not None:
-            pass
+        self.entity = entity
+        if self.entity is not None:
+            self.entity._simulator = self
 
         self._lane_balance_side = lane_balance_side
 
@@ -15,6 +15,18 @@ class Splitter():
         self._output_left = None
         self._output_right = None
         self._output_priority = None
+
+    def __repr__(self):
+        return "<Splitter ({entity}, inputs=({in_left}, {in_right}), outputs=({out_left}, {out_right}))>".format(
+            entity=self.entity,
+            in_left=str(self._input_left),
+            in_right=str(self._input_right),
+            out_left=str(self._output_left),
+            out_right=str(self._output_right)
+        )
+
+    def __str__(self):
+        return "<Splitter ({entity})>".format(entity=self.entity.name)
 
     def _get_inputs(self, empty=True):
         inputs = []

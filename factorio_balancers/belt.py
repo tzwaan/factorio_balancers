@@ -1,10 +1,28 @@
 
 
 class Belt():
-    def __init__(self, size=100, inp=None, out=None):
+    def __init__(self, *, size=100, entity=None, inp=None, out=None,
+                 _input=None, _output=None):
         self.size = size
         self.inp = 0
         self.out = 0
+        self.entity = None
+        self._input = _input
+        self._output = _output
+        if entity is not None:
+            self.entity = entity
+
+    def __repr__(self):
+        return "<Belt ({entity}, input=({input}), output=({output}))>".format(
+            entity=str(self.entity),
+            input=str(self._input),
+            output=str(self._output))
+
+    def __str__(self):
+        entity = None
+        if self.entity is not None:
+            entity = self.entity.name
+        return "<Belt ({entity})>".format(entity=entity)
 
     def add(self, amount):
         if self.inp + amount > self.size:
