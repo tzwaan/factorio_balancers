@@ -426,7 +426,7 @@ class Balancer(Blueprint):
         if entity._is_splitter:
             return entity, position
         elif entity._partner_forward is None:
-            return None, entity.position
+            return entity, entity.position
         elif entity._partner_forward._simulator is not None:
             return entity._partner_forward, entity.position
         else:
@@ -449,12 +449,15 @@ class Balancer(Blueprint):
             target_entity, position = self._trace_belt(
                 trace_target, node.entity.position)
             target_node = target_entity._simulator
-            assert type(target_node) is Splitter
-            to_side = target_entity.splitter_side(position)
+            if type(target_node) is Splitter:
+                to_side = target_entity.splitter_side(position)
+            else:
+                to_side = None
 
-            self.connect_nodes(node, target_node,
-                               from_side=from_side, to_side=to_side)
-            self._trace_node(target_node)
+            if self.connect_nodes(node, target_node,
+                                  from_side=from_side, to_side=to_side):
+                if target_node != node:
+                    self._trace_node(target_node)
 
     def _parse_balancer(self):
         for entity in self.entities:
@@ -575,12 +578,16 @@ class Balancer(Blueprint):
                 message="Illegal side supplied")
 
         if type(from_node) is not Splitter:
+            if from_node._output is not None:
+                return False
             from_node._output = to_node
             if to_side == "left":
                 to_node._input_left = from_node
             else:
                 to_node._input_right = from_node
         elif type(to_node) is not Splitter:
+            if to_node._input is not None:
+                return False
             to_node._input = from_node
             if from_side == "left":
                 from_node._output_left = to_node
@@ -588,10 +595,14 @@ class Balancer(Blueprint):
                 from_node._output_right = to_node
         elif type(from_node) is Splitter and type(to_node) is Splitter:
             # Todo supply proper belt properties (size)
+            if from_side == "left" and from_node._output_left is not None:
+                return False
+            elif from_side == "right" and from_node._output_right is not None:
+                return False
             belt = Belt()
             self._belts.append(belt)
             belt._input = from_node
-            belt._ouptut = to_node
+            belt._output = to_node
             if from_side == "left":
                 from_node._output_left = belt
             else:
@@ -600,6 +611,7 @@ class Balancer(Blueprint):
                 to_node._input_left = belt
             else:
                 to_node._input_right = belt
+        return True
 
     @property
     def nodes(self):

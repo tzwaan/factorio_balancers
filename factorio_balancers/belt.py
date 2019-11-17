@@ -11,6 +11,7 @@ class Belt():
         self._output = _output
         if entity is not None:
             self.entity = entity
+            self.entity._simulator = self
 
     def __repr__(self):
         return "<Belt ({entity}, input=({input}), output=({output}))>".format(
