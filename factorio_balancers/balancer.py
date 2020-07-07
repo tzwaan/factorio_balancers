@@ -1,70 +1,14 @@
 from py_factorio_blueprints import Blueprint, BaseEntity
 from py_factorio_blueprints.entity import Direction
+from py_factorio_blueprints.util import Vector
 from factorio_balancers.utils import catch
 from factorio_balancers import Splitter, Belt
+from factorio_balancers.entity_mixins import \
+    entity_prototypes, Splitter as SplitterMixin
+from factorio_balancers.exceptions import *
 
 
-class EntityError(Exception):
-    def __init__(self, *args, message="", **kwargs):
-        super().__init__(*args, **kwargs)
-        self.nr = len(args)
-        self.message = message
-
-    def __repr__(self):
-        result = "<{} (".format(type(self).__name__)
-        if self.message != "":
-            result += "{}: ".format(self.message)
-        for arg in self.args:
-            result += "{}, ".format(arg)
-        result += ")>"
-        return result
-
-    def __eq__(self, other):
-        if len(self.args) != len(other.args):
-            return False
-        for arg in self.args:
-            if arg not in self.args:
-                return False
-        return True
-
-
-class IllegalEntity(EntityError):
-    pass
-
-
-class IllegalEntities(EntityError):
-    def __repr__(self):
-        if self.message != "":
-            message = "{}\n".format(self.message)
-        else:
-            message = ""
-        result = "IllegalEntities ({message}Number of errors: {nr},".format(
-            nr=self.nr, message=message)
-        for exception in self.args:
-            result += "\n    {}".format(repr(exception))
-        result += ")"
-        return result
-
-
-class IllegalConfiguration(EntityError):
-    pass
-
-
-class IllegalConfigurations(EntityError):
-    def __repr__(self):
-        if self.message != "":
-            message = "{}\n".format(self.message)
-        else:
-            message = ""
-        result = "IllegalConfigurations ({message}Number of errors: {nr}," \
-            .format(nr=self.nr, message=message)
-        for exception in self.args:
-            result += "\n    {}".format(repr(exception))
-        result += ")"
-        return result
-
-
-class BalancerEntityMixin():
+class BalancerEntityMixin:
     def __init__(self):
         self._is_underground = self.name in Balancer.UNDERGROUND_ENTITIES
         self._is_belt = self.name in Balancer.BELT_ENTITIES
@@ -205,7 +149,7 @@ class BalancerEntityMixin():
 
         for position in self.coordinates:
             for offset in offsets:
-                self.blueprint.createEntity(
+                self.blueprint.create_entity(
                     name,
                     position + offset,
                     self.direction)
@@ -248,20 +192,45 @@ class Balancer(Blueprint):
     )
 
     def __init__(self, *args, print2d=False, **kwargs):
-        self._print2d = True
-        super().__init__(*args, entity_mixins=[BalancerEntityMixin], **kwargs)
+        Blueprint.import_prototype_data('../entity_data.json')
+        self._print2d = print2d
+        super().__init__(
+            *args, custom_entity_prototypes=entity_prototypes, **kwargs)
 
         self.recompile_entities()
-        self.pad_connections()
-        self.recompile_entities()
         if print2d:
-            self.print2D()
+            print("Before padding")
+            self.print2d()
+        self.pad_connections()
+        if print2d:
+            print("After padding")
+            self.print2d()
         inputs, outputs = self._get_external_connections()
         print("Nr of inputs and outputs: {}, {}".format(len(inputs), len(outputs)))
         print("Inputs: {}".format(inputs))
         print("Outputs: {}".format(outputs))
 
         self.generate_simulation()
+
+    def print2d(self):
+        maxx, minx, maxy, miny = self.maximum_values
+        width = maxx - minx + 1
+        height = maxy - miny + 1
+        offset = Vector(minx, miny)
+        data = [[" " for _ in range(width)] for _ in range(height)]
+
+        for entity in self.entities:
+            for i, coord in enumerate(entity.coordinates):
+                position = coord - offset
+                x, y = position.round()
+                data[y][x] = entity.name.data['ascii'][entity.direction // 2][i]
+        print()
+        for line in data:
+            r = ""
+            for char in line:
+                r += char
+            print(r)
+        print()
 
     def generate_simulation(self):
         self._splitters = []
@@ -282,20 +251,13 @@ class Balancer(Blueprint):
                 message="The balancer is not fully connected")
 
     def recompile_entities(self):
-        exceptions = self._check_illegal_entities()
-        nr_exceptions = len(exceptions)
-        if nr_exceptions > 0:
-            if self._print2d:
-                self.print2D()
-            raise IllegalEntities(*exceptions)
-
         for entity in self.entities:
             entity.reset()
-        exceptions = self._check_configuration()
+        exceptions = self.setup_transport_lines()
         nr_exceptions = len(exceptions)
         if nr_exceptions > 0:
             if self._print2d:
-                self.print2D()
+                self.print2d()
             raise IllegalConfigurations(*exceptions)
 
         self.has_sideloads = self._has_sideloads()
@@ -305,7 +267,7 @@ class Balancer(Blueprint):
         outputs = []
         inputs = [entity
                   for entity in self.entities
-                  if entity.has_no_inputs and self._input_belt_check(entity)]
+                  if entity.has_no_inputs and entity.input_belt_check()]
         outputs = [entity
                    for entity in self.entities
                    if entity.has_no_outputs]
@@ -326,12 +288,12 @@ class Balancer(Blueprint):
     def pad_connections(self):
         inputs, outputs = self._get_external_connections()
 
-        self._pad_entities(inputs, inp=True)
-        self._pad_entities(outputs, out=True)
+        self.pad_entities(inputs, inp=True)
+        self.pad_entities(outputs, out=True)
 
-    def _pad_entities(self, entities, **kwargs):
+    def pad_entities(self, entities, **kwargs):
         for entity in entities:
-            if entity._is_splitter:
+            if isinstance(entity, SplitterMixin):
                 break
         else:
             return
@@ -343,6 +305,15 @@ class Balancer(Blueprint):
                                     message="Entity not allowed in balancer")
                       for entity in self.entities
                       if entity.name not in Balancer.ALLOWED_ENTITIES]
+        return exceptions
+
+    def setup_transport_lines(self):
+        exceptions = []
+        for entity in self.entities:
+            e = catch(entity.setup_transport_lines,
+                      exceptions=IllegalConfiguration)
+            if e is not None and e not in exceptions:
+                exceptions.append(e)
         return exceptions
 
     def _check_configuration(self):
@@ -485,7 +456,7 @@ class Balancer(Blueprint):
         direction = out.direction - inp.direction
 
         if inp._is_splitter and out._is_splitter:
-            if not direction.isUp:
+            if not direction.is_up:
                 raise IllegalConfiguration(
                     inp, out,
                     message="Entities facing eachother")
@@ -507,17 +478,17 @@ class Balancer(Blueprint):
                 inp._partner_forward[side] = out
             else:
                 inp._partner_forward = out
-            if direction.isLeft:
+            if direction.is_left:
                 out._partner_left = inp
-            elif direction.isUp:
+            elif direction.is_up:
                 out._partner_backward = inp
-            elif direction.isRight:
+            elif direction.is_right:
                 out._partner_right = inp
-            elif direction.isDown:
+            elif direction.is_down:
                 raise IllegalConfiguration(inp, out,
                                            message="Entities facing eachother")
         elif not inp._is_splitter and out._is_splitter:
-            if not direction.isUp:
+            if not direction.is_up:
                 raise IllegalConfiguration(inp, out,
                                            message="Sideloading onto splitter")
             side = out.splitter_side(inp.position)

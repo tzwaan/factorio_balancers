@@ -1,0 +1,3567 @@
+{
+  "entity" : {
+    "transport-belt" : {
+      "name" : "transport-belt",
+      "type" : "transport-belt",
+      "localised_name" : [
+        "entity-name.transport-belt"
+      ],
+      "localised_description" : [
+        "entity-description.transport-belt"
+      ],
+      "flags" : {
+        "placeable-neutral" : true,
+        "player-creation" : true
+      },
+      "selection_box" : {
+        "left_top" : {
+          "y" : -0.5,
+          "x" : -0.5
+        },
+        "right_bottom" : {
+          "y" : 0.5,
+          "x" : 0.5
+        }
+      },
+      "items_to_place_this" : [
+        {
+          "name" : "transport-belt",
+          "count" : 1
+        }
+      ],
+      "belt_speed": 1,
+      "ascii": [
+        ["\u001b[33;1m^"],
+        ["\u001b[33;1m>"],
+        ["\u001b[33;1mV"],
+        ["\u001b[33;1m<"]
+      ]
+    },
+    "fast-transport-belt" : {
+      "name" : "fast-transport-belt",
+      "type" : "transport-belt",
+      "localised_name" : [
+        "entity-name.fast-transport-belt"
+      ],
+      "localised_description" : [
+        "entity-description.fast-transport-belt"
+      ],
+      "flags" : {
+        "placeable-neutral" : true,
+        "player-creation" : true
+      },
+      "selection_box" : {
+        "left_top" : {
+          "y" : -0.5,
+          "x" : -0.5
+        },
+        "right_bottom" : {
+          "y" : 0.5,
+          "x" : 0.5
+        }
+      },
+      "items_to_place_this" : [
+        {
+          "name" : "fast-transport-belt",
+          "count" : 1
+        }
+      ],
+      "belt_speed": 2,
+      "ascii": [
+        ["\u001b[31;1m^"],
+        ["\u001b[31;1m>"],
+        ["\u001b[31;1mV"],
+        ["\u001b[31;1m<"]
+      ]
+    },
+    "express-transport-belt" : {
+      "name" : "express-transport-belt",
+      "type" : "transport-belt",
+      "localised_name" : [
+        "entity-name.express-transport-belt"
+      ],
+      "localised_description" : [
+        "entity-description.express-transport-belt"
+      ],
+      "flags" : {
+        "placeable-neutral" : true,
+        "player-creation" : true
+      },
+      "selection_box" : {
+        "left_top" : {
+          "y" : -0.5,
+          "x" : -0.5
+        },
+        "right_bottom" : {
+          "y" : 0.5,
+          "x" : 0.5
+        }
+      },
+      "items_to_place_this" : [
+        {
+          "name" : "express-transport-belt",
+          "count" : 1
+        }
+      ],
+      "belt_speed": 3,
+      "ascii": [
+        ["\u001b[36;1m^"],
+        ["\u001b[36;1m>"],
+        ["\u001b[36;1mV"],
+        ["\u001b[36;1m<"]
+      ]
+    },
+    "underground-belt" : {
+      "name" : "underground-belt",
+      "type" : "underground-belt",
+      "max_distance" : 4,
+      "localised_name" : [
+        "entity-name.underground-belt"
+      ],
+      "localised_description" : [
+        "entity-description.underground-belt"
+      ],
+      "flags" : {
+        "placeable-neutral" : true,
+        "player-creation" : true
+      },
+      "selection_box" : {
+        "left_top" : {
+          "y" : -0.5,
+          "x" : -0.5
+        },
+        "right_bottom" : {
+          "y" : 0.5,
+          "x" : 0.5
+        }
+      },
+      "items_to_place_this" : [
+        {
+          "name" : "underground-belt",
+          "count" : 1
+        }
+      ],
+      "belt_speed": 1,
+      "ascii": [
+        ["\u001b[33;1m\u2593"],
+        ["\u001b[33;1m\u2593"],
+        ["\u001b[33;1m\u2593"],
+        ["\u001b[33;1m\u2593"]
+      ]
+    },
+    "fast-underground-belt" : {
+      "name" : "fast-underground-belt",
+      "type" : "underground-belt",
+      "max_distance" : 6,
+      "localised_name" : [
+        "entity-name.fast-underground-belt"
+      ],
+      "localised_description" : [
+        "entity-description.fast-underground-belt"
+      ],
+      "flags" : {
+        "placeable-neutral" : true,
+        "player-creation" : true
+      },
+      "selection_box" : {
+        "left_top" : {
+          "y" : -0.5,
+          "x" : -0.5
+        },
+        "right_bottom" : {
+          "y" : 0.5,
+          "x" : 0.5
+        }
+      },
+      "items_to_place_this" : [
+        {
+          "name" : "fast-underground-belt",
+          "count" : 1
+        }
+      ],
+      "belt_speed": 2,
+      "ascii": [
+        ["\u001b[31;1m\u2593"],
+        ["\u001b[31;1m\u2593"],
+        ["\u001b[31;1m\u2593"],
+        ["\u001b[31;1m\u2593"]
+      ]
+    },
+    "express-underground-belt" : {
+      "name" : "express-underground-belt",
+      "type" : "underground-belt",
+      "max_distance" : 8,
+      "localised_name" : [
+        "entity-name.express-underground-belt"
+      ],
+      "localised_description" : [
+        "entity-description.express-underground-belt"
+      ],
+      "flags" : {
+        "placeable-neutral" : true,
+        "player-creation" : true
+      },
+      "selection_box" : {
+        "left_top" : {
+          "y" : -0.5,
+          "x" : -0.5
+        },
+        "right_bottom" : {
+          "y" : 0.5,
+          "x" : 0.5
+        }
+      },
+      "items_to_place_this" : [
+        {
+          "name" : "express-underground-belt",
+          "count" : 1
+        }
+      ],
+      "belt_speed": 3,
+      "ascii": [
+        ["\u001b[36;1m\u2593"],
+        ["\u001b[36;1m\u2593"],
+        ["\u001b[36;1m\u2593"],
+        ["\u001b[36;1m\u2593"]
+      ]
+    },
+    "splitter" : {
+      "name" : "splitter",
+      "type" : "splitter",
+      "localised_name" : [
+        "entity-name.splitter"
+      ],
+      "localised_description" : [
+        "entity-description.splitter"
+      ],
+      "flags" : {
+        "placeable-neutral" : true,
+        "player-creation" : true
+      },
+      "selection_box" : {
+        "left_top" : {
+          "y" : -0.5,
+          "x" : -0.8984375
+        },
+        "right_bottom" : {
+          "y" : 0.5,
+          "x" : 0.8984375
+        }
+      },
+      "items_to_place_this" : [
+        {
+          "name" : "splitter",
+          "count" : 1
+        }
+      ],
+      "belt_speed": 1,
+      "ascii": [
+        ["\u001b[33;1m\u2552", "\u001b[33;1m\u2555"],
+        ["\u001b[33;1m\u2556", "\u001b[33;1m\u255C"],
+        ["\u001b[33;1m\u2558", "\u001b[33;1m\u255B"],
+        ["\u001b[33;1m\u2553", "\u001b[33;1m\u2559"]
+      ]
+    },
+    "fast-splitter" : {
+      "name" : "fast-splitter",
+      "type" : "splitter",
+      "localised_name" : [
+        "entity-name.fast-splitter"
+      ],
+      "localised_description" : [
+        "entity-description.fast-splitter"
+      ],
+      "flags" : {
+        "placeable-neutral" : true,
+        "player-creation" : true
+      },
+      "selection_box" : {
+        "left_top" : {
+          "y" : -0.5,
+          "x" : -0.8984375
+        },
+        "right_bottom" : {
+          "y" : 0.5,
+          "x" : 0.8984375
+        }
+      },
+      "items_to_place_this" : [
+        {
+          "name" : "fast-splitter",
+          "count" : 1
+        }
+      ],
+      "belt_speed": 2,
+      "ascii": [
+        ["\u001b[31;1m\u2552", "\u001b[31;1m\u2555"],
+        ["\u001b[31;1m\u2556", "\u001b[31;1m\u255C"],
+        ["\u001b[31;1m\u2558", "\u001b[31;1m\u255B"],
+        ["\u001b[31;1m\u2553", "\u001b[31;1m\u2559"]
+      ]
+    },
+    "express-splitter" : {
+      "name" : "express-splitter",
+      "type" : "splitter",
+      "localised_name" : [
+        "entity-name.express-splitter"
+      ],
+      "localised_description" : [
+        "entity-description.express-splitter"
+      ],
+      "flags" : {
+        "placeable-neutral" : true,
+        "player-creation" : true
+      },
+      "selection_box" : {
+        "left_top" : {
+          "y" : -0.5,
+          "x" : -0.8984375
+        },
+        "right_bottom" : {
+          "y" : 0.5,
+          "x" : 0.8984375
+        }
+      },
+      "items_to_place_this" : [
+        {
+          "name" : "express-splitter",
+          "count" : 1
+        }
+      ],
+      "belt_speed": 3,
+      "ascii": [
+        ["\u001b[36;1m\u2552", "\u001b[36;1m\u2555"],
+        ["\u001b[36;1m\u2556", "\u001b[36;1m\u255C"],
+        ["\u001b[36;1m\u2558", "\u001b[36;1m\u255B"],
+        ["\u001b[36;1m\u2553", "\u001b[36;1m\u2559"]
+      ]
+    }
+  },
+  "recipe" : { },
+  "signal" : {
+    "signal-everything" : {
+      "name" : "signal-everything",
+      "type" : "virtual"
+    },
+    "signal-anything" : {
+      "name" : "signal-anything",
+      "type" : "virtual"
+    },
+    "signal-each" : {
+      "name" : "signal-each",
+      "type" : "virtual"
+    },
+    "signal-0" : {
+      "name" : "signal-0",
+      "type" : "virtual"
+    },
+    "signal-1" : {
+      "name" : "signal-1",
+      "type" : "virtual"
+    },
+    "signal-2" : {
+      "name" : "signal-2",
+      "type" : "virtual"
+    },
+    "signal-3" : {
+      "name" : "signal-3",
+      "type" : "virtual"
+    },
+    "signal-4" : {
+      "name" : "signal-4",
+      "type" : "virtual"
+    },
+    "signal-5" : {
+      "name" : "signal-5",
+      "type" : "virtual"
+    },
+    "signal-6" : {
+      "name" : "signal-6",
+      "type" : "virtual"
+    },
+    "signal-7" : {
+      "name" : "signal-7",
+      "type" : "virtual"
+    },
+    "signal-8" : {
+      "name" : "signal-8",
+      "type" : "virtual"
+    },
+    "signal-9" : {
+      "name" : "signal-9",
+      "type" : "virtual"
+    },
+    "signal-A" : {
+      "name" : "signal-A",
+      "type" : "virtual"
+    },
+    "signal-B" : {
+      "name" : "signal-B",
+      "type" : "virtual"
+    },
+    "signal-C" : {
+      "name" : "signal-C",
+      "type" : "virtual"
+    },
+    "signal-D" : {
+      "name" : "signal-D",
+      "type" : "virtual"
+    },
+    "signal-E" : {
+      "name" : "signal-E",
+      "type" : "virtual"
+    },
+    "signal-F" : {
+      "name" : "signal-F",
+      "type" : "virtual"
+    },
+    "signal-G" : {
+      "name" : "signal-G",
+      "type" : "virtual"
+    },
+    "signal-H" : {
+      "name" : "signal-H",
+      "type" : "virtual"
+    },
+    "signal-I" : {
+      "name" : "signal-I",
+      "type" : "virtual"
+    },
+    "signal-J" : {
+      "name" : "signal-J",
+      "type" : "virtual"
+    },
+    "signal-K" : {
+      "name" : "signal-K",
+      "type" : "virtual"
+    },
+    "signal-L" : {
+      "name" : "signal-L",
+      "type" : "virtual"
+    },
+    "signal-M" : {
+      "name" : "signal-M",
+      "type" : "virtual"
+    },
+    "signal-N" : {
+      "name" : "signal-N",
+      "type" : "virtual"
+    },
+    "signal-O" : {
+      "name" : "signal-O",
+      "type" : "virtual"
+    },
+    "signal-P" : {
+      "name" : "signal-P",
+      "type" : "virtual"
+    },
+    "signal-Q" : {
+      "name" : "signal-Q",
+      "type" : "virtual"
+    },
+    "signal-R" : {
+      "name" : "signal-R",
+      "type" : "virtual"
+    },
+    "signal-S" : {
+      "name" : "signal-S",
+      "type" : "virtual"
+    },
+    "signal-T" : {
+      "name" : "signal-T",
+      "type" : "virtual"
+    },
+    "signal-U" : {
+      "name" : "signal-U",
+      "type" : "virtual"
+    },
+    "signal-V" : {
+      "name" : "signal-V",
+      "type" : "virtual"
+    },
+    "signal-W" : {
+      "name" : "signal-W",
+      "type" : "virtual"
+    },
+    "signal-X" : {
+      "name" : "signal-X",
+      "type" : "virtual"
+    },
+    "signal-Y" : {
+      "name" : "signal-Y",
+      "type" : "virtual"
+    },
+    "signal-Z" : {
+      "name" : "signal-Z",
+      "type" : "virtual"
+    },
+    "signal-red" : {
+      "name" : "signal-red",
+      "type" : "virtual"
+    },
+    "signal-green" : {
+      "name" : "signal-green",
+      "type" : "virtual"
+    },
+    "signal-blue" : {
+      "name" : "signal-blue",
+      "type" : "virtual"
+    },
+    "signal-yellow" : {
+      "name" : "signal-yellow",
+      "type" : "virtual"
+    },
+    "signal-pink" : {
+      "name" : "signal-pink",
+      "type" : "virtual"
+    },
+    "signal-cyan" : {
+      "name" : "signal-cyan",
+      "type" : "virtual"
+    },
+    "signal-white" : {
+      "name" : "signal-white",
+      "type" : "virtual"
+    },
+    "signal-grey" : {
+      "name" : "signal-grey",
+      "type" : "virtual"
+    },
+    "signal-black" : {
+      "name" : "signal-black",
+      "type" : "virtual"
+    },
+    "signal-check" : {
+      "name" : "signal-check",
+      "type" : "virtual"
+    },
+    "signal-info" : {
+      "name" : "signal-info",
+      "type" : "virtual"
+    },
+    "signal-dot" : {
+      "name" : "signal-dot",
+      "type" : "virtual"
+    },
+    "water" : {
+      "name" : "water",
+      "type" : "fluid"
+    },
+    "crude-oil" : {
+      "name" : "crude-oil",
+      "type" : "fluid"
+    },
+    "steam" : {
+      "name" : "steam",
+      "type" : "fluid"
+    },
+    "heavy-oil" : {
+      "name" : "heavy-oil",
+      "type" : "fluid"
+    },
+    "light-oil" : {
+      "name" : "light-oil",
+      "type" : "fluid"
+    },
+    "petroleum-gas" : {
+      "name" : "petroleum-gas",
+      "type" : "fluid"
+    },
+    "sulfuric-acid" : {
+      "name" : "sulfuric-acid",
+      "type" : "fluid"
+    },
+    "lubricant" : {
+      "name" : "lubricant",
+      "type" : "fluid"
+    },
+    "wooden-chest" : {
+      "name" : "wooden-chest",
+      "type" : "item"
+    },
+    "iron-chest" : {
+      "name" : "iron-chest",
+      "type" : "item"
+    },
+    "steel-chest" : {
+      "name" : "steel-chest",
+      "type" : "item"
+    },
+    "storage-tank" : {
+      "name" : "storage-tank",
+      "type" : "item"
+    },
+    "transport-belt" : {
+      "name" : "transport-belt",
+      "type" : "item"
+    },
+    "fast-transport-belt" : {
+      "name" : "fast-transport-belt",
+      "type" : "item"
+    },
+    "express-transport-belt" : {
+      "name" : "express-transport-belt",
+      "type" : "item"
+    },
+    "underground-belt" : {
+      "name" : "underground-belt",
+      "type" : "item"
+    },
+    "fast-underground-belt" : {
+      "name" : "fast-underground-belt",
+      "type" : "item"
+    },
+    "express-underground-belt" : {
+      "name" : "express-underground-belt",
+      "type" : "item"
+    },
+    "splitter" : {
+      "name" : "splitter",
+      "type" : "item"
+    },
+    "fast-splitter" : {
+      "name" : "fast-splitter",
+      "type" : "item"
+    },
+    "express-splitter" : {
+      "name" : "express-splitter",
+      "type" : "item"
+    },
+    "burner-inserter" : {
+      "name" : "burner-inserter",
+      "type" : "item"
+    },
+    "inserter" : {
+      "name" : "inserter",
+      "type" : "item"
+    },
+    "long-handed-inserter" : {
+      "name" : "long-handed-inserter",
+      "type" : "item"
+    },
+    "fast-inserter" : {
+      "name" : "fast-inserter",
+      "type" : "item"
+    },
+    "filter-inserter" : {
+      "name" : "filter-inserter",
+      "type" : "item"
+    },
+    "stack-inserter" : {
+      "name" : "stack-inserter",
+      "type" : "item"
+    },
+    "stack-filter-inserter" : {
+      "name" : "stack-filter-inserter",
+      "type" : "item"
+    },
+    "small-electric-pole" : {
+      "name" : "small-electric-pole",
+      "type" : "item"
+    },
+    "medium-electric-pole" : {
+      "name" : "medium-electric-pole",
+      "type" : "item"
+    },
+    "big-electric-pole" : {
+      "name" : "big-electric-pole",
+      "type" : "item"
+    },
+    "substation" : {
+      "name" : "substation",
+      "type" : "item"
+    },
+    "pipe" : {
+      "name" : "pipe",
+      "type" : "item"
+    },
+    "pipe-to-ground" : {
+      "name" : "pipe-to-ground",
+      "type" : "item"
+    },
+    "pump" : {
+      "name" : "pump",
+      "type" : "item"
+    },
+    "rail" : {
+      "name" : "rail",
+      "type" : "item"
+    },
+    "train-stop" : {
+      "name" : "train-stop",
+      "type" : "item"
+    },
+    "rail-signal" : {
+      "name" : "rail-signal",
+      "type" : "item"
+    },
+    "rail-chain-signal" : {
+      "name" : "rail-chain-signal",
+      "type" : "item"
+    },
+    "locomotive" : {
+      "name" : "locomotive",
+      "type" : "item"
+    },
+    "cargo-wagon" : {
+      "name" : "cargo-wagon",
+      "type" : "item"
+    },
+    "fluid-wagon" : {
+      "name" : "fluid-wagon",
+      "type" : "item"
+    },
+    "artillery-wagon" : {
+      "name" : "artillery-wagon",
+      "type" : "item"
+    },
+    "car" : {
+      "name" : "car",
+      "type" : "item"
+    },
+    "tank" : {
+      "name" : "tank",
+      "type" : "item"
+    },
+    "logistic-robot" : {
+      "name" : "logistic-robot",
+      "type" : "item"
+    },
+    "construction-robot" : {
+      "name" : "construction-robot",
+      "type" : "item"
+    },
+    "logistic-chest-active-provider" : {
+      "name" : "logistic-chest-active-provider",
+      "type" : "item"
+    },
+    "logistic-chest-passive-provider" : {
+      "name" : "logistic-chest-passive-provider",
+      "type" : "item"
+    },
+    "logistic-chest-storage" : {
+      "name" : "logistic-chest-storage",
+      "type" : "item"
+    },
+    "logistic-chest-buffer" : {
+      "name" : "logistic-chest-buffer",
+      "type" : "item"
+    },
+    "logistic-chest-requester" : {
+      "name" : "logistic-chest-requester",
+      "type" : "item"
+    },
+    "roboport" : {
+      "name" : "roboport",
+      "type" : "item"
+    },
+    "small-lamp" : {
+      "name" : "small-lamp",
+      "type" : "item"
+    },
+    "red-wire" : {
+      "name" : "red-wire",
+      "type" : "item"
+    },
+    "green-wire" : {
+      "name" : "green-wire",
+      "type" : "item"
+    },
+    "arithmetic-combinator" : {
+      "name" : "arithmetic-combinator",
+      "type" : "item"
+    },
+    "decider-combinator" : {
+      "name" : "decider-combinator",
+      "type" : "item"
+    },
+    "constant-combinator" : {
+      "name" : "constant-combinator",
+      "type" : "item"
+    },
+    "power-switch" : {
+      "name" : "power-switch",
+      "type" : "item"
+    },
+    "programmable-speaker" : {
+      "name" : "programmable-speaker",
+      "type" : "item"
+    },
+    "stone-brick" : {
+      "name" : "stone-brick",
+      "type" : "item"
+    },
+    "concrete" : {
+      "name" : "concrete",
+      "type" : "item"
+    },
+    "hazard-concrete" : {
+      "name" : "hazard-concrete",
+      "type" : "item"
+    },
+    "refined-concrete" : {
+      "name" : "refined-concrete",
+      "type" : "item"
+    },
+    "refined-hazard-concrete" : {
+      "name" : "refined-hazard-concrete",
+      "type" : "item"
+    },
+    "landfill" : {
+      "name" : "landfill",
+      "type" : "item"
+    },
+    "cliff-explosives" : {
+      "name" : "cliff-explosives",
+      "type" : "item"
+    },
+    "repair-pack" : {
+      "name" : "repair-pack",
+      "type" : "item"
+    },
+    "blueprint" : {
+      "name" : "blueprint",
+      "type" : "item"
+    },
+    "deconstruction-planner" : {
+      "name" : "deconstruction-planner",
+      "type" : "item"
+    },
+    "upgrade-planner" : {
+      "name" : "upgrade-planner",
+      "type" : "item"
+    },
+    "blueprint-book" : {
+      "name" : "blueprint-book",
+      "type" : "item"
+    },
+    "boiler" : {
+      "name" : "boiler",
+      "type" : "item"
+    },
+    "steam-engine" : {
+      "name" : "steam-engine",
+      "type" : "item"
+    },
+    "solar-panel" : {
+      "name" : "solar-panel",
+      "type" : "item"
+    },
+    "accumulator" : {
+      "name" : "accumulator",
+      "type" : "item"
+    },
+    "nuclear-reactor" : {
+      "name" : "nuclear-reactor",
+      "type" : "item"
+    },
+    "heat-pipe" : {
+      "name" : "heat-pipe",
+      "type" : "item"
+    },
+    "heat-exchanger" : {
+      "name" : "heat-exchanger",
+      "type" : "item"
+    },
+    "steam-turbine" : {
+      "name" : "steam-turbine",
+      "type" : "item"
+    },
+    "burner-mining-drill" : {
+      "name" : "burner-mining-drill",
+      "type" : "item"
+    },
+    "electric-mining-drill" : {
+      "name" : "electric-mining-drill",
+      "type" : "item"
+    },
+    "offshore-pump" : {
+      "name" : "offshore-pump",
+      "type" : "item"
+    },
+    "pumpjack" : {
+      "name" : "pumpjack",
+      "type" : "item"
+    },
+    "stone-furnace" : {
+      "name" : "stone-furnace",
+      "type" : "item"
+    },
+    "steel-furnace" : {
+      "name" : "steel-furnace",
+      "type" : "item"
+    },
+    "electric-furnace" : {
+      "name" : "electric-furnace",
+      "type" : "item"
+    },
+    "assembling-machine-1" : {
+      "name" : "assembling-machine-1",
+      "type" : "item"
+    },
+    "assembling-machine-2" : {
+      "name" : "assembling-machine-2",
+      "type" : "item"
+    },
+    "assembling-machine-3" : {
+      "name" : "assembling-machine-3",
+      "type" : "item"
+    },
+    "oil-refinery" : {
+      "name" : "oil-refinery",
+      "type" : "item"
+    },
+    "chemical-plant" : {
+      "name" : "chemical-plant",
+      "type" : "item"
+    },
+    "centrifuge" : {
+      "name" : "centrifuge",
+      "type" : "item"
+    },
+    "lab" : {
+      "name" : "lab",
+      "type" : "item"
+    },
+    "beacon" : {
+      "name" : "beacon",
+      "type" : "item"
+    },
+    "speed-module" : {
+      "name" : "speed-module",
+      "type" : "item"
+    },
+    "speed-module-2" : {
+      "name" : "speed-module-2",
+      "type" : "item"
+    },
+    "speed-module-3" : {
+      "name" : "speed-module-3",
+      "type" : "item"
+    },
+    "effectivity-module" : {
+      "name" : "effectivity-module",
+      "type" : "item"
+    },
+    "effectivity-module-2" : {
+      "name" : "effectivity-module-2",
+      "type" : "item"
+    },
+    "effectivity-module-3" : {
+      "name" : "effectivity-module-3",
+      "type" : "item"
+    },
+    "productivity-module" : {
+      "name" : "productivity-module",
+      "type" : "item"
+    },
+    "productivity-module-2" : {
+      "name" : "productivity-module-2",
+      "type" : "item"
+    },
+    "productivity-module-3" : {
+      "name" : "productivity-module-3",
+      "type" : "item"
+    },
+    "wood" : {
+      "name" : "wood",
+      "type" : "item"
+    },
+    "coal" : {
+      "name" : "coal",
+      "type" : "item"
+    },
+    "stone" : {
+      "name" : "stone",
+      "type" : "item"
+    },
+    "iron-ore" : {
+      "name" : "iron-ore",
+      "type" : "item"
+    },
+    "copper-ore" : {
+      "name" : "copper-ore",
+      "type" : "item"
+    },
+    "uranium-ore" : {
+      "name" : "uranium-ore",
+      "type" : "item"
+    },
+    "raw-fish" : {
+      "name" : "raw-fish",
+      "type" : "item"
+    },
+    "iron-plate" : {
+      "name" : "iron-plate",
+      "type" : "item"
+    },
+    "copper-plate" : {
+      "name" : "copper-plate",
+      "type" : "item"
+    },
+    "solid-fuel" : {
+      "name" : "solid-fuel",
+      "type" : "item"
+    },
+    "steel-plate" : {
+      "name" : "steel-plate",
+      "type" : "item"
+    },
+    "plastic-bar" : {
+      "name" : "plastic-bar",
+      "type" : "item"
+    },
+    "sulfur" : {
+      "name" : "sulfur",
+      "type" : "item"
+    },
+    "battery" : {
+      "name" : "battery",
+      "type" : "item"
+    },
+    "explosives" : {
+      "name" : "explosives",
+      "type" : "item"
+    },
+    "crude-oil-barrel" : {
+      "name" : "crude-oil-barrel",
+      "type" : "item"
+    },
+    "heavy-oil-barrel" : {
+      "name" : "heavy-oil-barrel",
+      "type" : "item"
+    },
+    "light-oil-barrel" : {
+      "name" : "light-oil-barrel",
+      "type" : "item"
+    },
+    "lubricant-barrel" : {
+      "name" : "lubricant-barrel",
+      "type" : "item"
+    },
+    "petroleum-gas-barrel" : {
+      "name" : "petroleum-gas-barrel",
+      "type" : "item"
+    },
+    "sulfuric-acid-barrel" : {
+      "name" : "sulfuric-acid-barrel",
+      "type" : "item"
+    },
+    "water-barrel" : {
+      "name" : "water-barrel",
+      "type" : "item"
+    },
+    "copper-cable" : {
+      "name" : "copper-cable",
+      "type" : "item"
+    },
+    "iron-stick" : {
+      "name" : "iron-stick",
+      "type" : "item"
+    },
+    "iron-gear-wheel" : {
+      "name" : "iron-gear-wheel",
+      "type" : "item"
+    },
+    "empty-barrel" : {
+      "name" : "empty-barrel",
+      "type" : "item"
+    },
+    "electronic-circuit" : {
+      "name" : "electronic-circuit",
+      "type" : "item"
+    },
+    "advanced-circuit" : {
+      "name" : "advanced-circuit",
+      "type" : "item"
+    },
+    "processing-unit" : {
+      "name" : "processing-unit",
+      "type" : "item"
+    },
+    "engine-unit" : {
+      "name" : "engine-unit",
+      "type" : "item"
+    },
+    "electric-engine-unit" : {
+      "name" : "electric-engine-unit",
+      "type" : "item"
+    },
+    "flying-robot-frame" : {
+      "name" : "flying-robot-frame",
+      "type" : "item"
+    },
+    "satellite" : {
+      "name" : "satellite",
+      "type" : "item"
+    },
+    "rocket-control-unit" : {
+      "name" : "rocket-control-unit",
+      "type" : "item"
+    },
+    "low-density-structure" : {
+      "name" : "low-density-structure",
+      "type" : "item"
+    },
+    "rocket-fuel" : {
+      "name" : "rocket-fuel",
+      "type" : "item"
+    },
+    "nuclear-fuel" : {
+      "name" : "nuclear-fuel",
+      "type" : "item"
+    },
+    "uranium-235" : {
+      "name" : "uranium-235",
+      "type" : "item"
+    },
+    "uranium-238" : {
+      "name" : "uranium-238",
+      "type" : "item"
+    },
+    "uranium-fuel-cell" : {
+      "name" : "uranium-fuel-cell",
+      "type" : "item"
+    },
+    "used-up-uranium-fuel-cell" : {
+      "name" : "used-up-uranium-fuel-cell",
+      "type" : "item"
+    },
+    "automation-science-pack" : {
+      "name" : "automation-science-pack",
+      "type" : "item"
+    },
+    "logistic-science-pack" : {
+      "name" : "logistic-science-pack",
+      "type" : "item"
+    },
+    "military-science-pack" : {
+      "name" : "military-science-pack",
+      "type" : "item"
+    },
+    "chemical-science-pack" : {
+      "name" : "chemical-science-pack",
+      "type" : "item"
+    },
+    "production-science-pack" : {
+      "name" : "production-science-pack",
+      "type" : "item"
+    },
+    "utility-science-pack" : {
+      "name" : "utility-science-pack",
+      "type" : "item"
+    },
+    "space-science-pack" : {
+      "name" : "space-science-pack",
+      "type" : "item"
+    },
+    "pistol" : {
+      "name" : "pistol",
+      "type" : "item"
+    },
+    "submachine-gun" : {
+      "name" : "submachine-gun",
+      "type" : "item"
+    },
+    "shotgun" : {
+      "name" : "shotgun",
+      "type" : "item"
+    },
+    "combat-shotgun" : {
+      "name" : "combat-shotgun",
+      "type" : "item"
+    },
+    "rocket-launcher" : {
+      "name" : "rocket-launcher",
+      "type" : "item"
+    },
+    "flamethrower" : {
+      "name" : "flamethrower",
+      "type" : "item"
+    },
+    "land-mine" : {
+      "name" : "land-mine",
+      "type" : "item"
+    },
+    "firearm-magazine" : {
+      "name" : "firearm-magazine",
+      "type" : "item"
+    },
+    "piercing-rounds-magazine" : {
+      "name" : "piercing-rounds-magazine",
+      "type" : "item"
+    },
+    "uranium-rounds-magazine" : {
+      "name" : "uranium-rounds-magazine",
+      "type" : "item"
+    },
+    "shotgun-shell" : {
+      "name" : "shotgun-shell",
+      "type" : "item"
+    },
+    "piercing-shotgun-shell" : {
+      "name" : "piercing-shotgun-shell",
+      "type" : "item"
+    },
+    "cannon-shell" : {
+      "name" : "cannon-shell",
+      "type" : "item"
+    },
+    "explosive-cannon-shell" : {
+      "name" : "explosive-cannon-shell",
+      "type" : "item"
+    },
+    "uranium-cannon-shell" : {
+      "name" : "uranium-cannon-shell",
+      "type" : "item"
+    },
+    "explosive-uranium-cannon-shell" : {
+      "name" : "explosive-uranium-cannon-shell",
+      "type" : "item"
+    },
+    "artillery-shell" : {
+      "name" : "artillery-shell",
+      "type" : "item"
+    },
+    "rocket" : {
+      "name" : "rocket",
+      "type" : "item"
+    },
+    "explosive-rocket" : {
+      "name" : "explosive-rocket",
+      "type" : "item"
+    },
+    "atomic-bomb" : {
+      "name" : "atomic-bomb",
+      "type" : "item"
+    },
+    "flamethrower-ammo" : {
+      "name" : "flamethrower-ammo",
+      "type" : "item"
+    },
+    "grenade" : {
+      "name" : "grenade",
+      "type" : "item"
+    },
+    "cluster-grenade" : {
+      "name" : "cluster-grenade",
+      "type" : "item"
+    },
+    "poison-capsule" : {
+      "name" : "poison-capsule",
+      "type" : "item"
+    },
+    "slowdown-capsule" : {
+      "name" : "slowdown-capsule",
+      "type" : "item"
+    },
+    "defender-capsule" : {
+      "name" : "defender-capsule",
+      "type" : "item"
+    },
+    "distractor-capsule" : {
+      "name" : "distractor-capsule",
+      "type" : "item"
+    },
+    "destroyer-capsule" : {
+      "name" : "destroyer-capsule",
+      "type" : "item"
+    },
+    "discharge-defense-remote" : {
+      "name" : "discharge-defense-remote",
+      "type" : "item"
+    },
+    "artillery-targeting-remote" : {
+      "name" : "artillery-targeting-remote",
+      "type" : "item"
+    },
+    "light-armor" : {
+      "name" : "light-armor",
+      "type" : "item"
+    },
+    "heavy-armor" : {
+      "name" : "heavy-armor",
+      "type" : "item"
+    },
+    "modular-armor" : {
+      "name" : "modular-armor",
+      "type" : "item"
+    },
+    "power-armor" : {
+      "name" : "power-armor",
+      "type" : "item"
+    },
+    "power-armor-mk2" : {
+      "name" : "power-armor-mk2",
+      "type" : "item"
+    },
+    "solar-panel-equipment" : {
+      "name" : "solar-panel-equipment",
+      "type" : "item"
+    },
+    "fusion-reactor-equipment" : {
+      "name" : "fusion-reactor-equipment",
+      "type" : "item"
+    },
+    "energy-shield-equipment" : {
+      "name" : "energy-shield-equipment",
+      "type" : "item"
+    },
+    "energy-shield-mk2-equipment" : {
+      "name" : "energy-shield-mk2-equipment",
+      "type" : "item"
+    },
+    "battery-equipment" : {
+      "name" : "battery-equipment",
+      "type" : "item"
+    },
+    "battery-mk2-equipment" : {
+      "name" : "battery-mk2-equipment",
+      "type" : "item"
+    },
+    "personal-laser-defense-equipment" : {
+      "name" : "personal-laser-defense-equipment",
+      "type" : "item"
+    },
+    "discharge-defense-equipment" : {
+      "name" : "discharge-defense-equipment",
+      "type" : "item"
+    },
+    "belt-immunity-equipment" : {
+      "name" : "belt-immunity-equipment",
+      "type" : "item"
+    },
+    "exoskeleton-equipment" : {
+      "name" : "exoskeleton-equipment",
+      "type" : "item"
+    },
+    "personal-roboport-equipment" : {
+      "name" : "personal-roboport-equipment",
+      "type" : "item"
+    },
+    "personal-roboport-mk2-equipment" : {
+      "name" : "personal-roboport-mk2-equipment",
+      "type" : "item"
+    },
+    "night-vision-equipment" : {
+      "name" : "night-vision-equipment",
+      "type" : "item"
+    },
+    "stone-wall" : {
+      "name" : "stone-wall",
+      "type" : "item"
+    },
+    "gate" : {
+      "name" : "gate",
+      "type" : "item"
+    },
+    "gun-turret" : {
+      "name" : "gun-turret",
+      "type" : "item"
+    },
+    "laser-turret" : {
+      "name" : "laser-turret",
+      "type" : "item"
+    },
+    "flamethrower-turret" : {
+      "name" : "flamethrower-turret",
+      "type" : "item"
+    },
+    "artillery-turret" : {
+      "name" : "artillery-turret",
+      "type" : "item"
+    },
+    "radar" : {
+      "name" : "radar",
+      "type" : "item"
+    },
+    "rocket-silo" : {
+      "name" : "rocket-silo",
+      "type" : "item"
+    }
+  },
+  "item" : {
+    "wooden-chest" : {
+      "name" : "wooden-chest",
+      "localised_name" : [
+        "entity-name.wooden-chest"
+      ],
+      "localised_description" : [
+        "item-description.wooden-chest"
+      ]
+    },
+    "iron-chest" : {
+      "name" : "iron-chest",
+      "localised_name" : [
+        "entity-name.iron-chest"
+      ],
+      "localised_description" : [
+        "item-description.iron-chest"
+      ]
+    },
+    "steel-chest" : {
+      "name" : "steel-chest",
+      "localised_name" : [
+        "entity-name.steel-chest"
+      ],
+      "localised_description" : [
+        "item-description.steel-chest"
+      ]
+    },
+    "storage-tank" : {
+      "name" : "storage-tank",
+      "localised_name" : [
+        "entity-name.storage-tank"
+      ],
+      "localised_description" : [
+        "item-description.storage-tank"
+      ]
+    },
+    "transport-belt" : {
+      "name" : "transport-belt",
+      "localised_name" : [
+        "entity-name.transport-belt"
+      ],
+      "localised_description" : [
+        "item-description.transport-belt"
+      ]
+    },
+    "fast-transport-belt" : {
+      "name" : "fast-transport-belt",
+      "localised_name" : [
+        "entity-name.fast-transport-belt"
+      ],
+      "localised_description" : [
+        "item-description.fast-transport-belt"
+      ]
+    },
+    "express-transport-belt" : {
+      "name" : "express-transport-belt",
+      "localised_name" : [
+        "entity-name.express-transport-belt"
+      ],
+      "localised_description" : [
+        "item-description.express-transport-belt"
+      ]
+    },
+    "underground-belt" : {
+      "name" : "underground-belt",
+      "localised_name" : [
+        "entity-name.underground-belt"
+      ],
+      "localised_description" : [
+        "item-description.underground-belt"
+      ]
+    },
+    "fast-underground-belt" : {
+      "name" : "fast-underground-belt",
+      "localised_name" : [
+        "entity-name.fast-underground-belt"
+      ],
+      "localised_description" : [
+        "item-description.fast-underground-belt"
+      ]
+    },
+    "express-underground-belt" : {
+      "name" : "express-underground-belt",
+      "localised_name" : [
+        "entity-name.express-underground-belt"
+      ],
+      "localised_description" : [
+        "item-description.express-underground-belt"
+      ]
+    },
+    "splitter" : {
+      "name" : "splitter",
+      "localised_name" : [
+        "entity-name.splitter"
+      ],
+      "localised_description" : [
+        "item-description.splitter"
+      ]
+    },
+    "fast-splitter" : {
+      "name" : "fast-splitter",
+      "localised_name" : [
+        "entity-name.fast-splitter"
+      ],
+      "localised_description" : [
+        "item-description.fast-splitter"
+      ]
+    },
+    "express-splitter" : {
+      "name" : "express-splitter",
+      "localised_name" : [
+        "entity-name.express-splitter"
+      ],
+      "localised_description" : [
+        "item-description.express-splitter"
+      ]
+    },
+    "loader" : {
+      "name" : "loader",
+      "localised_name" : [
+        "entity-name.loader"
+      ],
+      "localised_description" : [
+        "item-description.loader"
+      ]
+    },
+    "fast-loader" : {
+      "name" : "fast-loader",
+      "localised_name" : [
+        "entity-name.fast-loader"
+      ],
+      "localised_description" : [
+        "item-description.fast-loader"
+      ]
+    },
+    "express-loader" : {
+      "name" : "express-loader",
+      "localised_name" : [
+        "entity-name.express-loader"
+      ],
+      "localised_description" : [
+        "item-description.express-loader"
+      ]
+    },
+    "burner-inserter" : {
+      "name" : "burner-inserter",
+      "localised_name" : [
+        "entity-name.burner-inserter"
+      ],
+      "localised_description" : [
+        "item-description.burner-inserter"
+      ]
+    },
+    "inserter" : {
+      "name" : "inserter",
+      "localised_name" : [
+        "entity-name.inserter"
+      ],
+      "localised_description" : [
+        "item-description.inserter"
+      ]
+    },
+    "long-handed-inserter" : {
+      "name" : "long-handed-inserter",
+      "localised_name" : [
+        "entity-name.long-handed-inserter"
+      ],
+      "localised_description" : [
+        "item-description.long-handed-inserter"
+      ]
+    },
+    "fast-inserter" : {
+      "name" : "fast-inserter",
+      "localised_name" : [
+        "entity-name.fast-inserter"
+      ],
+      "localised_description" : [
+        "item-description.fast-inserter"
+      ]
+    },
+    "filter-inserter" : {
+      "name" : "filter-inserter",
+      "localised_name" : [
+        "entity-name.filter-inserter"
+      ],
+      "localised_description" : [
+        "item-description.filter-inserter"
+      ]
+    },
+    "stack-inserter" : {
+      "name" : "stack-inserter",
+      "localised_name" : [
+        "entity-name.stack-inserter"
+      ],
+      "localised_description" : [
+        "item-description.stack-inserter"
+      ]
+    },
+    "stack-filter-inserter" : {
+      "name" : "stack-filter-inserter",
+      "localised_name" : [
+        "entity-name.stack-filter-inserter"
+      ],
+      "localised_description" : [
+        "item-description.stack-filter-inserter"
+      ]
+    },
+    "small-electric-pole" : {
+      "name" : "small-electric-pole",
+      "localised_name" : [
+        "entity-name.small-electric-pole"
+      ],
+      "localised_description" : [
+        "item-description.small-electric-pole"
+      ]
+    },
+    "medium-electric-pole" : {
+      "name" : "medium-electric-pole",
+      "localised_name" : [
+        "entity-name.medium-electric-pole"
+      ],
+      "localised_description" : [
+        "item-description.medium-electric-pole"
+      ]
+    },
+    "big-electric-pole" : {
+      "name" : "big-electric-pole",
+      "localised_name" : [
+        "entity-name.big-electric-pole"
+      ],
+      "localised_description" : [
+        "item-description.big-electric-pole"
+      ]
+    },
+    "substation" : {
+      "name" : "substation",
+      "localised_name" : [
+        "entity-name.substation"
+      ],
+      "localised_description" : [
+        "item-description.substation"
+      ]
+    },
+    "pipe" : {
+      "name" : "pipe",
+      "localised_name" : [
+        "entity-name.pipe"
+      ],
+      "localised_description" : [
+        "item-description.pipe"
+      ]
+    },
+    "pipe-to-ground" : {
+      "name" : "pipe-to-ground",
+      "localised_name" : [
+        "entity-name.pipe-to-ground"
+      ],
+      "localised_description" : [
+        "item-description.pipe-to-ground"
+      ]
+    },
+    "pump" : {
+      "name" : "pump",
+      "localised_name" : [
+        "entity-name.pump"
+      ],
+      "localised_description" : [
+        "item-description.pump"
+      ]
+    },
+    "rail" : {
+      "name" : "rail",
+      "localised_name" : [
+        "item-name.rail"
+      ],
+      "localised_description" : [
+        "item-description.rail"
+      ]
+    },
+    "train-stop" : {
+      "name" : "train-stop",
+      "localised_name" : [
+        "entity-name.train-stop"
+      ],
+      "localised_description" : [
+        "item-description.train-stop"
+      ]
+    },
+    "rail-signal" : {
+      "name" : "rail-signal",
+      "localised_name" : [
+        "entity-name.rail-signal"
+      ],
+      "localised_description" : [
+        "item-description.rail-signal"
+      ]
+    },
+    "rail-chain-signal" : {
+      "name" : "rail-chain-signal",
+      "localised_name" : [
+        "entity-name.rail-chain-signal"
+      ],
+      "localised_description" : [
+        "item-description.rail-chain-signal"
+      ]
+    },
+    "locomotive" : {
+      "name" : "locomotive",
+      "localised_name" : [
+        "entity-name.locomotive"
+      ],
+      "localised_description" : [
+        "item-description.locomotive"
+      ]
+    },
+    "cargo-wagon" : {
+      "name" : "cargo-wagon",
+      "localised_name" : [
+        "entity-name.cargo-wagon"
+      ],
+      "localised_description" : [
+        "item-description.cargo-wagon"
+      ]
+    },
+    "fluid-wagon" : {
+      "name" : "fluid-wagon",
+      "localised_name" : [
+        "entity-name.fluid-wagon"
+      ],
+      "localised_description" : [
+        "item-description.fluid-wagon"
+      ]
+    },
+    "artillery-wagon" : {
+      "name" : "artillery-wagon",
+      "localised_name" : [
+        "entity-name.artillery-wagon"
+      ],
+      "localised_description" : [
+        "item-description.artillery-wagon"
+      ]
+    },
+    "car" : {
+      "name" : "car",
+      "localised_name" : [
+        "entity-name.car"
+      ],
+      "localised_description" : [
+        "item-description.car"
+      ]
+    },
+    "tank" : {
+      "name" : "tank",
+      "localised_name" : [
+        "entity-name.tank"
+      ],
+      "localised_description" : [
+        "item-description.tank"
+      ]
+    },
+    "small-plane" : {
+      "name" : "small-plane",
+      "localised_name" : [
+        "item-name.small-plane"
+      ],
+      "localised_description" : [
+        "item-description.small-plane"
+      ]
+    },
+    "logistic-robot" : {
+      "name" : "logistic-robot",
+      "localised_name" : [
+        "entity-name.logistic-robot"
+      ],
+      "localised_description" : [
+        "item-description.logistic-robot"
+      ]
+    },
+    "construction-robot" : {
+      "name" : "construction-robot",
+      "localised_name" : [
+        "entity-name.construction-robot"
+      ],
+      "localised_description" : [
+        "item-description.construction-robot"
+      ]
+    },
+    "logistic-chest-active-provider" : {
+      "name" : "logistic-chest-active-provider",
+      "localised_name" : [
+        "entity-name.logistic-chest-active-provider"
+      ],
+      "localised_description" : [
+        "item-description.logistic-chest-active-provider"
+      ]
+    },
+    "logistic-chest-passive-provider" : {
+      "name" : "logistic-chest-passive-provider",
+      "localised_name" : [
+        "entity-name.logistic-chest-passive-provider"
+      ],
+      "localised_description" : [
+        "item-description.logistic-chest-passive-provider"
+      ]
+    },
+    "logistic-chest-storage" : {
+      "name" : "logistic-chest-storage",
+      "localised_name" : [
+        "entity-name.logistic-chest-storage"
+      ],
+      "localised_description" : [
+        "item-description.logistic-chest-storage"
+      ]
+    },
+    "logistic-chest-buffer" : {
+      "name" : "logistic-chest-buffer",
+      "localised_name" : [
+        "entity-name.logistic-chest-buffer"
+      ],
+      "localised_description" : [
+        "item-description.logistic-chest-buffer"
+      ]
+    },
+    "logistic-chest-requester" : {
+      "name" : "logistic-chest-requester",
+      "localised_name" : [
+        "entity-name.logistic-chest-requester"
+      ],
+      "localised_description" : [
+        "item-description.logistic-chest-requester"
+      ]
+    },
+    "roboport" : {
+      "name" : "roboport",
+      "localised_name" : [
+        "entity-name.roboport"
+      ],
+      "localised_description" : [
+        "item-description.roboport"
+      ]
+    },
+    "small-lamp" : {
+      "name" : "small-lamp",
+      "localised_name" : [
+        "entity-name.small-lamp"
+      ],
+      "localised_description" : [
+        "item-description.small-lamp"
+      ]
+    },
+    "red-wire" : {
+      "name" : "red-wire",
+      "localised_name" : [
+        "item-name.red-wire"
+      ],
+      "localised_description" : [
+        "item-description.red-wire"
+      ]
+    },
+    "green-wire" : {
+      "name" : "green-wire",
+      "localised_name" : [
+        "item-name.green-wire"
+      ],
+      "localised_description" : [
+        "item-description.green-wire"
+      ]
+    },
+    "arithmetic-combinator" : {
+      "name" : "arithmetic-combinator",
+      "localised_name" : [
+        "entity-name.arithmetic-combinator"
+      ],
+      "localised_description" : [
+        "item-description.arithmetic-combinator"
+      ]
+    },
+    "decider-combinator" : {
+      "name" : "decider-combinator",
+      "localised_name" : [
+        "entity-name.decider-combinator"
+      ],
+      "localised_description" : [
+        "item-description.decider-combinator"
+      ]
+    },
+    "constant-combinator" : {
+      "name" : "constant-combinator",
+      "localised_name" : [
+        "entity-name.constant-combinator"
+      ],
+      "localised_description" : [
+        "item-description.constant-combinator"
+      ]
+    },
+    "power-switch" : {
+      "name" : "power-switch",
+      "localised_name" : [
+        "entity-name.power-switch"
+      ],
+      "localised_description" : [
+        "item-description.power-switch"
+      ]
+    },
+    "programmable-speaker" : {
+      "name" : "programmable-speaker",
+      "localised_name" : [
+        "entity-name.programmable-speaker"
+      ],
+      "localised_description" : [
+        "item-description.programmable-speaker"
+      ]
+    },
+    "stone-brick" : {
+      "name" : "stone-brick",
+      "localised_name" : [
+        "item-name.stone-brick"
+      ],
+      "localised_description" : [
+        "item-description.stone-brick"
+      ]
+    },
+    "concrete" : {
+      "name" : "concrete",
+      "localised_name" : [
+        "item-name.concrete"
+      ],
+      "localised_description" : [
+        "item-description.concrete"
+      ]
+    },
+    "hazard-concrete" : {
+      "name" : "hazard-concrete",
+      "localised_name" : [
+        "item-name.hazard-concrete"
+      ],
+      "localised_description" : [
+        "item-description.hazard-concrete"
+      ]
+    },
+    "refined-concrete" : {
+      "name" : "refined-concrete",
+      "localised_name" : [
+        "item-name.refined-concrete"
+      ],
+      "localised_description" : [
+        "item-description.refined-concrete"
+      ]
+    },
+    "refined-hazard-concrete" : {
+      "name" : "refined-hazard-concrete",
+      "localised_name" : [
+        "item-name.refined-hazard-concrete"
+      ],
+      "localised_description" : [
+        "item-description.refined-hazard-concrete"
+      ]
+    },
+    "landfill" : {
+      "name" : "landfill",
+      "localised_name" : [
+        "item-name.landfill"
+      ],
+      "localised_description" : [
+        "item-description.landfill"
+      ]
+    },
+    "cliff-explosives" : {
+      "name" : "cliff-explosives",
+      "localised_name" : [
+        "item-name.cliff-explosives"
+      ],
+      "localised_description" : [
+        "item-description.cliff-explosives"
+      ]
+    },
+    "dummy-steel-axe" : {
+      "name" : "dummy-steel-axe",
+      "localised_name" : [
+        "item-name.dummy-steel-axe"
+      ],
+      "localised_description" : [
+        "item-description.dummy-steel-axe"
+      ]
+    },
+    "repair-pack" : {
+      "name" : "repair-pack",
+      "localised_name" : [
+        "item-name.repair-pack"
+      ],
+      "localised_description" : [
+        "item-description.repair-pack"
+      ]
+    },
+    "blueprint" : {
+      "name" : "blueprint",
+      "localised_name" : [
+        "item-name.blueprint"
+      ],
+      "localised_description" : [
+        "item-description.blueprint"
+      ]
+    },
+    "deconstruction-planner" : {
+      "name" : "deconstruction-planner",
+      "localised_name" : [
+        "item-name.deconstruction-planner"
+      ],
+      "localised_description" : [
+        "item-description.deconstruction-planner"
+      ]
+    },
+    "upgrade-planner" : {
+      "name" : "upgrade-planner",
+      "localised_name" : [
+        "item-name.upgrade-planner"
+      ],
+      "localised_description" : [
+        "item-description.upgrade-planner"
+      ]
+    },
+    "blueprint-book" : {
+      "name" : "blueprint-book",
+      "localised_name" : [
+        "item-name.blueprint-book"
+      ],
+      "localised_description" : [
+        "item-description.blueprint-book"
+      ]
+    },
+    "copy-paste-tool" : {
+      "name" : "copy-paste-tool",
+      "localised_name" : [
+        "item-name.copy-paste-tool"
+      ],
+      "localised_description" : [
+        "item-description.copy-paste-tool"
+      ]
+    },
+    "cut-paste-tool" : {
+      "name" : "cut-paste-tool",
+      "localised_name" : [
+        "item-name.cut-paste-tool"
+      ],
+      "localised_description" : [
+        "item-description.cut-paste-tool"
+      ]
+    },
+    "boiler" : {
+      "name" : "boiler",
+      "localised_name" : [
+        "entity-name.boiler"
+      ],
+      "localised_description" : [
+        "item-description.boiler"
+      ]
+    },
+    "steam-engine" : {
+      "name" : "steam-engine",
+      "localised_name" : [
+        "entity-name.steam-engine"
+      ],
+      "localised_description" : [
+        "item-description.steam-engine"
+      ]
+    },
+    "solar-panel" : {
+      "name" : "solar-panel",
+      "localised_name" : [
+        "entity-name.solar-panel"
+      ],
+      "localised_description" : [
+        "item-description.solar-panel"
+      ]
+    },
+    "accumulator" : {
+      "name" : "accumulator",
+      "localised_name" : [
+        "entity-name.accumulator"
+      ],
+      "localised_description" : [
+        "item-description.accumulator"
+      ]
+    },
+    "nuclear-reactor" : {
+      "name" : "nuclear-reactor",
+      "localised_name" : [
+        "entity-name.nuclear-reactor"
+      ],
+      "localised_description" : [
+        "item-description.nuclear-reactor"
+      ]
+    },
+    "heat-pipe" : {
+      "name" : "heat-pipe",
+      "localised_name" : [
+        "entity-name.heat-pipe"
+      ],
+      "localised_description" : [
+        "item-description.heat-pipe"
+      ]
+    },
+    "heat-exchanger" : {
+      "name" : "heat-exchanger",
+      "localised_name" : [
+        "entity-name.heat-exchanger"
+      ],
+      "localised_description" : [
+        "item-description.heat-exchanger"
+      ]
+    },
+    "steam-turbine" : {
+      "name" : "steam-turbine",
+      "localised_name" : [
+        "entity-name.steam-turbine"
+      ],
+      "localised_description" : [
+        "item-description.steam-turbine"
+      ]
+    },
+    "burner-mining-drill" : {
+      "name" : "burner-mining-drill",
+      "localised_name" : [
+        "entity-name.burner-mining-drill"
+      ],
+      "localised_description" : [
+        "item-description.burner-mining-drill"
+      ]
+    },
+    "electric-mining-drill" : {
+      "name" : "electric-mining-drill",
+      "localised_name" : [
+        "entity-name.electric-mining-drill"
+      ],
+      "localised_description" : [
+        "item-description.electric-mining-drill"
+      ]
+    },
+    "offshore-pump" : {
+      "name" : "offshore-pump",
+      "localised_name" : [
+        "entity-name.offshore-pump"
+      ],
+      "localised_description" : [
+        "item-description.offshore-pump"
+      ]
+    },
+    "pumpjack" : {
+      "name" : "pumpjack",
+      "localised_name" : [
+        "entity-name.pumpjack"
+      ],
+      "localised_description" : [
+        "item-description.pumpjack"
+      ]
+    },
+    "stone-furnace" : {
+      "name" : "stone-furnace",
+      "localised_name" : [
+        "entity-name.stone-furnace"
+      ],
+      "localised_description" : [
+        "item-description.stone-furnace"
+      ]
+    },
+    "steel-furnace" : {
+      "name" : "steel-furnace",
+      "localised_name" : [
+        "entity-name.steel-furnace"
+      ],
+      "localised_description" : [
+        "item-description.steel-furnace"
+      ]
+    },
+    "electric-furnace" : {
+      "name" : "electric-furnace",
+      "localised_name" : [
+        "entity-name.electric-furnace"
+      ],
+      "localised_description" : [
+        "item-description.electric-furnace"
+      ]
+    },
+    "assembling-machine-1" : {
+      "name" : "assembling-machine-1",
+      "localised_name" : [
+        "entity-name.assembling-machine-1"
+      ],
+      "localised_description" : [
+        "item-description.assembling-machine-1"
+      ]
+    },
+    "assembling-machine-2" : {
+      "name" : "assembling-machine-2",
+      "localised_name" : [
+        "entity-name.assembling-machine-2"
+      ],
+      "localised_description" : [
+        "item-description.assembling-machine-2"
+      ]
+    },
+    "assembling-machine-3" : {
+      "name" : "assembling-machine-3",
+      "localised_name" : [
+        "entity-name.assembling-machine-3"
+      ],
+      "localised_description" : [
+        "item-description.assembling-machine-3"
+      ]
+    },
+    "oil-refinery" : {
+      "name" : "oil-refinery",
+      "localised_name" : [
+        "entity-name.oil-refinery"
+      ],
+      "localised_description" : [
+        "item-description.oil-refinery"
+      ]
+    },
+    "chemical-plant" : {
+      "name" : "chemical-plant",
+      "localised_name" : [
+        "entity-name.chemical-plant"
+      ],
+      "localised_description" : [
+        "item-description.chemical-plant"
+      ]
+    },
+    "centrifuge" : {
+      "name" : "centrifuge",
+      "localised_name" : [
+        "entity-name.centrifuge"
+      ],
+      "localised_description" : [
+        "item-description.centrifuge"
+      ]
+    },
+    "lab" : {
+      "name" : "lab",
+      "localised_name" : [
+        "entity-name.lab"
+      ],
+      "localised_description" : [
+        "item-description.lab"
+      ]
+    },
+    "beacon" : {
+      "name" : "beacon",
+      "localised_name" : [
+        "entity-name.beacon"
+      ],
+      "localised_description" : [
+        "item-description.beacon"
+      ]
+    },
+    "speed-module" : {
+      "name" : "speed-module",
+      "localised_name" : [
+        "item-name.speed-module"
+      ],
+      "localised_description" : [
+        "item-description.speed-module"
+      ]
+    },
+    "speed-module-2" : {
+      "name" : "speed-module-2",
+      "localised_name" : [
+        "item-name.speed-module-2"
+      ],
+      "localised_description" : [
+        "item-description.speed-module"
+      ]
+    },
+    "speed-module-3" : {
+      "name" : "speed-module-3",
+      "localised_name" : [
+        "item-name.speed-module-3"
+      ],
+      "localised_description" : [
+        "item-description.speed-module"
+      ]
+    },
+    "effectivity-module" : {
+      "name" : "effectivity-module",
+      "localised_name" : [
+        "item-name.effectivity-module"
+      ],
+      "localised_description" : [
+        "item-description.effectivity-module"
+      ]
+    },
+    "effectivity-module-2" : {
+      "name" : "effectivity-module-2",
+      "localised_name" : [
+        "item-name.effectivity-module-2"
+      ],
+      "localised_description" : [
+        "item-description.effectivity-module"
+      ]
+    },
+    "effectivity-module-3" : {
+      "name" : "effectivity-module-3",
+      "localised_name" : [
+        "item-name.effectivity-module-3"
+      ],
+      "localised_description" : [
+        "item-description.effectivity-module"
+      ]
+    },
+    "productivity-module" : {
+      "name" : "productivity-module",
+      "localised_name" : [
+        "item-name.productivity-module"
+      ],
+      "localised_description" : [
+        "item-description.productivity-module"
+      ]
+    },
+    "productivity-module-2" : {
+      "name" : "productivity-module-2",
+      "localised_name" : [
+        "item-name.productivity-module-2"
+      ],
+      "localised_description" : [
+        "item-description.productivity-module"
+      ]
+    },
+    "productivity-module-3" : {
+      "name" : "productivity-module-3",
+      "localised_name" : [
+        "item-name.productivity-module-3"
+      ],
+      "localised_description" : [
+        "item-description.productivity-module"
+      ]
+    },
+    "crash-site-assembling-machine-1-broken" : {
+      "name" : "crash-site-assembling-machine-1-broken",
+      "localised_name" : [
+        "entity-name.crash-site-assembling-machine-1-broken"
+      ],
+      "localised_description" : [
+        "item-description.crash-site-assembling-machine-1-broken"
+      ]
+    },
+    "crash-site-assembling-machine-1-repaired" : {
+      "name" : "crash-site-assembling-machine-1-repaired",
+      "localised_name" : [
+        "entity-name.crash-site-assembling-machine-1-repaired"
+      ],
+      "localised_description" : [
+        "item-description.crash-site-assembling-machine-1-repaired"
+      ]
+    },
+    "crash-site-assembling-machine-2-broken" : {
+      "name" : "crash-site-assembling-machine-2-broken",
+      "localised_name" : [
+        "entity-name.crash-site-assembling-machine-2-broken"
+      ],
+      "localised_description" : [
+        "item-description.crash-site-assembling-machine-2-broken"
+      ]
+    },
+    "crash-site-assembling-machine-2-repaired" : {
+      "name" : "crash-site-assembling-machine-2-repaired",
+      "localised_name" : [
+        "entity-name.crash-site-assembling-machine-2-repaired"
+      ],
+      "localised_description" : [
+        "item-description.crash-site-assembling-machine-2-repaired"
+      ]
+    },
+    "crash-site-chest-1" : {
+      "name" : "crash-site-chest-1",
+      "localised_name" : [
+        "entity-name.crash-site-chest-1"
+      ],
+      "localised_description" : [
+        "item-description.crash-site-chest-1"
+      ]
+    },
+    "crash-site-chest-2" : {
+      "name" : "crash-site-chest-2",
+      "localised_name" : [
+        "entity-name.crash-site-chest-2"
+      ],
+      "localised_description" : [
+        "item-description.crash-site-chest-2"
+      ]
+    },
+    "crash-site-electric-pole" : {
+      "name" : "crash-site-electric-pole",
+      "localised_name" : [
+        "entity-name.crash-site-electric-pole"
+      ],
+      "localised_description" : [
+        "item-description.crash-site-electric-pole"
+      ]
+    },
+    "crash-site-generator" : {
+      "name" : "crash-site-generator",
+      "localised_name" : [
+        "entity-name.crash-site-generator"
+      ],
+      "localised_description" : [
+        "item-description.crash-site-generator"
+      ]
+    },
+    "crash-site-lab-broken" : {
+      "name" : "crash-site-lab-broken",
+      "localised_name" : [
+        "entity-name.crash-site-lab-broken"
+      ],
+      "localised_description" : [
+        "item-description.crash-site-lab-broken"
+      ]
+    },
+    "crash-site-lab-repaired" : {
+      "name" : "crash-site-lab-repaired",
+      "localised_name" : [
+        "entity-name.crash-site-lab-repaired"
+      ],
+      "localised_description" : [
+        "item-description.crash-site-lab-repaired"
+      ]
+    },
+    "wood" : {
+      "name" : "wood",
+      "localised_name" : [
+        "item-name.wood"
+      ],
+      "localised_description" : [
+        "item-description.wood"
+      ]
+    },
+    "coal" : {
+      "name" : "coal",
+      "localised_name" : [
+        "item-name.coal"
+      ],
+      "localised_description" : [
+        "item-description.coal"
+      ]
+    },
+    "stone" : {
+      "name" : "stone",
+      "localised_name" : [
+        "item-name.stone"
+      ],
+      "localised_description" : [
+        "item-description.stone"
+      ]
+    },
+    "iron-ore" : {
+      "name" : "iron-ore",
+      "localised_name" : [
+        "item-name.iron-ore"
+      ],
+      "localised_description" : [
+        "item-description.iron-ore"
+      ]
+    },
+    "copper-ore" : {
+      "name" : "copper-ore",
+      "localised_name" : [
+        "item-name.copper-ore"
+      ],
+      "localised_description" : [
+        "item-description.copper-ore"
+      ]
+    },
+    "uranium-ore" : {
+      "name" : "uranium-ore",
+      "localised_name" : [
+        "item-name.uranium-ore"
+      ],
+      "localised_description" : [
+        "item-description.uranium-ore"
+      ]
+    },
+    "raw-fish" : {
+      "name" : "raw-fish",
+      "localised_name" : [
+        "item-name.raw-fish"
+      ],
+      "localised_description" : [
+        "item-description.raw-fish"
+      ]
+    },
+    "iron-plate" : {
+      "name" : "iron-plate",
+      "localised_name" : [
+        "item-name.iron-plate"
+      ],
+      "localised_description" : [
+        "item-description.iron-plate"
+      ]
+    },
+    "copper-plate" : {
+      "name" : "copper-plate",
+      "localised_name" : [
+        "item-name.copper-plate"
+      ],
+      "localised_description" : [
+        "item-description.copper-plate"
+      ]
+    },
+    "solid-fuel" : {
+      "name" : "solid-fuel",
+      "localised_name" : [
+        "item-name.solid-fuel"
+      ],
+      "localised_description" : [
+        "item-description.solid-fuel"
+      ]
+    },
+    "steel-plate" : {
+      "name" : "steel-plate",
+      "localised_name" : [
+        "item-name.steel-plate"
+      ],
+      "localised_description" : [
+        "item-description.steel-plate"
+      ]
+    },
+    "plastic-bar" : {
+      "name" : "plastic-bar",
+      "localised_name" : [
+        "item-name.plastic-bar"
+      ],
+      "localised_description" : [
+        "item-description.plastic-bar"
+      ]
+    },
+    "sulfur" : {
+      "name" : "sulfur",
+      "localised_name" : [
+        "item-name.sulfur"
+      ],
+      "localised_description" : [
+        "item-description.sulfur"
+      ]
+    },
+    "battery" : {
+      "name" : "battery",
+      "localised_name" : [
+        "item-name.battery"
+      ],
+      "localised_description" : [
+        "item-description.battery"
+      ]
+    },
+    "explosives" : {
+      "name" : "explosives",
+      "localised_name" : [
+        "item-name.explosives"
+      ],
+      "localised_description" : [
+        "item-description.explosives"
+      ]
+    },
+    "crude-oil-barrel" : {
+      "name" : "crude-oil-barrel",
+      "localised_name" : [
+        "item-name.filled-barrel",
+        [
+          "fluid-name.crude-oil"
+        ]
+      ],
+      "localised_description" : [
+        "item-description.crude-oil-barrel"
+      ]
+    },
+    "heavy-oil-barrel" : {
+      "name" : "heavy-oil-barrel",
+      "localised_name" : [
+        "item-name.filled-barrel",
+        [
+          "fluid-name.heavy-oil"
+        ]
+      ],
+      "localised_description" : [
+        "item-description.heavy-oil-barrel"
+      ]
+    },
+    "light-oil-barrel" : {
+      "name" : "light-oil-barrel",
+      "localised_name" : [
+        "item-name.filled-barrel",
+        [
+          "fluid-name.light-oil"
+        ]
+      ],
+      "localised_description" : [
+        "item-description.light-oil-barrel"
+      ]
+    },
+    "lubricant-barrel" : {
+      "name" : "lubricant-barrel",
+      "localised_name" : [
+        "item-name.filled-barrel",
+        [
+          "fluid-name.lubricant"
+        ]
+      ],
+      "localised_description" : [
+        "item-description.lubricant-barrel"
+      ]
+    },
+    "petroleum-gas-barrel" : {
+      "name" : "petroleum-gas-barrel",
+      "localised_name" : [
+        "item-name.filled-barrel",
+        [
+          "fluid-name.petroleum-gas"
+        ]
+      ],
+      "localised_description" : [
+        "item-description.petroleum-gas-barrel"
+      ]
+    },
+    "sulfuric-acid-barrel" : {
+      "name" : "sulfuric-acid-barrel",
+      "localised_name" : [
+        "item-name.filled-barrel",
+        [
+          "fluid-name.sulfuric-acid"
+        ]
+      ],
+      "localised_description" : [
+        "item-description.sulfuric-acid-barrel"
+      ]
+    },
+    "water-barrel" : {
+      "name" : "water-barrel",
+      "localised_name" : [
+        "item-name.filled-barrel",
+        [
+          "fluid-name.water"
+        ]
+      ],
+      "localised_description" : [
+        "item-description.water-barrel"
+      ]
+    },
+    "copper-cable" : {
+      "name" : "copper-cable",
+      "localised_name" : [
+        "item-name.copper-cable"
+      ],
+      "localised_description" : [
+        "item-description.copper-cable"
+      ]
+    },
+    "iron-stick" : {
+      "name" : "iron-stick",
+      "localised_name" : [
+        "item-name.iron-stick"
+      ],
+      "localised_description" : [
+        "item-description.iron-stick"
+      ]
+    },
+    "iron-gear-wheel" : {
+      "name" : "iron-gear-wheel",
+      "localised_name" : [
+        "item-name.iron-gear-wheel"
+      ],
+      "localised_description" : [
+        "item-description.iron-gear-wheel"
+      ]
+    },
+    "empty-barrel" : {
+      "name" : "empty-barrel",
+      "localised_name" : [
+        "item-name.empty-barrel"
+      ],
+      "localised_description" : [
+        "item-description.empty-barrel"
+      ]
+    },
+    "electronic-circuit" : {
+      "name" : "electronic-circuit",
+      "localised_name" : [
+        "item-name.electronic-circuit"
+      ],
+      "localised_description" : [
+        "item-description.electronic-circuit"
+      ]
+    },
+    "advanced-circuit" : {
+      "name" : "advanced-circuit",
+      "localised_name" : [
+        "item-name.advanced-circuit"
+      ],
+      "localised_description" : [
+        "item-description.advanced-circuit"
+      ]
+    },
+    "processing-unit" : {
+      "name" : "processing-unit",
+      "localised_name" : [
+        "item-name.processing-unit"
+      ],
+      "localised_description" : [
+        "item-description.processing-unit"
+      ]
+    },
+    "engine-unit" : {
+      "name" : "engine-unit",
+      "localised_name" : [
+        "item-name.engine-unit"
+      ],
+      "localised_description" : [
+        "item-description.engine-unit"
+      ]
+    },
+    "electric-engine-unit" : {
+      "name" : "electric-engine-unit",
+      "localised_name" : [
+        "item-name.electric-engine-unit"
+      ],
+      "localised_description" : [
+        "item-description.electric-engine-unit"
+      ]
+    },
+    "flying-robot-frame" : {
+      "name" : "flying-robot-frame",
+      "localised_name" : [
+        "item-name.flying-robot-frame"
+      ],
+      "localised_description" : [
+        "item-description.flying-robot-frame"
+      ]
+    },
+    "satellite" : {
+      "name" : "satellite",
+      "localised_name" : [
+        "item-name.satellite"
+      ],
+      "localised_description" : [
+        "item-description.satellite"
+      ]
+    },
+    "rocket-control-unit" : {
+      "name" : "rocket-control-unit",
+      "localised_name" : [
+        "item-name.rocket-control-unit"
+      ],
+      "localised_description" : [
+        "item-description.rocket-control-unit"
+      ]
+    },
+    "low-density-structure" : {
+      "name" : "low-density-structure",
+      "localised_name" : [
+        "item-name.low-density-structure"
+      ],
+      "localised_description" : [
+        "item-description.low-density-structure"
+      ]
+    },
+    "rocket-fuel" : {
+      "name" : "rocket-fuel",
+      "localised_name" : [
+        "item-name.rocket-fuel"
+      ],
+      "localised_description" : [
+        "item-description.rocket-fuel"
+      ]
+    },
+    "rocket-part" : {
+      "name" : "rocket-part",
+      "localised_name" : [
+        "item-name.rocket-part"
+      ],
+      "localised_description" : [
+        "item-description.rocket-part"
+      ]
+    },
+    "nuclear-fuel" : {
+      "name" : "nuclear-fuel",
+      "localised_name" : [
+        "item-name.nuclear-fuel"
+      ],
+      "localised_description" : [
+        "item-description.nuclear-fuel"
+      ]
+    },
+    "uranium-235" : {
+      "name" : "uranium-235",
+      "localised_name" : [
+        "item-name.uranium-235"
+      ],
+      "localised_description" : [
+        "item-description.uranium-235"
+      ]
+    },
+    "uranium-238" : {
+      "name" : "uranium-238",
+      "localised_name" : [
+        "item-name.uranium-238"
+      ],
+      "localised_description" : [
+        "item-description.uranium-238"
+      ]
+    },
+    "uranium-fuel-cell" : {
+      "name" : "uranium-fuel-cell",
+      "localised_name" : [
+        "item-name.uranium-fuel-cell"
+      ],
+      "localised_description" : [
+        "item-description.uranium-fuel-cell"
+      ]
+    },
+    "used-up-uranium-fuel-cell" : {
+      "name" : "used-up-uranium-fuel-cell",
+      "localised_name" : [
+        "item-name.used-up-uranium-fuel-cell"
+      ],
+      "localised_description" : [
+        "item-description.used-up-uranium-fuel-cell"
+      ]
+    },
+    "automation-science-pack" : {
+      "name" : "automation-science-pack",
+      "localised_name" : [
+        "item-name.automation-science-pack"
+      ],
+      "localised_description" : [
+        "item-description.science-pack"
+      ]
+    },
+    "logistic-science-pack" : {
+      "name" : "logistic-science-pack",
+      "localised_name" : [
+        "item-name.logistic-science-pack"
+      ],
+      "localised_description" : [
+        "item-description.science-pack"
+      ]
+    },
+    "military-science-pack" : {
+      "name" : "military-science-pack",
+      "localised_name" : [
+        "item-name.military-science-pack"
+      ],
+      "localised_description" : [
+        "item-description.science-pack"
+      ]
+    },
+    "chemical-science-pack" : {
+      "name" : "chemical-science-pack",
+      "localised_name" : [
+        "item-name.chemical-science-pack"
+      ],
+      "localised_description" : [
+        "item-description.science-pack"
+      ]
+    },
+    "production-science-pack" : {
+      "name" : "production-science-pack",
+      "localised_name" : [
+        "item-name.production-science-pack"
+      ],
+      "localised_description" : [
+        "item-description.science-pack"
+      ]
+    },
+    "utility-science-pack" : {
+      "name" : "utility-science-pack",
+      "localised_name" : [
+        "item-name.utility-science-pack"
+      ],
+      "localised_description" : [
+        "item-description.science-pack"
+      ]
+    },
+    "space-science-pack" : {
+      "name" : "space-science-pack",
+      "localised_name" : [
+        "item-name.space-science-pack"
+      ],
+      "localised_description" : [
+        "item-description.space-science-pack"
+      ]
+    },
+    "coin" : {
+      "name" : "coin",
+      "localised_name" : [
+        "item-name.coin"
+      ],
+      "localised_description" : [
+        "item-description.coin"
+      ]
+    },
+    "pistol" : {
+      "name" : "pistol",
+      "localised_name" : [
+        "item-name.pistol"
+      ],
+      "localised_description" : [
+        "item-description.pistol"
+      ]
+    },
+    "submachine-gun" : {
+      "name" : "submachine-gun",
+      "localised_name" : [
+        "item-name.submachine-gun"
+      ],
+      "localised_description" : [
+        "item-description.submachine-gun"
+      ]
+    },
+    "tank-machine-gun" : {
+      "name" : "tank-machine-gun",
+      "localised_name" : [
+        "item-name.tank-machine-gun"
+      ],
+      "localised_description" : [
+        "item-description.tank-machine-gun"
+      ]
+    },
+    "vehicle-machine-gun" : {
+      "name" : "vehicle-machine-gun",
+      "localised_name" : [
+        "item-name.vehicle-machine-gun"
+      ],
+      "localised_description" : [
+        "item-description.vehicle-machine-gun"
+      ]
+    },
+    "tank-flamethrower" : {
+      "name" : "tank-flamethrower",
+      "localised_name" : [
+        "item-name.tank-flamethrower"
+      ],
+      "localised_description" : [
+        "item-description.tank-flamethrower"
+      ]
+    },
+    "shotgun" : {
+      "name" : "shotgun",
+      "localised_name" : [
+        "item-name.shotgun"
+      ],
+      "localised_description" : [
+        "item-description.shotgun"
+      ]
+    },
+    "combat-shotgun" : {
+      "name" : "combat-shotgun",
+      "localised_name" : [
+        "item-name.combat-shotgun"
+      ],
+      "localised_description" : [
+        "item-description.combat-shotgun"
+      ]
+    },
+    "railgun" : {
+      "name" : "railgun",
+      "localised_name" : [
+        "item-name.railgun"
+      ],
+      "localised_description" : [
+        "item-description.railgun"
+      ]
+    },
+    "rocket-launcher" : {
+      "name" : "rocket-launcher",
+      "localised_name" : [
+        "item-name.rocket-launcher"
+      ],
+      "localised_description" : [
+        "item-description.rocket-launcher"
+      ]
+    },
+    "flamethrower" : {
+      "name" : "flamethrower",
+      "localised_name" : [
+        "item-name.flamethrower"
+      ],
+      "localised_description" : [
+        "item-description.flamethrower"
+      ]
+    },
+    "land-mine" : {
+      "name" : "land-mine",
+      "localised_name" : [
+        "entity-name.land-mine"
+      ],
+      "localised_description" : [
+        "item-description.land-mine"
+      ]
+    },
+    "artillery-wagon-cannon" : {
+      "name" : "artillery-wagon-cannon",
+      "localised_name" : [
+        "item-name.artillery-wagon-cannon"
+      ],
+      "localised_description" : [
+        "item-description.artillery-wagon-cannon"
+      ]
+    },
+    "tank-cannon" : {
+      "name" : "tank-cannon",
+      "localised_name" : [
+        "item-name.tank-cannon"
+      ],
+      "localised_description" : [
+        "item-description.tank-cannon"
+      ]
+    },
+    "firearm-magazine" : {
+      "name" : "firearm-magazine",
+      "localised_name" : [
+        "item-name.firearm-magazine"
+      ],
+      "localised_description" : [
+        "item-description.firearm-magazine"
+      ]
+    },
+    "piercing-rounds-magazine" : {
+      "name" : "piercing-rounds-magazine",
+      "localised_name" : [
+        "item-name.piercing-rounds-magazine"
+      ],
+      "localised_description" : [
+        "item-description.piercing-rounds-magazine"
+      ]
+    },
+    "uranium-rounds-magazine" : {
+      "name" : "uranium-rounds-magazine",
+      "localised_name" : [
+        "item-name.uranium-rounds-magazine"
+      ],
+      "localised_description" : [
+        "item-description.uranium-rounds-magazine"
+      ]
+    },
+    "shotgun-shell" : {
+      "name" : "shotgun-shell",
+      "localised_name" : [
+        "item-name.shotgun-shell"
+      ],
+      "localised_description" : [
+        "item-description.shotgun-shell"
+      ]
+    },
+    "piercing-shotgun-shell" : {
+      "name" : "piercing-shotgun-shell",
+      "localised_name" : [
+        "item-name.piercing-shotgun-shell"
+      ],
+      "localised_description" : [
+        "item-description.piercing-shotgun-shell"
+      ]
+    },
+    "railgun-dart" : {
+      "name" : "railgun-dart",
+      "localised_name" : [
+        "item-name.railgun-dart"
+      ],
+      "localised_description" : [
+        "item-description.railgun-dart"
+      ]
+    },
+    "cannon-shell" : {
+      "name" : "cannon-shell",
+      "localised_name" : [
+        "item-name.cannon-shell"
+      ],
+      "localised_description" : [
+        "item-description.cannon-shell"
+      ]
+    },
+    "explosive-cannon-shell" : {
+      "name" : "explosive-cannon-shell",
+      "localised_name" : [
+        "item-name.explosive-cannon-shell"
+      ],
+      "localised_description" : [
+        "item-description.explosive-cannon-shell"
+      ]
+    },
+    "uranium-cannon-shell" : {
+      "name" : "uranium-cannon-shell",
+      "localised_name" : [
+        "item-name.uranium-cannon-shell"
+      ],
+      "localised_description" : [
+        "item-description.uranium-cannon-shell"
+      ]
+    },
+    "explosive-uranium-cannon-shell" : {
+      "name" : "explosive-uranium-cannon-shell",
+      "localised_name" : [
+        "item-name.explosive-uranium-cannon-shell"
+      ],
+      "localised_description" : [
+        "item-description.explosive-uranium-cannon-shell"
+      ]
+    },
+    "artillery-shell" : {
+      "name" : "artillery-shell",
+      "localised_name" : [
+        "item-name.artillery-shell"
+      ],
+      "localised_description" : [
+        "item-description.artillery-shell"
+      ]
+    },
+    "rocket" : {
+      "name" : "rocket",
+      "localised_name" : [
+        "item-name.rocket"
+      ],
+      "localised_description" : [
+        "item-description.rocket"
+      ]
+    },
+    "explosive-rocket" : {
+      "name" : "explosive-rocket",
+      "localised_name" : [
+        "item-name.explosive-rocket"
+      ],
+      "localised_description" : [
+        "item-description.explosive-rocket"
+      ]
+    },
+    "atomic-bomb" : {
+      "name" : "atomic-bomb",
+      "localised_name" : [
+        "item-name.atomic-bomb"
+      ],
+      "localised_description" : [
+        "item-description.atomic-bomb"
+      ]
+    },
+    "flamethrower-ammo" : {
+      "name" : "flamethrower-ammo",
+      "localised_name" : [
+        "item-name.flamethrower-ammo"
+      ],
+      "localised_description" : [
+        "item-description.flamethrower-ammo"
+      ]
+    },
+    "grenade" : {
+      "name" : "grenade",
+      "localised_name" : [
+        "item-name.grenade"
+      ],
+      "localised_description" : [
+        "item-description.grenade"
+      ]
+    },
+    "cluster-grenade" : {
+      "name" : "cluster-grenade",
+      "localised_name" : [
+        "item-name.cluster-grenade"
+      ],
+      "localised_description" : [
+        "item-description.cluster-grenade"
+      ]
+    },
+    "poison-capsule" : {
+      "name" : "poison-capsule",
+      "localised_name" : [
+        "item-name.poison-capsule"
+      ],
+      "localised_description" : [
+        "item-description.poison-capsule"
+      ]
+    },
+    "slowdown-capsule" : {
+      "name" : "slowdown-capsule",
+      "localised_name" : [
+        "item-name.slowdown-capsule"
+      ],
+      "localised_description" : [
+        "item-description.slowdown-capsule"
+      ]
+    },
+    "defender-capsule" : {
+      "name" : "defender-capsule",
+      "localised_name" : [
+        "item-name.defender-capsule"
+      ],
+      "localised_description" : [
+        "item-description.defender-capsule"
+      ]
+    },
+    "distractor-capsule" : {
+      "name" : "distractor-capsule",
+      "localised_name" : [
+        "item-name.distractor-capsule"
+      ],
+      "localised_description" : [
+        "item-description.distractor-capsule"
+      ]
+    },
+    "destroyer-capsule" : {
+      "name" : "destroyer-capsule",
+      "localised_name" : [
+        "item-name.destroyer-capsule"
+      ],
+      "localised_description" : [
+        "item-description.destroyer-capsule"
+      ]
+    },
+    "discharge-defense-remote" : {
+      "name" : "discharge-defense-remote",
+      "localised_name" : [
+        "item-name.discharge-defense-remote"
+      ],
+      "localised_description" : [
+        "item-description.discharge-defense-remote"
+      ]
+    },
+    "artillery-targeting-remote" : {
+      "name" : "artillery-targeting-remote",
+      "localised_name" : [
+        "item-name.artillery-targeting-remote"
+      ],
+      "localised_description" : [
+        "item-description.artillery-targeting-remote"
+      ]
+    },
+    "light-armor" : {
+      "name" : "light-armor",
+      "localised_name" : [
+        "item-name.light-armor"
+      ],
+      "localised_description" : [
+        "item-description.light-armor"
+      ]
+    },
+    "heavy-armor" : {
+      "name" : "heavy-armor",
+      "localised_name" : [
+        "item-name.heavy-armor"
+      ],
+      "localised_description" : [
+        "item-description.heavy-armor"
+      ]
+    },
+    "modular-armor" : {
+      "name" : "modular-armor",
+      "localised_name" : [
+        "item-name.modular-armor"
+      ],
+      "localised_description" : [
+        "item-description.modular-armor"
+      ]
+    },
+    "power-armor" : {
+      "name" : "power-armor",
+      "localised_name" : [
+        "item-name.power-armor"
+      ],
+      "localised_description" : [
+        "item-description.power-armor"
+      ]
+    },
+    "power-armor-mk2" : {
+      "name" : "power-armor-mk2",
+      "localised_name" : [
+        "item-name.power-armor-mk2"
+      ],
+      "localised_description" : [
+        "item-description.power-armor-mk2"
+      ]
+    },
+    "solar-panel-equipment" : {
+      "name" : "solar-panel-equipment",
+      "localised_name" : [
+        "equipment-name.solar-panel-equipment"
+      ],
+      "localised_description" : [
+        "item-description.solar-panel-equipment"
+      ]
+    },
+    "fusion-reactor-equipment" : {
+      "name" : "fusion-reactor-equipment",
+      "localised_name" : [
+        "equipment-name.fusion-reactor-equipment"
+      ],
+      "localised_description" : [
+        "item-description.fusion-reactor-equipment"
+      ]
+    },
+    "energy-shield-equipment" : {
+      "name" : "energy-shield-equipment",
+      "localised_name" : [
+        "equipment-name.energy-shield-equipment"
+      ],
+      "localised_description" : [
+        "item-description.energy-shield-equipment"
+      ]
+    },
+    "energy-shield-mk2-equipment" : {
+      "name" : "energy-shield-mk2-equipment",
+      "localised_name" : [
+        "equipment-name.energy-shield-mk2-equipment"
+      ],
+      "localised_description" : [
+        "item-description.energy-shield-equipment"
+      ]
+    },
+    "battery-equipment" : {
+      "name" : "battery-equipment",
+      "localised_name" : [
+        "equipment-name.battery-equipment"
+      ],
+      "localised_description" : [
+        "item-description.battery-equipment"
+      ]
+    },
+    "battery-mk2-equipment" : {
+      "name" : "battery-mk2-equipment",
+      "localised_name" : [
+        "equipment-name.battery-mk2-equipment"
+      ],
+      "localised_description" : [
+        "item-description.battery-equipment"
+      ]
+    },
+    "personal-laser-defense-equipment" : {
+      "name" : "personal-laser-defense-equipment",
+      "localised_name" : [
+        "equipment-name.personal-laser-defense-equipment"
+      ],
+      "localised_description" : [
+        "item-description.personal-laser-defense-equipment"
+      ]
+    },
+    "discharge-defense-equipment" : {
+      "name" : "discharge-defense-equipment",
+      "localised_name" : [
+        "equipment-name.discharge-defense-equipment"
+      ],
+      "localised_description" : [
+        "item-description.discharge-defense-equipment"
+      ]
+    },
+    "belt-immunity-equipment" : {
+      "name" : "belt-immunity-equipment",
+      "localised_name" : [
+        "equipment-name.belt-immunity-equipment"
+      ],
+      "localised_description" : [
+        "item-description.belt-immunity-equipment"
+      ]
+    },
+    "exoskeleton-equipment" : {
+      "name" : "exoskeleton-equipment",
+      "localised_name" : [
+        "equipment-name.exoskeleton-equipment"
+      ],
+      "localised_description" : [
+        "item-description.exoskeleton-equipment"
+      ]
+    },
+    "personal-roboport-equipment" : {
+      "name" : "personal-roboport-equipment",
+      "localised_name" : [
+        "equipment-name.personal-roboport-equipment"
+      ],
+      "localised_description" : [
+        "item-description.personal-roboport-equipment"
+      ]
+    },
+    "personal-roboport-mk2-equipment" : {
+      "name" : "personal-roboport-mk2-equipment",
+      "localised_name" : [
+        "equipment-name.personal-roboport-mk2-equipment"
+      ],
+      "localised_description" : [
+        "item-description.personal-roboport-equipment"
+      ]
+    },
+    "night-vision-equipment" : {
+      "name" : "night-vision-equipment",
+      "localised_name" : [
+        "equipment-name.night-vision-equipment"
+      ],
+      "localised_description" : [
+        "item-description.night-vision-equipment"
+      ]
+    },
+    "stone-wall" : {
+      "name" : "stone-wall",
+      "localised_name" : [
+        "entity-name.stone-wall"
+      ],
+      "localised_description" : [
+        "item-description.stone-wall"
+      ]
+    },
+    "gate" : {
+      "name" : "gate",
+      "localised_name" : [
+        "entity-name.gate"
+      ],
+      "localised_description" : [
+        "item-description.gate"
+      ]
+    },
+    "gun-turret" : {
+      "name" : "gun-turret",
+      "localised_name" : [
+        "entity-name.gun-turret"
+      ],
+      "localised_description" : [
+        "item-description.gun-turret"
+      ]
+    },
+    "laser-turret" : {
+      "name" : "laser-turret",
+      "localised_name" : [
+        "entity-name.laser-turret"
+      ],
+      "localised_description" : [
+        "item-description.laser-turret"
+      ]
+    },
+    "flamethrower-turret" : {
+      "name" : "flamethrower-turret",
+      "localised_name" : [
+        "entity-name.flamethrower-turret"
+      ],
+      "localised_description" : [
+        "item-description.flamethrower-turret"
+      ]
+    },
+    "artillery-turret" : {
+      "name" : "artillery-turret",
+      "localised_name" : [
+        "entity-name.artillery-turret"
+      ],
+      "localised_description" : [
+        "item-description.artillery-turret"
+      ]
+    },
+    "radar" : {
+      "name" : "radar",
+      "localised_name" : [
+        "entity-name.radar"
+      ],
+      "localised_description" : [
+        "item-description.radar"
+      ]
+    },
+    "rocket-silo" : {
+      "name" : "rocket-silo",
+      "localised_name" : [
+        "entity-name.rocket-silo"
+      ],
+      "localised_description" : [
+        "item-description.rocket-silo"
+      ]
+    },
+    "computer" : {
+      "name" : "computer",
+      "localised_name" : [
+        "item-name.computer"
+      ],
+      "localised_description" : [
+        "item-description.computer"
+      ]
+    },
+    "player-port" : {
+      "name" : "player-port",
+      "localised_name" : [
+        "entity-name.player-port"
+      ],
+      "localised_description" : [
+        "item-description.player-port"
+      ]
+    },
+    "electric-energy-interface" : {
+      "name" : "electric-energy-interface",
+      "localised_name" : [
+        "entity-name.electric-energy-interface"
+      ],
+      "localised_description" : [
+        "item-description.electric-energy-interface"
+      ]
+    },
+    "heat-interface" : {
+      "name" : "heat-interface",
+      "localised_name" : [
+        "entity-name.heat-interface"
+      ],
+      "localised_description" : [
+        "item-description.heat-interface"
+      ]
+    },
+    "infinity-chest" : {
+      "name" : "infinity-chest",
+      "localised_name" : [
+        "entity-name.infinity-chest"
+      ],
+      "localised_description" : [
+        "item-description.infinity-chest"
+      ]
+    },
+    "infinity-pipe" : {
+      "name" : "infinity-pipe",
+      "localised_name" : [
+        "entity-name.infinity-pipe"
+      ],
+      "localised_description" : [
+        "item-description.infinity-pipe"
+      ]
+    },
+    "selection-tool" : {
+      "name" : "selection-tool",
+      "localised_name" : [
+        "item-name.selection-tool"
+      ],
+      "localised_description" : [
+        "item-description.selection-tool"
+      ]
+    },
+    "item-with-inventory" : {
+      "name" : "item-with-inventory",
+      "localised_name" : [
+        "item-name.item-with-inventory"
+      ],
+      "localised_description" : [
+        "item-description.item-with-inventory"
+      ]
+    },
+    "item-with-label" : {
+      "name" : "item-with-label",
+      "localised_name" : [
+        "item-name.item-with-label"
+      ],
+      "localised_description" : [
+        "item-description.item-with-label"
+      ]
+    },
+    "item-with-tags" : {
+      "name" : "item-with-tags",
+      "localised_name" : [
+        "item-name.item-with-tags"
+      ],
+      "localised_description" : [
+        "item-description.item-with-tags"
+      ]
+    },
+    "simple-entity-with-force" : {
+      "name" : "simple-entity-with-force",
+      "localised_name" : [
+        "entity-name.simple-entity-with-force"
+      ],
+      "localised_description" : [
+        "item-description.simple-entity-with-force"
+      ]
+    },
+    "simple-entity-with-owner" : {
+      "name" : "simple-entity-with-owner",
+      "localised_name" : [
+        "entity-name.simple-entity-with-owner"
+      ],
+      "localised_description" : [
+        "item-description.simple-entity-with-owner"
+      ]
+    },
+    "burner-generator" : {
+      "name" : "burner-generator",
+      "localised_name" : [
+        "entity-name.burner-generator"
+      ],
+      "localised_description" : [
+        "item-description.burner-generator"
+      ]
+    }
+  },
+  "tile" : { }
+}
