@@ -7,11 +7,11 @@ class EntityError(Exception):
         self.message = message
 
     def __repr__(self):
-        result = "<{} (".format(type(self).__name__)
+        result = f"<{type(self).__name__} ("
         if self.message != "":
-            result += "{}: ".format(self.message)
+            result += f"{self.message}: "
         for arg in self.args:
-            result += "{}, ".format(arg)
+            result += f"{arg}, "
         result += ")>"
         return result
 
@@ -31,13 +31,12 @@ class IllegalEntity(EntityError):
 class IllegalEntities(EntityError):
     def __repr__(self):
         if self.message != "":
-            message = "{}\n".format(self.message)
+            message = f"{self.message}\n"
         else:
             message = ""
-        result = "IllegalEntities ({message}Number of errors: {nr},".format(
-            nr=self.nr, message=message)
+        result = f"IllegalEntities ({message}Number of errors: {self.nr},"
         for exception in self.args:
-            result += "\n    {}".format(repr(exception))
+            result += f"\n    {repr(exception)}"
         result += ")"
         return result
 
@@ -49,12 +48,11 @@ class IllegalConfiguration(EntityError):
 class IllegalConfigurations(EntityError):
     def __repr__(self):
         if self.message != "":
-            message = "{}\n".format(self.message)
+            message = f"{self.message}\n"
         else:
             message = ""
-        result = "IllegalConfigurations ({message}Number of errors: {nr}," \
-            .format(nr=self.nr, message=message)
+        result = f"IllegalConfigurations ({message}Number of errors: {self.nr},"
         for exception in self.args:
-            result += "\n    {}".format(repr(exception))
+            result += f"\n    {repr(exception)}"
         result += ")"
         return result

@@ -206,9 +206,9 @@ class Balancer(Blueprint):
             print("After padding")
             self.print2d()
         inputs, outputs = self._get_external_connections()
-        print("Nr of inputs and outputs: {}, {}".format(len(inputs), len(outputs)))
-        print("Inputs: {}".format(inputs))
-        print("Outputs: {}".format(outputs))
+        print(f"Nr of inputs and outputs: {len(inputs)}, {len(outputs)}")
+        print(f"Inputs: {inputs}")
+        print(f"Outputs: {outputs}")
 
         self.generate_simulation()
 
@@ -244,8 +244,8 @@ class Balancer(Blueprint):
         else:
             self._parse_balancer()
 
-        print("Belts: {}".format(self._belts))
-        print("Splitters: {}".format(self._splitters))
+        print(f"Belts: {self._belts}")
+        print(f"Splitters: {self._splitters}")
         if not self.traverse_nodes():
             raise IllegalConfiguration(
                 message="The balancer is not fully connected")
@@ -445,7 +445,7 @@ class Balancer(Blueprint):
                 self._belts.append(belt)
                 self._outputs.append(belt)
         for node in self._inputs:
-            print("tracing from input node: {}".format(node))
+            print(f"tracing from input node: {node}")
             self._trace_node(node)
 
     def _parse_lane_balancer(self):
@@ -597,11 +597,11 @@ class Balancer(Blueprint):
         """
         print("All nodes:")
         for node in self.nodes:
-            print("    {}".format(node))
+            print(f"    {node}")
             node._traversed = False
 
         start_node = self._inputs[0]
-        print("start node: {}".format(start_node))
+        print(f"start node: {start_node}")
 
         self._traverse_node(start_node)
         for node in self.nodes:
@@ -610,7 +610,7 @@ class Balancer(Blueprint):
         return True
 
     def _traverse_node(self, node):
-        print("traversing node: {}".format(node))
+        print(f"traversing node: {node}")
         if node is None or node._traversed:
             return
         node._traversed = True

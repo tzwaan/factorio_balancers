@@ -17,16 +17,12 @@ class Splitter():
         self._output_priority = None
 
     def __repr__(self):
-        return "<Splitter ({entity}, inputs=({in_left}, {in_right}), outputs=({out_left}, {out_right}))>".format(
-            entity=self.entity,
-            in_left=str(self._input_left),
-            in_right=str(self._input_right),
-            out_left=str(self._output_left),
-            out_right=str(self._output_right)
-        )
+        return f"<Splitter ({self.entity}, " \
+               f"inputs=({self._input_left}, {self._input_right}), " \
+               f"outputs=({self._output_left}, {self._output_right}))>"
 
     def __str__(self):
-        return "<Splitter ({entity})>".format(entity=self.entity.name)
+        return f"<Splitter ({self.entity.name})>"
 
     def _get_inputs(self, empty=True):
         inputs = []
@@ -54,7 +50,7 @@ class Splitter():
 
     def set_input_priority(self, side=None):
         if side is not None and side != 'left' and side != 'right':
-            raise ValueError("Invalid side supplied: {}".format(side))
+            raise ValueError(f"Invalid side supplied: {side}")
         self._input_priority = side
 
     def set_output_priority(self, side=None):
@@ -64,7 +60,7 @@ class Splitter():
 
     def add_input(self, belt, side=None, priority=False):
         if side is not None and side != 'left' and side != 'right':
-            raise ValueError("Invalid side supplied: {}".format(side))
+            raise ValueError(f"Invalid side supplied: {side}")
         if side is None:
             if self._input_left is None:
                 side = "left"
@@ -88,7 +84,7 @@ class Splitter():
 
     def add_output(self, belt, side=None, priority=False):
         if side is not None and side != 'left' and side != 'right':
-            raise ValueError("Invalid side supplied: {}".format(side))
+            raise ValueError(f"Invalid side supplied: {side}")
         if side is None:
             if self._output_left is None:
                 side = "left"

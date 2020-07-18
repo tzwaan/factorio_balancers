@@ -14,16 +14,15 @@ class Belt():
             self.entity._simulator = self
 
     def __repr__(self):
-        return "<Belt ({entity}, input=({input}), output=({output}))>".format(
-            entity=str(self.entity),
-            input=str(self._input),
-            output=str(self._output))
+        return f"<Belt ({self.entity}, " \
+               f"input=({self._input}), " \
+               f"output=({self._output}))>"
 
     def __str__(self):
         entity = None
         if self.entity is not None:
             entity = self.entity.name
-        return "<Belt ({entity})>".format(entity=entity)
+        return f"<Belt ({entity})>"
 
     def add(self, amount):
         if self.inp + amount > self.size:
