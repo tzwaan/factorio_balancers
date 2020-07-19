@@ -6,14 +6,15 @@ from factorio_balancers.balancer import Balancer
 from factorio_balancers.exceptions import *
 
 
-class TestBlueprint(unittest.TestCase):
-
+class TestBase(unittest.TestCase):
     def stringRaises(self, string, exceptions):
         with open(string) as f:
             string = f.read()
         with self.assertRaises(exceptions):
             balancer = Balancer(string=string, print2d=True)
 
+
+class TestBlueprint(TestBase):
     def test_illegal_entities(self):
         self.stringRaises(
             'blueprint_strings/illegal_entities.blueprint',

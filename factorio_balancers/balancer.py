@@ -1,174 +1,42 @@
-from py_factorio_blueprints import Blueprint, BaseEntity
-from py_factorio_blueprints.entity import Direction
+from itertools import combinations
+from progress.bar import Bar
+from fractions import Fraction
+from py_factorio_blueprints import Blueprint
 from py_factorio_blueprints.util import Vector
-from factorio_balancers.utils import catch
-from factorio_balancers import Splitter, Belt
-from factorio_balancers.entity_mixins import \
-    entity_prototypes, Splitter as SplitterMixin
+from factorio_balancers.utils import catch, get_nr_of_permutations
+from factorio_balancers.graph import Splitter, Belt
+from factorio_balancers.entity_mixins import (
+    entity_prototypes, Splitter as SplitterMixin,
+    Belt as BeltMixin, Underground as UndergroundMixin)
 from factorio_balancers.exceptions import *
 
 
-class BalancerEntityMixin:
-    def __init__(self):
-        self._is_underground = self.name in Balancer.UNDERGROUND_ENTITIES
-        self._is_belt = self.name in Balancer.BELT_ENTITIES
-        self._is_splitter = self.name in Balancer.SPLITTER_ENTITIES
-
-        self.reset()
-
-    def reset(self):
-        self._simulator = None
-
-        if self._is_splitter:
-            self._partner_forward = {
-                "left": None,
-                "right": None
-            }
-            self._partner_backward = {
-                "left": None,
-                "right": None
-            }
+class MyBar(Bar):
+    def finish(self, clear=True):
+        if clear:
+            self.clearln()
+            print('\x1b[?25h', end='')
         else:
-            self._partner_forward = None
-            self._partner_backward = None
-            self._partner_left = None
-            self._partner_right = None
-
-    @property
-    def has_no_inputs(self):
-        if self._is_splitter:
-            return (
-                self._partner_backward["left"] is None and
-                self._partner_backward["right"] is None
-            )
-        else:
-            return (
-                self._partner_left is None and
-                self._partner_right is None and
-                self._partner_backward is None
-            )
-
-    @property
-    def has_no_outputs(self):
-        if self._is_splitter:
-            return (
-                self._partner_forward["left"] is None and
-                self._partner_forward["right"] is None
-            )
-        else:
-            return self._partner_forward is None
-
-    @property
-    def has_sideloads(self):
-        if self._is_belt:
-            return self._belt_has_sideloads
-        elif self._is_underground:
-            return self._underground_has_sideloads
-        elif self._is_splitter:
-            return self._splitter_has_sideloads
-
-    def _make_vec_dir_tuples(self, directions):
-        # rotate input directions to match entity direction
-        directions = [direction + self.direction
-                      for direction in directions]
-        # make rotated directions into
-        # offset vectors + opposite direction tuples
-        directions = [
-            (direction.vector, direction.rotate(2))
-            for direction in directions]
-        return directions
-
-    @property
-    def _belt_has_sideloads(self):
-        # assume belt direction is up
-        directions = [
-            Direction.right(),
-            Direction.down(),
-            Direction.left()
-        ]
-        directions = self._make_vec_dir_tuples(directions)
-
-        nr_inputs = 0
-        position = self.position
-        for vector, direction in directions:
-            position = self.position + vector
-            if self.blueprint[position] is None:
-                continue
-            if self.blueprint[position].type == "input":
-                continue
-            if self.blueprint[position].direction == direction:
-                nr_inputs += 1
-            if nr_inputs > 1:
-                return True
-        return False
-
-    @property
-    def _underground_has_sideloads(self):
-        # assume belt direction is up
-        directions = [
-            Direction.right(),
-            Direction.left()
-        ]
-        directions = self._make_vec_dir_tuples(directions)
-
-        for vector, direction in directions:
-            position = self.position + vector
-            if self.blueprint[position] is None:
-                continue
-            if self.blueprint[position].type == "input":
-                continue
-            if self.blueprint[position].direction == direction:
-                return True
-        return False
-
-    @property
-    def _splitter_has_sideloads(splitter):
-        return False
-
-    def splitter_side(self, position):
-        if not self._is_splitter:
-            return NotImplemented
-        rot_amount = self.direction // -2
-
-        side_vector = position - self.position
-        side_vector = side_vector.rotate(rot_amount)
-        if side_vector.x < 0:
-            return "left"
-        elif side_vector.x > 0:
-            return "right"
-        else:
-            return "middle"
-
-    def pad_connection(self, inp=False, out=False):
-        offsets = []
-        if inp:
-            offsets.append(self.direction.rotate(2).vector)
-        if out:
-            offsets.append(self.direction.vector)
-        name = entity_to_belt_name(self)
-
-        for position in self.coordinates:
-            for offset in offsets:
-                self.blueprint.create_entity(
-                    name,
-                    position + offset,
-                    self.direction)
+            super().finish()
 
 
-def entity_to_belt_name(entity):
-    if entity.name.startswith('express'):
-        return 'express-transport-belt'
-    elif entity.name.startswith('fast'):
-        return 'fast-transport-belt'
-    else:
-        return 'transport-belt'
+class OptionalBar:
+    def __init__(self, *args, verbose, **kwargs):
+        self.verbose = verbose
+        if self.verbose:
+            self.bar = MyBar(*args, **kwargs)
+
+    def finish(self, *args, **kwargs):
+        if self.verbose:
+            self.bar.finish(*args, **kwargs)
+
+    def next(self, *args, **kwargs):
+        if self.verbose:
+            self.bar.finish(*args, **kwargs)
 
 
-UNDERGROUND_DISTANCE = {
-    'underground-belt': 4,
-    'fast-undergroud-belt': 6,
-    'express-underground-belt': 8
-}
+def is_close(a, b, rel_tol=1e-06, abs_tol=0.0):
+    return abs(a - b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
 
 class Balancer(Blueprint):
@@ -191,24 +59,33 @@ class Balancer(Blueprint):
         BELT_ENTITIES + UNDERGROUND_ENTITIES + SPLITTER_ENTITIES
     )
 
-    def __init__(self, *args, print2d=False, **kwargs):
+    def __init__(self, *args, verbose=False, **kwargs):
         Blueprint.import_prototype_data('../entity_data.json')
-        self._print2d = print2d
+        self._verbose = verbose
         super().__init__(
             *args, custom_entity_prototypes=entity_prototypes, **kwargs)
 
         self.recompile_entities()
-        if print2d:
+        if self._verbose:
             print("Before padding")
             self.print2d()
         self.pad_connections()
-        if print2d:
+        if self._verbose:
             print("After padding")
             self.print2d()
         inputs, outputs = self._get_external_connections()
-        print(f"Nr of inputs and outputs: {len(inputs)}, {len(outputs)}")
-        print(f"Inputs: {inputs}")
-        print(f"Outputs: {outputs}")
+        if self._verbose:
+            print(f"Nr of inputs and outputs: {len(inputs)}, {len(outputs)}")
+            print(f"Inputs: {inputs}")
+            print(f"Outputs: {outputs}")
+
+        nodes = self._get_nodes()
+        if self._verbose:
+            print(f"Number of nodes {len(nodes)}")
+            print(f"Nodes {nodes}")
+
+        for i, node in enumerate(nodes):
+            node.node_number = i
 
         self.generate_simulation()
 
@@ -232,6 +109,12 @@ class Balancer(Blueprint):
             print(r)
         print()
 
+    def _get_nodes(self):
+        return [
+            entity
+            for entity in self.entities
+            if isinstance(entity, SplitterMixin) or entity.has_sideloads]
+
     def generate_simulation(self):
         self._splitters = []
         self._belts = []
@@ -244,11 +127,46 @@ class Balancer(Blueprint):
         else:
             self._parse_balancer()
 
-        print(f"Belts: {self._belts}")
-        print(f"Splitters: {self._splitters}")
-        if not self.traverse_nodes():
-            raise IllegalConfiguration(
-                message="The balancer is not fully connected")
+        if self._verbose:
+            print(f"Inputs: {self._input_belts}")
+            print(f"Outputs: {self._output_belts}")
+            print(f"Splitters: {self._splitters}")
+        for entity in self._get_nodes():
+            if not entity._traversed:
+                raise IllegalConfiguration(
+                    message="The balancer is not fully connected")
+
+    def cycle(self):
+        for splitter in self._splitters:
+            splitter.balance()
+        for belt in self._belts:
+            belt.transfer()
+
+    def clear(self):
+        total = 0
+        for belt in self._belts:
+            total += belt.clear()
+            if belt.next:
+                total += belt.next.clear()
+        return total
+
+    def fill(self):
+        total = 0
+        for belt in self._belts:
+            total += belt.supply()
+            if belt.next:
+                total += belt.next.supply()
+        return total
+
+    def supply(self, *args, **kwargs):
+        return [
+            belt.supply(*args, **kwargs)
+            for belt in self._input_belts]
+
+    def drain(self):
+        return [
+            belt.clear()
+            for belt in self._output_belts]
 
     def recompile_entities(self):
         for entity in self.entities:
@@ -256,7 +174,7 @@ class Balancer(Blueprint):
         exceptions = self.setup_transport_lines()
         nr_exceptions = len(exceptions)
         if nr_exceptions > 0:
-            if self._print2d:
+            if self._verbose:
                 self.print2d()
             raise IllegalConfigurations(*exceptions)
 
@@ -300,13 +218,6 @@ class Balancer(Blueprint):
         for entity in entities:
             entity.pad_connection(**kwargs)
 
-    def _check_illegal_entities(self):
-        exceptions = [IllegalEntity(entity,
-                                    message="Entity not allowed in balancer")
-                      for entity in self.entities
-                      if entity.name not in Balancer.ALLOWED_ENTITIES]
-        return exceptions
-
     def setup_transport_lines(self):
         exceptions = []
         for entity in self.entities:
@@ -316,292 +227,46 @@ class Balancer(Blueprint):
                 exceptions.append(e)
         return exceptions
 
-    def _check_configuration(self):
-        def _check_belt_configuration(belt):
-            position = belt.position + belt.direction.vector
-            if self[position] is None:
-                return
-            if self[position].direction == belt.direction.rotate(2):
-                raise IllegalConfiguration(belt, self[position],
-                                           message="Entities facing eachother")
-            if self[position].direction != belt.direction and \
-                    self[position]._is_splitter:
-                raise IllegalConfiguration(belt, self[position],
-                                           message="Sideloading onto splitter")
-            self._set_as_partner(belt, self[position])
-            return
-
-        def _check_underground_configuration(underground):
-            if (
-                    underground.type == "input" and
-                    underground._partner_forward is None or
-                    underground.type == "output" and
-                    underground._partner_backward is None):
-                partner = self._find_underground_partner(underground)
-                if partner is None and underground.type == "input":
-                    raise IllegalConfiguration(
-                        underground, message="Lone underground input")
-                if underground.type == "input":
-                    self._set_as_partner(underground, partner)
-                else:
-                    self._set_as_partner(partner, underground)
-
-            if underground.type == "output":
-                position = underground.position + underground.direction.vector
-                if self[position] is None:
-                    return
-                if self[position].direction == underground.direction.rotate(2):
-                    raise IllegalConfiguration(
-                        underground, self[position],
-                        message="Undergrounds have conflicting directions")
-                if self[position].direction != underground.direction and \
-                        self[position]._is_splitter:
-                    raise IllegalConfiguration(
-                        underground, self[position],
-                        message="Sideloading onto splitter")
-                self._set_as_partner(underground, self[position])
-            return
-
-        def _check_splitter_configuration(splitter):
-            positions = [coordinate + splitter.direction.vector
-                         for coordinate in splitter.coordinates]
-            for position in positions:
-                if self[position] is not None:
-                    self._set_as_partner(splitter, self[position])
-
-        def _check_entity_configuration(entity):
-            if entity._is_belt:
-                return _check_belt_configuration(entity)
-            elif entity._is_underground:
-                return _check_underground_configuration(entity)
-            elif entity._is_splitter:
-                return _check_splitter_configuration(entity)
-
-        exceptions = []
-        for entity in self.entities:
-            e = catch(_check_entity_configuration, entity,
-                      exceptions=IllegalConfiguration)
-            if e is None:
-                continue
-            if e not in exceptions:
-                exceptions.append(e)
-        return exceptions
-
     def _has_sideloads(self):
         for entity in self.entities:
             if entity.has_sideloads:
                 return True
         return False
 
-    def _trace_belt(self, entity, position):
-        if entity._is_splitter:
-            return entity, position
-        elif entity._partner_forward is None:
-            return entity, entity.position
-        elif entity._partner_forward._simulator is not None:
-            return entity._partner_forward, entity.position
-        else:
-            return self._trace_belt(entity._partner_forward, entity.position)
-
-    def _trace_node(self, node):
-        """
-        Trace nodes for a regular balancer.
-        No sideloading permitted
-        """
-        if node.entity._is_splitter:
-            trace_targets = [(node.entity._partner_forward["left"], "left"),
-                             (node.entity._partner_forward["right"], "right")]
-            trace_targets = [target for target in trace_targets
-                             if target[0] is not None]
-        else:
-            trace_targets = [(node.entity, None)]
-
-        for trace_target, from_side in trace_targets:
-            target_entity, position = self._trace_belt(
-                trace_target, node.entity.position)
-            target_node = target_entity._simulator
-            if type(target_node) is Splitter:
-                to_side = target_entity.splitter_side(position)
-            else:
-                to_side = None
-
-            if self.connect_nodes(node, target_node,
-                                  from_side=from_side, to_side=to_side):
-                if target_node != node:
-                    self._trace_node(target_node)
-
     def _parse_balancer(self):
-        for entity in self.entities:
-            if entity._is_splitter:
-                splitter = Splitter(entity=entity)
-                self._splitters.append(splitter)
-            if entity.has_no_inputs:
-                belt = Belt(entity=entity)
-                self._belts.append(belt)
-                self._inputs.append(belt)
-
-            elif entity.has_no_outputs:
-                belt = Belt(entity=entity)
-                self._belts.append(belt)
-                self._outputs.append(belt)
-        for node in self._inputs:
-            print(f"tracing from input node: {node}")
-            self._trace_node(node)
+        for entity in self._get_nodes():
+            splitter = Splitter(entity=entity)
+            self._splitters.append(splitter)
+        inputs, outputs = self._get_external_connections()
+        self._input_belts = []
+        self._output_belts = []
+        for input in inputs:
+            assert isinstance(input, (BeltMixin, UndergroundMixin))
+            belt = input._trace_nodes(
+                Belt(capacity=input.name.data['belt_speed']),
+                input.position)
+            assert len(outputs) == len(self._output_belts)
+            self._input_belts.append(belt)
 
     def _parse_lane_balancer(self):
         pass
 
-    def _set_as_partner(self, inp, out):
-        # direction of out compared to inp
-        direction = out.direction - inp.direction
-
-        if inp._is_splitter and out._is_splitter:
-            if not direction.is_up:
-                raise IllegalConfiguration(
-                    inp, out,
-                    message="Entities facing eachother")
-            side = inp.splitter_side(out.position)
-            if side == "left":
-                inp._partner_forward["left"] = out
-                out._partner_backward["right"] = inp
-            elif side == "right":
-                inp._partner_forward["right"] = out
-                out._partner_backward["left"] = inp
-            elif side == "middle":
-                inp._partner_forward["right"] = out
-                inp._partner_forward["left"] = out
-                out._partner_backward["right"] = inp
-                out._partner_backward["left"] = inp
-        if not out._is_splitter:
-            if inp._is_splitter:
-                side = inp.splitter_side(out.position)
-                inp._partner_forward[side] = out
-            else:
-                inp._partner_forward = out
-            if direction.is_left:
-                out._partner_left = inp
-            elif direction.is_up:
-                out._partner_backward = inp
-            elif direction.is_right:
-                out._partner_right = inp
-            elif direction.is_down:
-                raise IllegalConfiguration(inp, out,
-                                           message="Entities facing eachother")
-        elif not inp._is_splitter and out._is_splitter:
-            if not direction.is_up:
-                raise IllegalConfiguration(inp, out,
-                                           message="Sideloading onto splitter")
-            side = out.splitter_side(inp.position)
-            out._partner_backward[side] = inp
-            inp._partner_forward = out
-
-    def _find_underground_partner(self, underground):
-        max_distance = UNDERGROUND_DISTANCE[underground.name] + 1
-        if underground.type == "output":
-            direction = underground.direction.rotate(2)
-        else:
-            direction = underground.direction
-        vector = direction.vector
-        partner = None
-
-        for i in range(1, max_distance):
-            entity = self[underground.position + (vector * i)]
-            if entity is None:
-                continue
-            elif entity.name != underground.name:
-                continue
-            elif entity.direction == underground.direction \
-                    and underground.type == "input" \
-                    and entity.type == "input":
-                raise IllegalConfiguration(
-                    underground, entity,
-                    message="Two underground inputs in a row")
-            elif entity.direction == underground.direction.rotate(2) \
-                    and underground.type == "input":
-                raise IllegalConfiguration(
-                    underground, entity,
-                    message="Two connected underground inputs")
-            elif entity.direction == underground.direction.rotate(2) \
-                    and underground.type == "output" \
-                    and entity.type == "output":
-                raise IllegalConfiguration(
-                    underground, entity,
-                    message="Two connected underground outputs")
-            elif entity.direction == underground.direction \
-                    and entity.type != underground.type:
-                partner = entity
-                break
-        return partner
-
-    def connect_nodes(self, from_node, to_node, from_side=None, to_side=None):
-        if type(from_node) is Splitter and from_side is None:
-            raise IllegalConfiguration(
-                from_node.entity, from_node,
-                message="No side supplied")
-        if type(to_node) is Splitter and to_side is None:
-            raise IllegalConfiguration(
-                to_node.entity, to_node,
-                message="No side supplied")
-
-        if from_side == "middle" or to_side == "middle":
-            raise IllegalConfiguration(
-                from_side, to_side,
-                message="Illegal side supplied")
-
-        if type(from_node) is not Splitter:
-            if from_node._output is not None:
-                return False
-            from_node._output = to_node
-            if to_side == "left":
-                to_node._input_left = from_node
-            else:
-                to_node._input_right = from_node
-        elif type(to_node) is not Splitter:
-            if to_node._input is not None:
-                return False
-            to_node._input = from_node
-            if from_side == "left":
-                from_node._output_left = to_node
-            else:
-                from_node._output_right = to_node
-        elif type(from_node) is Splitter and type(to_node) is Splitter:
-            # Todo supply proper belt properties (size)
-            if from_side == "left" and from_node._output_left is not None:
-                return False
-            elif from_side == "right" and from_node._output_right is not None:
-                return False
-            belt = Belt()
-            self._belts.append(belt)
-            belt._input = from_node
-            belt._output = to_node
-            if from_side == "left":
-                from_node._output_left = belt
-            else:
-                from_node._output_right = belt
-            if to_side == "left":
-                to_node._input_left = belt
-            else:
-                to_node._input_right = belt
-        return True
-
-    @property
-    def nodes(self):
-        return self._belts + self._splitters
-
-    def traverse_nodes(self):
+    def graph_check(self):
         """
         Recursively traverse all the nodes from a single input, going both
         forward and backwards through the graph.
         Checks whether all nodes have been traversed. If not, this means the
         graph is not fully connected.
         """
-        print("All nodes:")
-        for node in self.nodes:
+        if self._verbose:
+            print("All nodes:")
+        for node in self._get_nodes():
             print(f"    {node}")
             node._traversed = False
 
         start_node = self._inputs[0]
-        print(f"start node: {start_node}")
+        if self._verbose:
+            print(f"start node: {start_node}")
 
         self._traverse_node(start_node)
         for node in self.nodes:
@@ -610,7 +275,8 @@ class Balancer(Blueprint):
         return True
 
     def _traverse_node(self, node):
-        print(f"traversing node: {node}")
+        if self._verbose:
+            print(f"traversing node: {node}")
         if node is None or node._traversed:
             return
         node._traversed = True
@@ -623,3 +289,157 @@ class Balancer(Blueprint):
             self._traverse_node(node._input_right)
             self._traverse_node(node._output_left)
             self._traverse_node(node._output_right)
+
+    def estimate_iterations(self):
+        return (
+            len(self._get_nodes()) * 2 +
+            len(self._input_belts) +
+            len(self._output_belts) + 1) * 4
+
+    def test_output_balance(self, verbose=False, trickle=False, **kwargs):
+        bar = OptionalBar(
+            '   -- Progress',
+            verbose=verbose,
+            max=len(self._input_belts) + 1,
+            suffix='%(percent)d%%')
+
+        amount = Fraction(1, 4) if trickle else None
+        for input in self._input_belts:
+            self.clear()
+            drained = self.drain()
+            supplied = input.supply(amount)
+            while not is_close(sum(drained), supplied):
+                self.cycle()
+                drained = self.drain()
+                supplied = input.supply(amount)
+
+            if len(set(drained)) > 1:
+                bar.finish()
+                return False
+            bar.next()
+
+        self.clear()
+        drained = self.drain()
+        supplied = self.supply(amount)
+        while not is_close(sum(drained), sum(supplied)):
+            self.cycle()
+            drained = self.drain()
+            supplied = self.supply(amount)
+        bar.finish()
+        if len(set(drained)) > 1:
+            return False
+        return True
+
+    def test_input_balance(self, verbose=False, **kwargs):
+        bar = OptionalBar(
+            '   -- Progress',
+            verbose=verbose,
+            max=len(self._output_belts) + 1,
+            suffix='%(percent)d%%')
+
+        for output in self._output_belts:
+            self.fill()
+            drained = output.clear()
+            supplied = self.supply()
+            while not is_close(drained, sum(supplied)):
+                self.cycle()
+                drained = output.clear()
+                supplied = self.supply()
+
+            if len(set(supplied)) > 1:
+                bar.finish()
+                return False
+            bar.next()
+
+        self.fill()
+        drained = self.drain()
+        supplied = self.supply()
+        while not is_close(sum(drained), sum(supplied)):
+            self.cycle()
+            drained = self.drain()
+            supplied = self.supply()
+        bar.finish()
+        if len(set(supplied)) > 1:
+            return False
+        return True
+
+    def test_throughput(
+            self, inputs=None, outputs=None, verbose=False, **kwargs):
+        if inputs is None:
+            inputs = self._input_belts
+        if outputs is None:
+            outputs = self._output_belts
+
+        def drain(a):
+            return [b.clear() for b in a]
+
+        def supply(a):
+            return [b.supply() for b in a]
+
+        self.clear()
+        drained = drain(outputs)
+        supplied = supply(inputs)
+        clean_input = supplied
+        while not is_close(sum(drained), sum(supplied)):
+            drained = drain(outputs)
+            self.cycle()
+            supplied = supply(inputs)
+
+        worst_percentage = 100.0
+        for output in outputs:
+            percentage = output.percentage
+            if not is_close(worst_percentage, percentage) and \
+                    percentage < worst_percentage:
+                worst_percentage = percentage
+        drained = drain(outputs)
+
+        if is_close(sum(clean_input), sum(drained)):
+            return True, worst_percentage
+        if worst_percentage < 100.0:
+            return False, worst_percentage
+        return True, worst_percentage
+
+    def throughput_sweep(self, extensive=False, verbose=False, **kwargs):
+        if extensive:
+            i_range = range(
+                1,
+                min(
+                    len(self._input_belts),
+                    len(self._output_belts)))
+            nr_of_permutations = get_nr_of_permutations(
+                len(self._input_belts),
+                len(self._output_belts),
+                len(self._input_belts))
+        else:
+            i_range = range(1, 3)
+            nr_of_permutations = get_nr_of_permutations(
+                len(self._input_belts),
+                len(self._output_belts),
+                2)
+        bar = OptionalBar(
+            '   -- Progress', verbose=verbose, max=nr_of_permutations)
+
+        results = []
+
+        for i in i_range:
+            for inputs in combinations(self._input_belts, i):
+                for outputs in combinations(self._output_belts, i):
+                    results.append(
+                        self.test_throughput(inputs=inputs, outputs=outputs))
+                    bar.next()
+        bar.finish()
+        return results
+
+    def test_throughput_unlimited(self, **kwargs):
+        results = self.throughput_sweep(**kwargs)
+        limited = False
+        worst = 100.0
+        for unlimited, percentage in results:
+            if not unlimited:
+                limited = True
+                if not is_close(worst, percentage) and \
+                        percentage < worst:
+                    worst = percentage
+
+        return not limited, worst
+

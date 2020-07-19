@@ -1,6 +1,7 @@
 from py_factorio_blueprints.entity_mixins import BaseMixin
 from py_factorio_blueprints.util import Vector
 from factorio_balancers.exceptions import *
+from factorio_balancers.graph import Belt as GraphBelt
 from enum import Enum
 
 
@@ -27,6 +28,8 @@ class Connection:
     def entity(self):
         if not (self.type == Connection.Type.OUTPUT or not self.__multi_input):
             raise AttributeError("Connection has no attribute 'entity'")
+        if self.__connection is None:
+            return None
         return self.__connection.__entity
 
     @property
@@ -112,6 +115,19 @@ class BalancerEntity(BaseMixin):
             connection2 = new.backward
             connection1.connect(connection2)
 
+    def _trace_nodes(self, belt, position):
+        speed = self.name.data['belt_speed']
+        if speed < belt.capacity:
+            belt.capacity = speed
+        if isinstance(self.forward.entity, (Belt, Underground)):
+            return self.forward.entity._trace_nodes(belt, self.position)
+        elif isinstance(self.forward.entity, Splitter):
+            self.forward.entity._trace_nodes(belt, self.position)
+            return belt
+        elif self.forward.entity is None:
+            self.blueprint._belts.append(belt)
+            self.blueprint._output_belts.append(belt)
+
 
 class Belt(BalancerEntity):
     def __init__(self, *args, **kwargs):
@@ -169,7 +185,6 @@ class Belt(BalancerEntity):
                 position, Connection.Type.INPUT))
 
 
-
 class Splitter(BalancerEntity):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -207,6 +222,15 @@ class Splitter(BalancerEntity):
             Vector(0.5, 0).rotate(amount)]
         return [self.position + vector
                 for vector in vectors]
+
+    def side_from_position(self, position):
+        rot_amount = self.direction // -2
+        side_vector = position - self.position
+        side_vector = side_vector.rotate(rot_amount)
+        if side_vector.x < 0:
+            return 'left'
+        else:
+            return 'right'
 
     def get_connection_for(self, position, conn_type):
         rot_amount = self.direction // -2
@@ -297,6 +321,41 @@ class Splitter(BalancerEntity):
             self.forward_left.connect(new_left.backward)
             self.forward_right.connect(new_right.backward)
 
+    def _trace_nodes(self, belt, position):
+        side = self.side_from_position(position)
+        if side == 'left':
+            if self._node.input_left is None:
+                self._node.input_left = GraphBelt(
+                    capacity=belt.capacity)
+                belt.next = self._node.input_left
+            else:
+                raise IllegalConfiguration(
+                    "Can't connect to the same side twice")
+        else:
+            if self._node.input_right is None:
+                self._node.input_right = GraphBelt(
+                    capacity=belt.capacity)
+                belt.next = self._node.input_right
+            else:
+                raise IllegalConfiguration(
+                    "Can't connect to the same side twice")
+        self.blueprint._belts.append(belt)
+
+        if getattr(self, '_traversed', False):
+            return belt
+        self._traversed = True
+
+        if self.forward_left.connected:
+            self._node.output_left = GraphBelt(capacity=self.name.data['belt_speed'])
+            self.forward_left.entity._trace_nodes(
+                self._node.output_left, self.coordinates[0])
+        if self.forward_right.connected:
+            self._node.output_right = GraphBelt(capacity=self.name.data['belt_speed'])
+            self.forward_right.entity._trace_nodes(
+                self._node.output_right, self.coordinates[1])
+
+        return belt
+
 
 class Underground(BalancerEntity):
     def __init__(self, *args, **kwargs):
@@ -370,7 +429,11 @@ class Underground(BalancerEntity):
 
     @property
     def has_sideloads(self):
-        return len(self.backward.entities) > 1
+        for entity in self.backward.entities:
+            if entity.direction != self.direction:
+                return True
+        else:
+            return False
 
     def setup_transport_lines(self):
         partner = self.find_partner()
