@@ -8,9 +8,9 @@ from tests.test_blueprint import TestBase
 
 
 def random_priority(allow_off=False):
-    choices = [Splitter.Priority.left, Splitter.Priority.right]
+    choices = [Splitter.Priority.left.value, Splitter.Priority.right.value]
     if allow_off:
-        choices.append(Splitter.Priority.off)
+        choices.append(Splitter.Priority.off.value)
     return random.choice(choices)
 
 
@@ -156,7 +156,7 @@ class TestGraphSplitter(TestBase):
             splitter.output_left = random_belt()
             splitter.output_right = random_belt()
             splitter.balance()
-            if splitter.input_priority == Splitter.Priority.left:
+            if splitter.input_priority == Splitter.Priority.left.value:
                 self.assertTrue(
                     splitter.input_left.content < splitter.input_right.content
                     or splitter.input_left.empty and splitter.input_right.empty
@@ -230,6 +230,12 @@ class TestBalancerSimulation(TestBalancerBase):
         self.assertOutputBalance(string)
         self.assertNoOutputBalance(string, trickle=True)
         self.assertInputBalance(string)
+        self.assertFullThroughput(string)
+        self.assertThroughputUnlimited(string)
+        string = 'blueprint_strings/3x1_different_speeds.blueprint'
+        self.assertOutputBalance(string)
+        self.assertInputBalance(string)
+        self.assertNoInputBalance(string, trickle=True)
         self.assertFullThroughput(string)
         self.assertThroughputUnlimited(string)
 

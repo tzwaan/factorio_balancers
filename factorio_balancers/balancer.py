@@ -146,9 +146,9 @@ class Balancer(Blueprint):
             belt.supply(*args, **kwargs)
             for belt in self._input_belts]
 
-    def drain(self):
+    def drain(self, **kwargs):
         return [
-            belt.clear()
+            belt.clear(**kwargs)
             for belt in self._output_belts]
 
     def recompile_entities(self):
@@ -307,20 +307,21 @@ class Balancer(Blueprint):
             return False
         return True
 
-    def test_input_balance(self, verbose=False, **kwargs):
+    def test_input_balance(self, verbose=False, trickle=False, **kwargs):
         bar = OptionalBar(
             '   -- Progress',
             verbose=verbose,
             max=len(self._output_belts) + 1,
             suffix='%(percent)d%%')
 
+        amount = Fraction(1, 4) if trickle else None
         for output in self._output_belts:
             self.fill()
-            drained = output.clear()
+            drained = output.clear(amount)
             supplied = self.supply()
             while not is_close(drained, sum(supplied)):
                 self.cycle()
-                drained = output.clear()
+                drained = output.clear(amount)
                 supplied = self.supply()
 
             if len(set(supplied)) > 1:
@@ -329,11 +330,11 @@ class Balancer(Blueprint):
             bar.next()
 
         self.fill()
-        drained = self.drain()
+        drained = self.drain(amount=amount)
         supplied = self.supply()
         while not is_close(sum(drained), sum(supplied)):
             self.cycle()
-            drained = self.drain()
+            drained = self.drain(amount=amount)
             supplied = self.supply()
         bar.finish()
         if len(set(supplied)) > 1:

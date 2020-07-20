@@ -11,7 +11,7 @@ class TestBase(unittest.TestCase):
         with open(string) as f:
             string = f.read()
         with self.assertRaises(exceptions):
-            balancer = Balancer(string=string, print2d=True)
+            balancer = Balancer(string=string)
 
 
 class TestBlueprint(TestBase):
@@ -40,4 +40,4 @@ class TestBlueprint(TestBase):
     def test_import(self):
         with open('blueprint_strings/4x4_balancer.blueprint') as f:
             string = f.read()
-        balancer = Balancer(string=string, print2d=True)
+        balancer = Balancer(string=string)

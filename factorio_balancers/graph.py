@@ -28,7 +28,7 @@ class Belt:
 
     @property
     def percentage(self):
-        return (self.content / self.capacity) * 100
+        return (self.content / self.capacity) * 100.0
 
     @property
     def full(self):
@@ -47,9 +47,10 @@ class Belt:
         self.content = amount
         return result
 
-    def clear(self):
-        amount = self.content
-        self.content = Fraction(0, 1)
+    def clear(self, amount=None):
+        if amount is None:
+            amount = self.content
+        self.content -= amount
         return amount
 
     def transfer(self):
