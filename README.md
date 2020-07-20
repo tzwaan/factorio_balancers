@@ -1,37 +1,31 @@
 # factorio-balancers
 
 ## Description
-This is a commandline program (and soon to be library) made to check
-whether a factorio blueprint is a belt balancer.
+This package provides a framework to import and test belt balancers
+from the game factorio.
 
-It is able to check a multitude of things: Belt balance, belt throughput,
-and a combination of both.
+It is able to check a blueprint for belt input and output balance, full
+throughput on regular use, and throughput unlimitedness.
+It fully supports all vanilla belt types, splitters and priority splitters
+(currently ignores filters)
 
-Website for balancers with this program integrated coming soon at
+A website for balancers with this program integrated coming soon at
 [factoriobalancers.com](http://factoriobalancers.com)
 
 ### Note
 This currently does not support belt sideloading in any form. A blueprint
 containing any kind of sideloading will result in a RuntimeError.
 
-Splitter filters and priorities are currently ignored.
-
-It is currently assumed (to a degree) that all belts are the same level.
-Balancers with varying belt speeds are untested and not guaranteed to
-be tested correctly.
-
-## Requirements
-This requires the "progress" package which is available on pip.
-
 ## Usage
-The file you need to run is "balancer-test.py"
+You can use the ``balancer_test`` command to use the main balancer
+testing tool on the command line.
 
 #### The following is the output of:
-> $ balancer-test.py -h
+> $ balancer_test -h
 
 ```
-usage: balancer-test.py [-h] [-f FILE] [-nb] [-i NR_ITERATIONS] [-s] [-es]
-                        [--string STRING]
+usage: balancer_test [-h] [-f FILE] [-nb] [-t] [-s] [-es] [--string STRING]
+                     [--silent]
 
 Test a balancer configuration for its properties
 
@@ -40,14 +34,15 @@ optional arguments:
   -f FILE, --file FILE  The file from which to read the blueprint string
   -nb, --nobalance      If for any reason you don't want to test the balance
                         of the balancer
-  -i NR_ITERATIONS, --iterations NR_ITERATIONS
-                        The number of iterations you want the simulation to
-                        run in each test. If not set, will use an estimation
-                        based on the balancer design
+  -t, --trickle         Performs a balance test using belts that are not full
   -s, --sweep           Performs a throughput test on all combinations where
                         exactly 1 or 2 inputs and outputs are used
   -es, --extensivesweep
                         Performs a throughput test on all combinations of the
                         same number of inputs and outputs
   --string STRING       The blueprint string to parse
+  --silent              Tell the script not to write intermediate data to the
+                        screen. Note: this prints raw function results on exit
+                        that are very user-unfriendly.
+
 ```

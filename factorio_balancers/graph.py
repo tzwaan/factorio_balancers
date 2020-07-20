@@ -71,10 +71,15 @@ class Splitter:
         left = 'left'
         right = 'right'
 
-    def __init__(self, entity=None, input_priority=None, output_priority=None):
+    def __init__(self, entity=None, lane_side=None,
+                 input_priority=None, output_priority=None):
         self.entity = entity
+        self.lane_side = lane_side
         if self.entity is not None:
-            self.entity._node = self
+            if self.lane_side is not None:
+                setattr(self.entity, f'_node_{self.lane_side}', self)
+            else:
+                self.entity._node = self
 
         self.input_left = None
         self.input_right = None

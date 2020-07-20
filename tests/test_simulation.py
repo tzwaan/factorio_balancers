@@ -275,3 +275,8 @@ class TestLaneBalancerSimulation(TestBalancerBase):
         string = 'blueprint_strings/1x1_lane_balancer_output.blueprint'
         self.assertOutputBalance(string)
         self.assertNoInputBalance(string)
+
+    def test_1x1_lane_balancer_output_false_inputs(self):
+        string = 'blueprint_strings/1x1_lane_balancer_false_inputs.blueprint'
+        self.assertOutputBalance(string)
+        self.assertNoInputBalance(string)

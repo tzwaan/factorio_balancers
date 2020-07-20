@@ -232,7 +232,17 @@ class Balancer(Blueprint):
             self._input_belts.append(belt)
 
     def _parse_lane_balancer(self):
-        pass
+        raise RuntimeError("Lane balancers are currently not supported")
+        for entity in self._get_nodes():
+            if isinstance(entity, SplitterMixin):
+                splitter_left = Splitter(entity=entity, lane_side='left')
+                splitter_right = Splitter(entity=entity, lane_side='right')
+            elif isinstance(entity, BeltMixin):
+                pass
+            elif isinstance(entity, UndergroundMixin):
+                pass
+            else:
+                raise Exception('what')
 
     def graph_check(self):
         """
