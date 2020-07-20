@@ -20,4 +20,8 @@ setup(
     classifiers=[
         "Programming Language :: Python :: 3",
     ],
+    scripts=[
+        'bin/balancer_test'
+    ],
+    include_package_data=True,
     zip_safe=False)

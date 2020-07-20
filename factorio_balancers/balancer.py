@@ -1,3 +1,4 @@
+import os
 from itertools import combinations
 from progress.bar import Bar
 from fractions import Fraction
@@ -40,27 +41,9 @@ def is_close(a, b, rel_tol=1e-06, abs_tol=0.0):
 
 
 class Balancer(Blueprint):
-    BELT_ENTITIES = (
-        'transport-belt',
-        'fast-transport-belt',
-        'express-transport-belt',
-    )
-    UNDERGROUND_ENTITIES = (
-        'underground-belt',
-        'fast-underground-belt',
-        'express-underground-belt',
-    )
-    SPLITTER_ENTITIES = (
-        'splitter',
-        'fast-splitter',
-        'express-splitter',
-    )
-    ALLOWED_ENTITIES = (
-        BELT_ENTITIES + UNDERGROUND_ENTITIES + SPLITTER_ENTITIES
-    )
-
     def __init__(self, *args, verbose=False, **kwargs):
-        Blueprint.import_prototype_data('../entity_data.json')
+        Blueprint.import_prototype_data(
+            f"{os.path.dirname(__file__)}/../entity_data.json")
         self._verbose = verbose
         super().__init__(
             *args, custom_entity_prototypes=entity_prototypes, **kwargs)
@@ -290,12 +273,6 @@ class Balancer(Blueprint):
             self._traverse_node(node._output_left)
             self._traverse_node(node._output_right)
 
-    def estimate_iterations(self):
-        return (
-            len(self._get_nodes()) * 2 +
-            len(self._input_belts) +
-            len(self._output_belts) + 1) * 4
-
     def test_output_balance(self, verbose=False, trickle=False, **kwargs):
         bar = OptionalBar(
             '   -- Progress',
@@ -443,3 +420,79 @@ class Balancer(Blueprint):
 
         return not limited, worst
 
+    def test(self, balance=True, throughput=True, trickle=False,
+             sweep=False, extensive_sweep=False, verbose=False):
+        self.clear()
+        if verbose:
+            print(f"Testing a {len(self._input_belts)} - "
+                  f"{len(self._output_belts)} balancer.")
+
+        results = {}
+
+        if balance:
+            if verbose:
+                print("\n  Testing balance.")
+            output_balanced = self.test_output_balance(verbose=verbose)
+            results['output_balanced'] = output_balanced
+            if verbose:
+                print(f"   -- Output is {'' if output_balanced else 'NOT '}"
+                      f"balanced.")
+
+            input_balanced = self.test_input_balance(verbose=verbose)
+            results['input_balanced'] = input_balanced
+            if verbose:
+                print(f"   -- Input is {'' if input_balanced else 'NOT '}"
+                      f"balanced.")
+        if trickle:
+            if verbose:
+                print("\n  Testing balance using trickle.")
+            output_balanced = self.test_output_balance(
+                verbose=verbose, trickle=True)
+            results['output_balanced_trickle'] = output_balanced
+            if verbose:
+                print(f"   -- Output is {'' if output_balanced else 'NOT '}"
+                      f"balanced with a trickle.")
+            input_balanced = self.test_input_balance(
+                verbose=verbose, trickle=True)
+            results['input_balanced_trickle'] = input_balanced
+            if verbose:
+                print(f"   -- Input is {'' if input_balanced else 'NOT '}"
+                      f"balanced with a trickle.")
+
+        if throughput:
+            full_throughput, worst = self.test_throughput(verbose=verbose)
+            if verbose:
+                print("\n  Testing regular throughput.")
+            results['full_throughput'] = full_throughput
+            if full_throughput:
+                if verbose:
+                    print("   -- Full throughput on regular use")
+            else:
+                results['full_throughput_bottleneck'] = worst
+                if verbose:
+                    print(f"   -- Limited throughput to {worst} on "
+                          f"regular use on at least one of the outputs.")
+
+        if sweep or extensive_sweep:
+            if verbose:
+                print(f"\n  {'Extensive' if extensive_sweep else 'Regular'} "
+                      f"throughput sweep")
+            unlimited, worst = self.test_throughput_unlimited(
+                extensive=extensive_sweep, verbose=verbose)
+            if not unlimited:
+                print(f"   -- At least one bottleneck exists that "
+                      f"limits throughput to {worst}%.")
+                results['largest_bottleneck'] = worst
+            else:
+                print(f"   -- No bottlenecks with any combinations of"
+                      f" {'any number of' if extensive_sweep else '1 or 2'} "
+                      f"any number of inputs and outputs.")
+
+            if extensive_sweep:
+                results['throughput_unlimited'] = unlimited
+            else:
+                results['throughput_unlimited_candidate'] = unlimited
+
+        if verbose:
+            print("\n")
+        return results

@@ -66,9 +66,9 @@ class Belt:
 
 class Splitter:
     class Priority(Enum):
-        off = auto()
-        left = auto()
-        right = auto()
+        off = None
+        left = 'left'
+        right = 'right'
 
     def __init__(self, entity=None, input_priority=None, output_priority=None):
         self.entity = entity
@@ -77,11 +77,24 @@ class Splitter:
 
         self.input_left = None
         self.input_right = None
-        self.input_priority = input_priority or Splitter.Priority.off
 
         self.output_left = None
         self.output_right = None
-        self.output_priority = output_priority or Splitter.Priority.off
+
+        self._input_priority = input_priority
+        self._output_priority = output_priority
+
+    @property
+    def input_priority(self):
+        if not self.entity:
+            return self._input_priority
+        return self.entity.input_priority
+
+    @property
+    def output_priority(self):
+        if not self.entity:
+            return self._output_priority
+        return self.entity.output_priority
 
     def get_inputs(self):
         inputs = [self.input_left, self.input_right]
@@ -93,10 +106,10 @@ class Splitter:
 
     def get_available_inputs(self):
         inputs = [self.input_left, self.input_right]
-        if self.input_priority == self.Priority.left:
+        if self.input_priority == self.Priority.left.value:
             if self.input_left and self.input_left.content > 0:
                 inputs = [self.input_left]
-        elif self.input_priority == self.Priority.right:
+        elif self.input_priority == self.Priority.right.value:
             if self.input_right and self.input_right.content > 0:
                 inputs = [self.input_right]
         inputs = [input for input in inputs
@@ -105,10 +118,10 @@ class Splitter:
 
     def get_available_outputs(self):
         outputs = [self.output_left, self.output_right]
-        if self.output_priority == self.Priority.left:
+        if self.output_priority == self.Priority.left.value:
             if self.output_left and self.output_left.available > 0:
                 outputs = [self.output_left]
-        elif self.output_priority == self.Priority.right:
+        elif self.output_priority == self.Priority.right.value:
             if self.output_right and self.output_right.available > 0:
                 outputs = [self.output_right]
         outputs = [output for output in outputs

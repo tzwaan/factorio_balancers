@@ -46,8 +46,7 @@ def random_splitter():
     return splitter
 
 
-class TestSimulation(TestBase):
-    NR_CYCLES = 100
+class TestBalancerBase(TestBase):
 
     def assertOutputBalance(self, string, **kwargs):
         with open(string) as f:
@@ -104,6 +103,10 @@ class TestSimulation(TestBase):
         balancer = Balancer(string=string, verbose=kwargs.get('verbose', False))
         unlimited, worst = balancer.test_throughput_unlimited(**kwargs)
         self.assertFalse(unlimited)
+
+
+class TestGraphSplitter(TestBase):
+    NR_CYCLES = 100
 
     def test_splitter_backup(self):
         for _ in range(self.NR_CYCLES):
@@ -182,7 +185,10 @@ class TestSimulation(TestBase):
         splitter.input_left.supply()
         splitter.input_right.supply(Fraction(1, 2))
         splitter.balance()
-        pass
+
+
+class TestBalancerSimulation(TestBalancerBase):
+    NR_CYCLES = 100
 
     def test_import_4x4(self):
         string = 'blueprint_strings/4x4_balancer.blueprint'
@@ -226,3 +232,40 @@ class TestSimulation(TestBase):
         self.assertInputBalance(string)
         self.assertFullThroughput(string)
         self.assertThroughputUnlimited(string)
+
+    def test_priority(self):
+        string = 'blueprint_strings/splitter.blueprint'
+        self.assertOutputBalance(string, verbose=True)
+        self.assertInputBalance(string, verbose=True)
+        string = 'blueprint_strings/splitter_output_priority.blueprint'
+        self.assertNoOutputBalance(string, verbose=True)
+        self.assertInputBalance(string, verbose=True)
+        string = 'blueprint_strings/splitter_input_priority.blueprint'
+        self.assertOutputBalance(string, verbose=True)
+        self.assertNoInputBalance(string, verbose=True)
+
+    def test_4x4_balancer_using_priority(self):
+        string = 'blueprint_strings/4x4_balancer_using_priority.blueprint'
+        self.assertOutputBalance(string)
+        self.assertNoInputBalance(string)
+        self.assertFullThroughput(string)
+        self.assertThroughputLimited(string)
+
+    def test_4x4_splitter_block(self):
+        string = 'blueprint_strings/4x4_splitter_block.blueprint'
+        self.assertNoOutputBalance(string)
+        self.assertNoInputBalance(string)
+        self.assertFullThroughput(string)
+        self.assertThroughputLimited(string)
+        string = 'blueprint_strings/4x4_splitter_block_priority.blueprint'
+        self.assertNoOutputBalance(string)
+        self.assertNoInputBalance(string)
+        self.assertFullThroughput(string)
+        self.assertThroughputUnlimited(string)
+
+
+class TestLaneBalancerSimulation(TestBalancerBase):
+    def test_1x1_lane_balancer_output(self):
+        string = 'blueprint_strings/1x1_lane_balancer_output.blueprint'
+        self.assertOutputBalance(string)
+        self.assertNoInputBalance(string)
