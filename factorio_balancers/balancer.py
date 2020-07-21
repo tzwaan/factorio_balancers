@@ -1,3 +1,5 @@
+import networkx as nx
+import matplotlib.pyplot as plt
 import os
 from itertools import combinations
 from progress.bar import Bar
@@ -33,7 +35,7 @@ class OptionalBar:
 
     def next(self, *args, **kwargs):
         if self.verbose:
-            self.bar.finish(*args, **kwargs)
+            self.bar.next(*args, **kwargs)
 
 
 def is_close(a, b, rel_tol=1e-06, abs_tol=0.0):
@@ -217,8 +219,8 @@ class Balancer(Blueprint):
         return False
 
     def _parse_balancer(self):
-        for entity in self._get_nodes():
-            splitter = Splitter(entity=entity)
+        for i, entity in enumerate(self._get_nodes()):
+            splitter = Splitter(entity=entity, uid=i)
             self._splitters.append(splitter)
         inputs, outputs = self._get_external_connections()
         self._input_belts = []
@@ -232,17 +234,74 @@ class Balancer(Blueprint):
             self._input_belts.append(belt)
 
     def _parse_lane_balancer(self):
-        raise RuntimeError("Lane balancers are currently not supported")
         for entity in self._get_nodes():
             if isinstance(entity, SplitterMixin):
                 splitter_left = Splitter(entity=entity, lane_side='left')
                 splitter_right = Splitter(entity=entity, lane_side='right')
+                self._splitters.append(splitter_left)
+                self._splitters.append(splitter_right)
             elif isinstance(entity, BeltMixin):
-                pass
+                sideload_left = Splitter(
+                    entity=entity, sideload='left',
+                    input_priority=Splitter.Priority.right.value)
+                straight_left = Splitter(
+                    entity=entity, lane_side='left',
+                    input_priority=Splitter.Priority.right.value)
+                straight_left.input_left = Belt(
+                    capacity=entity.name.data['belt_speed'],
+                    node=straight_left)
+                sideload_left.output_left = Belt(
+                    capacity=entity.name.data['belt_speed'],
+                    node=sideload_left,
+                    next=straight_left.input_left)
+                self._belts.append(sideload_left.output_left)
+                sideload_right = Splitter(
+                    entity=entity, sideload='right',
+                    input_priority=Splitter.Priority.left.value)
+                straight_right = Splitter(
+                    entity=entity, lane_side='right',
+                    input_priority=Splitter.Priority.left.value)
+                straight_right.input_right = Belt(
+                    capacity=entity.name.data['belt_speed'],
+                    node=straight_right)
+                sideload_right.output_right = Belt(
+                    capacity=entity.name.data['belt_speed'],
+                    node=sideload_right,
+                    next=straight_right.input_right)
+                self._belts.append(sideload_right.output_right)
+                self._splitters.append(sideload_left)
+                self._splitters.append(straight_left)
+                self._splitters.append(sideload_right)
+                self._splitters.append(straight_right)
             elif isinstance(entity, UndergroundMixin):
-                pass
+                sideload_left = Splitter(
+                    entity=entity, lane_side='left',
+                    input_priority=Splitter.Priority.right.value)
+                sideload_right = Splitter(
+                    entity=entity, lane_side='right',
+                    input_priority=Splitter.Priority.left.value)
+                self._splitters.append(sideload_left)
+                self._splitters.append(sideload_right)
             else:
                 raise Exception('what')
+        inputs, outputs = self._get_external_connections()
+        self._input_belts = []
+        self._output_belts = []
+        for input in inputs:
+            assert isinstance(input, (BeltMixin, UndergroundMixin))
+            belt_left = input._trace_nodes(
+                Belt(capacity=input.name.data['belt_speed']),
+                input.position,
+                lane='left')
+            belt_right = input._trace_nodes(
+                Belt(capacity=input.name.data['belt_speed']),
+                input.position,
+                lane='right')
+            assert len(outputs) * 2 == len(self._output_belts)
+            self._input_belts.append(belt_left)
+            self._input_belts.append(belt_right)
+        for i, splitter in enumerate(self._splitters):
+            splitter.uid = i
 
     def graph_check(self):
         """
@@ -283,7 +342,32 @@ class Balancer(Blueprint):
             self._traverse_node(node._output_left)
             self._traverse_node(node._output_right)
 
-    def test_output_balance(self, verbose=False, trickle=False, **kwargs):
+    def make_networkx_graph(self):
+        g = nx.DiGraph()
+        node_colors = {}
+        edge_colors = {}
+        for i, belt in enumerate(self._input_belts):
+            node_name = f'input {i}'
+            if belt.next:
+                belt.next.node.make_networkx_graph(
+                    g, node_name, node_colors, edge_colors)
+
+        pos = nx.spring_layout(g)
+        # nx.draw(g)
+        # nx.draw_networkx_nodes(g, pos, node_size=500)
+        nx.draw_networkx_labels(g, pos)
+        edge_colors = [edge_colors.get(edge, 0.0) for edge in g.edges()]
+        nx.draw(
+            g, pos,
+            edge_color=edge_colors,
+            edge_cmap=plt.get_cmap('jet'),
+            arrows=True)
+        # nx.draw_networkx_edges(g, pos, arrows=True)
+        filename = f"{os.path.dirname(__file__)}/../graph.png"
+        plt.show()
+
+    def test_output_balance(
+            self, verbose=False, trickle=False, debug=False, **kwargs):
         bar = OptionalBar(
             '   -- Progress',
             verbose=verbose,
@@ -296,6 +380,8 @@ class Balancer(Blueprint):
             drained = self.drain()
             supplied = input.supply(amount)
             while not is_close(sum(drained), supplied):
+                if debug:
+                    self.make_networkx_graph()
                 self.cycle()
                 drained = self.drain()
                 supplied = input.supply(amount)

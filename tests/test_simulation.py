@@ -53,56 +53,64 @@ class TestBalancerBase(TestBase):
             string = f.read()
         balancer = Balancer(string=string, verbose=kwargs.get('verbose', False))
         is_output_balanced = balancer.test_output_balance(**kwargs)
-        self.assertTrue(is_output_balanced)
+        if not is_output_balanced:
+            raise AssertionError('Balancer is not output balanced')
 
     def assertNoOutputBalance(self, string, **kwargs):
         with open(string) as f:
             string = f.read()
         balancer = Balancer(string=string, verbose=kwargs.get('verbose', False))
         is_output_balanced = balancer.test_output_balance(**kwargs)
-        self.assertFalse(is_output_balanced)
+        if is_output_balanced:
+            raise AssertionError('Balancer is output balanced')
 
     def assertInputBalance(self, string, **kwargs):
         with open(string) as f:
             string = f.read()
         balancer = Balancer(string=string, verbose=kwargs.get('verbose', False))
         is_input_balanced = balancer.test_input_balance(**kwargs)
-        self.assertTrue(is_input_balanced)
+        if not is_input_balanced:
+            raise AssertionError('Balancer is not input balanced')
 
     def assertNoInputBalance(self, string, **kwargs):
         with open(string) as f:
             string = f.read()
         balancer = Balancer(string=string, verbose=kwargs.get('verbose', False))
         is_input_balanced = balancer.test_input_balance(**kwargs)
-        self.assertFalse(is_input_balanced)
+        if is_input_balanced:
+            raise AssertionError('Balancer is input balanced')
 
     def assertFullThroughput(self, string, **kwargs):
         with open(string) as f:
             string = f.read()
         balancer = Balancer(string=string, verbose=kwargs.get('verbose', False))
         has_full_throughput, worst = balancer.test_throughput(**kwargs)
-        self.assertTrue(has_full_throughput)
+        if not has_full_throughput:
+            raise AssertionError('Balancer does not have full throughput')
 
     def assertNoFullThroughput(self, string, **kwargs):
         with open(string) as f:
             string = f.read()
         balancer = Balancer(string=string, verbose=kwargs.get('verbose', False))
         has_full_throughput, worst = balancer.test_throughput(**kwargs)
-        self.assertFalse(has_full_throughput)
+        if has_full_throughput:
+            raise AssertionError('Balancer has full throughput')
 
     def assertThroughputUnlimited(self, string, **kwargs):
         with open(string) as f:
             string = f.read()
         balancer = Balancer(string=string, verbose=kwargs.get('verbose', False))
         unlimited, worst = balancer.test_throughput_unlimited(**kwargs)
-        self.assertTrue(unlimited)
+        if not unlimited:
+            raise AssertionError('Balancer is throughput limited')
 
     def assertThroughputLimited(self, string, **kwargs):
         with open(string) as f:
             string = f.read()
         balancer = Balancer(string=string, verbose=kwargs.get('verbose', False))
         unlimited, worst = balancer.test_throughput_unlimited(**kwargs)
-        self.assertFalse(unlimited)
+        if unlimited:
+            raise AssertionError('Balancer is throughput unlimited')
 
 
 class TestGraphSplitter(TestBase):
@@ -269,14 +277,56 @@ class TestBalancerSimulation(TestBalancerBase):
         self.assertFullThroughput(string)
         self.assertThroughputUnlimited(string)
 
+    def test_4x4_balancer_belt_weave(self):
+        string = 'blueprint_strings/4x4_balancer_belt_weave.blueprint'
+        self.assertOutputBalance(string)
+        self.assertInputBalance(string)
+        self.assertFullThroughput(string)
+        self.assertThroughputLimited(string)
+
+
+class TestNetworkxGraph(TestBalancerBase):
+    def test_4x4_balancer(self):
+        string = 'blueprint_strings/4x4_balancer.blueprint'
+        with open(string) as f:
+            string = f.read()
+        balancer = Balancer(string=string)
+        balancer.make_networkx_graph()
+
+    def test_1x1_lane_balancer(self):
+        string = 'blueprint_strings/1x1_lane_balancer_output.blueprint'
+        with open(string) as f:
+            string = f.read()
+        balancer = Balancer(string=string)
+        balancer.make_networkx_graph()
+
 
 class TestLaneBalancerSimulation(TestBalancerBase):
     def test_1x1_lane_balancer_output(self):
         string = 'blueprint_strings/1x1_lane_balancer_output.blueprint'
         self.assertOutputBalance(string)
         self.assertNoInputBalance(string)
+        self.assertFullThroughput(string)
+        self.assertThroughputUnlimited(string)
 
     def test_1x1_lane_balancer_output_false_inputs(self):
         string = 'blueprint_strings/1x1_lane_balancer_false_inputs.blueprint'
         self.assertOutputBalance(string)
         self.assertNoInputBalance(string)
+        self.assertFullThroughput(string)
+        self.assertThroughputUnlimited(string)
+
+    def test_1x1_lane_balancer_input(self):
+        string = 'blueprint_strings/1x1_lane_balancer_input.blueprint'
+        self.assertOutputBalance(string)
+        self.assertInputBalance(string)
+        self.assertFullThroughput(string)
+        self.assertThroughputUnlimited(string)
+
+    def test_4x4_lane_balancer_input(self):
+        string = 'blueprint_strings/4x4_lane_balancer_input.blueprint'
+        self.assertOutputBalance(string, verbose=True)
+        self.assertInputBalance(string, verbose=True)
+        self.assertFullThroughput(string, verbose=True)
+        self.assertThroughputLimited(string, verbose=True)
+

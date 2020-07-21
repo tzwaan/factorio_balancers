@@ -86,6 +86,17 @@ class BalancerEntity(BaseMixin):
         else:
             return self.forward.entity.input_belt_check()
 
+    def side_from_position(self, position):
+        rot_amount = self.direction // -2
+        side_vector = position - self.position
+        side_vector = side_vector.rotate(rot_amount)
+        if side_vector.x < 0:
+            return 'left'
+        elif side_vector.x > 0:
+            return 'right'
+        else:
+            return None
+
     @property
     def coordinates(self):
         return [self.position]
@@ -115,14 +126,14 @@ class BalancerEntity(BaseMixin):
             connection2 = new.backward
             connection1.connect(connection2)
 
-    def _trace_nodes(self, belt, position):
+    def _trace_nodes(self, belt, position, lane=None):
         speed = self.name.data['belt_speed']
         if speed < belt.capacity:
             belt.capacity = speed
         if isinstance(self.forward.entity, (Belt, Underground)):
-            return self.forward.entity._trace_nodes(belt, self.position)
+            return self.forward.entity._trace_nodes(belt, self.position, lane=lane)
         elif isinstance(self.forward.entity, Splitter):
-            self.forward.entity._trace_nodes(belt, self.position)
+            self.forward.entity._trace_nodes(belt, self.position, lane=lane)
             return belt
         elif self.forward.entity is None:
             self.blueprint._belts.append(belt)
@@ -134,6 +145,50 @@ class Belt(BalancerEntity):
         super().__init__(*args, **kwargs)
         self.__forward = Connection(self, Connection.Type.OUTPUT)
         self.__backward = Connection(self, Connection.Type.INPUT)
+
+    def _trace_nodes(self, belt, position, lane=None):
+        if lane is None or not getattr(self, '_has_node', False):
+            return super()._trace_nodes(belt, self.position, lane=lane)
+
+        def opposite(a):
+            return {'left': 'right', 'right': 'left'}[a]
+
+        speed = self.name.data['belt_speed']
+        if speed < belt.capacity:
+            belt.capacity = speed
+        side = self.side_from_position(position)
+        if side is None:
+            node = getattr(self, f'_node_{lane}')
+            field = f'input_{opposite(lane)}'
+            if getattr(node, field) is None:
+                setattr(node, field, GraphBelt(capacity=speed, node=node))
+                belt.next = getattr(node, field)
+            else:
+                raise IllegalConfiguration(
+                    "Can't connect to the same side twice")
+        else:
+            node = getattr(self, f'_node_sideload_{side}')
+            field = f'input_{lane}'
+            if getattr(node, field) is None:
+                setattr(node, field, GraphBelt(capacity=speed, node=node))
+                belt.next = getattr(node, field)
+            else:
+                raise IllegalConfiguration(
+                    "Can't connect to the same side twice")
+        self.blueprint._belts.append(belt)
+
+        lane_side = lane if side is None else side
+        if getattr(self, f'_traversed_{lane_side}', False):
+            return belt
+        setattr(self, f'_traversed_{lane_side}', True)
+
+        node = getattr(self, f'_node_{lane_side}')
+        field = f'output_{opposite(lane_side)}'
+        setattr(node, field, GraphBelt(capacity=speed, node=node))
+        super()._trace_nodes(
+            getattr(node, field),
+            self.position, lane=lane_side)
+        return belt
 
     @property
     def forward(self):
@@ -222,15 +277,6 @@ class Splitter(BalancerEntity):
             Vector(0.5, 0).rotate(amount)]
         return [self.position + vector
                 for vector in vectors]
-
-    def side_from_position(self, position):
-        rot_amount = self.direction // -2
-        side_vector = position - self.position
-        side_vector = side_vector.rotate(rot_amount)
-        if side_vector.x < 0:
-            return 'left'
-        else:
-            return 'right'
 
     def get_connection_for(self, position, conn_type):
         rot_amount = self.direction // -2
@@ -321,38 +367,45 @@ class Splitter(BalancerEntity):
             self.forward_left.connect(new_left.backward)
             self.forward_right.connect(new_right.backward)
 
-    def _trace_nodes(self, belt, position):
+    def _trace_nodes(self, belt, position, lane=None):
         side = self.side_from_position(position)
+        node = getattr(self, f'_node{f"_{lane}" if lane is not None else ""}')
         if side == 'left':
-            if self._node.input_left is None:
-                self._node.input_left = GraphBelt(
-                    capacity=belt.capacity)
-                belt.next = self._node.input_left
+            if node.input_left is None:
+                node.input_left = GraphBelt(
+                    capacity=belt.capacity,
+                    node=node)
+                belt.next = node.input_left
             else:
                 raise IllegalConfiguration(
                     "Can't connect to the same side twice")
         else:
-            if self._node.input_right is None:
-                self._node.input_right = GraphBelt(
-                    capacity=belt.capacity)
-                belt.next = self._node.input_right
+            if node.input_right is None:
+                node.input_right = GraphBelt(
+                    capacity=belt.capacity,
+                    node=node)
+                belt.next = node.input_right
             else:
                 raise IllegalConfiguration(
                     "Can't connect to the same side twice")
         self.blueprint._belts.append(belt)
 
-        if getattr(self, '_traversed', False):
+        if getattr(self, f'_traversed{f"_{lane}" if lane else ""}', False):
             return belt
-        self._traversed = True
+        setattr(self, f'_traversed{f"_{lane}" if lane else ""}', True)
 
         if self.forward_left.connected:
-            self._node.output_left = GraphBelt(capacity=self.name.data['belt_speed'])
+            node.output_left = GraphBelt(
+                capacity=self.name.data['belt_speed'],
+                node=node)
             self.forward_left.entity._trace_nodes(
-                self._node.output_left, self.coordinates[0])
+                node.output_left, self.coordinates[0], lane=lane)
         if self.forward_right.connected:
-            self._node.output_right = GraphBelt(capacity=self.name.data['belt_speed'])
+            node.output_right = GraphBelt(
+                capacity=self.name.data['belt_speed'],
+                node=node)
             self.forward_right.entity._trace_nodes(
-                self._node.output_right, self.coordinates[1])
+                node.output_right, self.coordinates[1], lane=lane)
 
         return belt
 
@@ -395,7 +448,7 @@ class Underground(BalancerEntity):
         else:
             direction = self.direction
         vector = direction.vector
-        for i in range(1, max_distance):
+        for i in range(1, max_distance + 1):
             entity = self.blueprint.entities[self.position + vector * i]
             if not entity:
                 continue
@@ -451,6 +504,56 @@ class Underground(BalancerEntity):
                         partner.position, Connection.Type.OUTPUT))
         if self.type == 'output':
             Belt.setup_transport_lines(self)
+
+    def _trace_nodes(self, belt, position, lane=None):
+        if lane is None or not getattr(self, '_has_node', False):
+            return super()._trace_nodes(belt, self.position, lane=lane)
+
+        def opposite(a):
+            return {'left': 'right', 'right': 'left'}[a]
+
+        speed = self.name.data['belt_speed']
+        if speed < belt.capacity:
+            belt.capacity = speed
+        side = self.side_from_position(position)
+        if side is None:
+            node = getattr(self, f'_node_{lane}')
+            field = f'input_{opposite(lane)}'
+            if getattr(node, field) is None:
+                setattr(node, field, GraphBelt(capacity=speed, node=node))
+                belt.next = getattr(node, field)
+            else:
+                raise IllegalConfiguration(
+                    "Can't connect to the same side twice")
+        else:
+            node = getattr(self, f'_node_{side}')
+            lane_check = lane
+            if self.type == 'output':
+                lane_check = opposite(lane)
+            if side != lane_check:
+                return belt
+            field = f'input_{side}'
+            if getattr(node, field) is None:
+                setattr(node, field, GraphBelt(
+                    capacity=speed, node=node))
+                belt.next = getattr(node, field)
+            else:
+                raise IllegalConfiguration(
+                    "Can't connect to the same side twice")
+        self.blueprint._belts.append(belt)
+
+        lane_side = lane if side is None else side
+        if getattr(self, f'_traversed_{lane_side}', False):
+            return belt
+        setattr(self, f'_traversed_{lane_side}', True)
+
+        node = getattr(self, f'_node_{lane_side}')
+        field = f'output_{opposite(lane_side)}'
+        setattr(node, field, GraphBelt(capacity=speed, node=node))
+        super()._trace_nodes(
+            getattr(node, field),
+            self.position, lane=lane_side)
+        return belt
 
 
 entity_prototypes = {

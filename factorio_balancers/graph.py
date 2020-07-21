@@ -3,8 +3,9 @@ from fractions import Fraction
 
 
 class Belt:
-    def __init__(self, capacity=1, next=None):
-        self.next = None
+    def __init__(self, capacity=1, next=None, node=None):
+        self.next = next
+        self.node = node
         self.capacity = capacity
         self.__content = Fraction(0, 1)
 
@@ -71,13 +72,20 @@ class Splitter:
         left = 'left'
         right = 'right'
 
-    def __init__(self, entity=None, lane_side=None,
+    def __init__(self, entity=None,
+                 uid=None,
+                 lane_side=None, sideload=None, straight=None,
                  input_priority=None, output_priority=None):
+        self.uid = uid
         self.entity = entity
         self.lane_side = lane_side
+        self.sideload = sideload
         if self.entity is not None:
+            self.entity._has_node = True
             if self.lane_side is not None:
                 setattr(self.entity, f'_node_{self.lane_side}', self)
+            elif self.sideload is not None:
+                setattr(self.entity, f'_node_sideload_{self.sideload}', self)
             else:
                 self.entity._node = self
 
@@ -92,15 +100,13 @@ class Splitter:
 
     @property
     def input_priority(self):
-        if not self.entity:
-            return self._input_priority
-        return self.entity.input_priority
+        return self._input_priority or getattr(
+            self.entity, 'input_priority', None)
 
     @property
     def output_priority(self):
-        if not self.entity:
-            return self._output_priority
-        return self.entity.output_priority
+        return self._output_priority or getattr(
+            self.entity, 'output_priority', None)
 
     def get_inputs(self):
         inputs = [self.input_left, self.input_right]
@@ -152,3 +158,26 @@ class Splitter:
                 output.content += amount / len(outputs)
             inputs = self.get_available_inputs()
             outputs = self.get_available_outputs()
+
+    @property
+    def percentage(self):
+        inputs = self.get_inputs()
+        total = sum([input.available for input in inputs])
+        return total / len(inputs)
+
+    def make_networkx_graph(self, g, parent_name, node_colors, edge_colors):
+        outputs = self.get_outputs()
+        node_name = f'{self.uid}'
+        if parent_name:
+            edge_colors[(parent_name, node_name)] = self.percentage / 100.0
+            g.add_edges_from([(parent_name, node_name)])
+        for belt in outputs:
+            if belt.next:
+                belt.next.node.make_networkx_graph(
+                    g, node_name, node_colors, edge_colors)
+            elif belt in self.entity.blueprint._output_belts:
+                for i, output in enumerate(self.entity.blueprint._output_belts):
+                    if belt == output:
+                        edge_colors[(node_name, f'output {i}')] = self.percentage / 100.0
+                        g.add_edges_from([(node_name, f'output {i}')])
+                        break
