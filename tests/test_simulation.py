@@ -249,14 +249,14 @@ class TestBalancerSimulation(TestBalancerBase):
 
     def test_priority(self):
         string = 'blueprint_strings/splitter.blueprint'
-        self.assertOutputBalance(string, verbose=True)
-        self.assertInputBalance(string, verbose=True)
+        self.assertOutputBalance(string)
+        self.assertInputBalance(string)
         string = 'blueprint_strings/splitter_output_priority.blueprint'
-        self.assertNoOutputBalance(string, verbose=True)
-        self.assertInputBalance(string, verbose=True)
+        self.assertNoOutputBalance(string)
+        self.assertInputBalance(string)
         string = 'blueprint_strings/splitter_input_priority.blueprint'
-        self.assertOutputBalance(string, verbose=True)
-        self.assertNoInputBalance(string, verbose=True)
+        self.assertOutputBalance(string)
+        self.assertNoInputBalance(string)
 
     def test_4x4_balancer_using_priority(self):
         string = 'blueprint_strings/4x4_balancer_using_priority.blueprint'
@@ -325,8 +325,8 @@ class TestLaneBalancerSimulation(TestBalancerBase):
 
     def test_4x4_lane_balancer_input(self):
         string = 'blueprint_strings/4x4_lane_balancer_input.blueprint'
-        self.assertOutputBalance(string, verbose=True)
-        self.assertInputBalance(string, verbose=True)
-        self.assertFullThroughput(string, verbose=True)
-        self.assertThroughputLimited(string, verbose=True)
+        self.assertOutputBalance(string)
+        self.assertInputBalance(string)
+        self.assertFullThroughput(string)
+        self.assertThroughputLimited(string)
 

@@ -22,10 +22,16 @@ class MyBar(Bar):
         else:
             super().finish()
 
+    @property
+    def eta_display(self):
+        return str(self.eta_td)
+
 
 class OptionalBar:
     def __init__(self, *args, verbose, **kwargs):
         self.verbose = verbose
+        if kwargs.get('suffix', None) is None:
+            kwargs['suffix'] = '%(percent)d%% - %(eta_display)s'
         if self.verbose:
             self.bar = MyBar(*args, **kwargs)
 
@@ -43,10 +49,9 @@ def is_close(a, b, rel_tol=1e-06, abs_tol=0.0):
 
 
 class Balancer(Blueprint):
-    def __init__(self, *args, verbose=False, **kwargs):
+    def __init__(self, *args, **kwargs):
         Blueprint.import_prototype_data(
             f"{os.path.dirname(__file__)}/../entity_data.json")
-        self._verbose = verbose
         super().__init__(
             *args, custom_entity_prototypes=entity_prototypes, **kwargs)
 
@@ -371,8 +376,7 @@ class Balancer(Blueprint):
         bar = OptionalBar(
             '   -- Progress',
             verbose=verbose,
-            max=len(self._input_belts) + 1,
-            suffix='%(percent)d%%')
+            max=len(self._input_belts) + 1)
 
         amount = Fraction(1, 4) if trickle else None
         for input in self._input_belts:
@@ -407,8 +411,7 @@ class Balancer(Blueprint):
         bar = OptionalBar(
             '   -- Progress',
             verbose=verbose,
-            max=len(self._output_belts) + 1,
-            suffix='%(percent)d%%')
+            max=len(self._output_belts) + 1)
 
         amount = Fraction(1, 4) if trickle else None
         for output in self._output_belts:
@@ -520,9 +523,11 @@ class Balancer(Blueprint):
     def test(self, balance=True, throughput=True, trickle=False,
              sweep=False, extensive_sweep=False, verbose=False):
         self.clear()
+        is_lane_balancer = self.has_sideloads
         if verbose:
             print(f"Testing a {len(self._input_belts)} - "
-                  f"{len(self._output_belts)} balancer.")
+                  f"{len(self._output_belts)} "
+                  f"{'lane ' if is_lane_balancer else ''}balancer.")
 
         results = {}
 
