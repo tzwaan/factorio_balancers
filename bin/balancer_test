@@ -1,8 +1,19 @@
 #!/usr/bin/env python
 
+import logging
+
 from factorio_balancers import Balancer
 from argparse import ArgumentParser
 from py_factorio_blueprints.exceptions import InvalidExchangeString
+
+
+logger = logging.getLogger('factorio_balancers')
+logger.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.WARNING)
+
+formatter = logging.Formatter('%(message)s')
 
 
 parser = ArgumentParser(
@@ -30,28 +41,38 @@ parser.add_argument(
 parser.add_argument(
     "--silent", dest="verbose", default=True, action='store_false',
     help="Tell the script not to write intermediate data to the screen.\nNote: this prints raw function results on exit that are very user-unfriendly.")
+parser.add_argument(
+    '--debug', dest='debug', default=False, action='store_true',
+    help="Write additional debug info to the screen when parsing and testing")
 
 args = parser.parse_args()
 
+if args.verbose:
+    console_handler.setLevel(logging.INFO)
+if args.debug:
+    console_handler.setLevel(logging.DEBUG)
+
+console_handler.setFormatter(formatter)
+
+logger.addHandler(console_handler)
+
 if not args.filename and not args.string:
-    print("No file or string specified.")
+    logger.error("No file or string specified.")
     parser.parse_args(['-h'])
 
 if not args.string:
-    if args.verbose:
-        print("Reading blueprint string from ", args.filename)
+    logger.debug("Reading blueprint string from ", args.filename)
     file = open(args.filename, 'r')
     string = file.read()
-    if args.verbose:
-        print("The blueprint string: \n", string)
+    logger.debug("The blueprint string: \n", string)
 else:
     string = args.string
 
 try:
     balancer = Balancer(string=string, verbose=args.verbose)
 except InvalidExchangeString:
-    print("Error - Either the string was formatted wrong, or the blueprint contained non-belt entities.")
-    print("Exiting.")
+    logger.error("Error - Either the string was formatted wrong, or the blueprint contained non-belt entities.")
+    logger.info("Exiting.")
     exit()
 
 results = balancer.test(

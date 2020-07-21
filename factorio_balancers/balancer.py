@@ -1,5 +1,4 @@
-import networkx as nx
-import matplotlib.pyplot as plt
+import logging
 import os
 from itertools import combinations
 from progress.bar import Bar
@@ -12,6 +11,9 @@ from factorio_balancers.entity_mixins import (
     entity_prototypes, Splitter as SplitterMixin,
     Belt as BeltMixin, Underground as UndergroundMixin)
 from factorio_balancers.exceptions import *
+
+
+logger = logging.getLogger("factorio_balancers.balancer")
 
 
 class MyBar(Bar):
@@ -56,23 +58,19 @@ class Balancer(Blueprint):
             *args, custom_entity_prototypes=entity_prototypes, **kwargs)
 
         self.recompile_entities()
-        if self._verbose:
-            print("Before padding")
-            self.print2d()
+        logger.debug("Before padding")
+        logger.debug(self.print2d())
         self.pad_connections()
-        if self._verbose:
-            print("After padding")
-            self.print2d()
+        logger.debug("After padding")
+        logger.info(self.print2d())
         inputs, outputs = self._get_external_connections()
-        if self._verbose:
-            print(f"Nr of inputs and outputs: {len(inputs)}, {len(outputs)}")
-            print(f"Inputs: {inputs}")
-            print(f"Outputs: {outputs}")
+        logger.debug(f"Nr of inputs and outputs: {len(inputs)}, {len(outputs)}")
+        logger.debug(f"Inputs: {inputs}")
+        logger.debug(f"Outputs: {outputs}")
 
         nodes = self._get_nodes()
-        if self._verbose:
-            print(f"Number of nodes {len(nodes)}")
-            print(f"Nodes {nodes}")
+        logger.debug(f"Number of nodes {len(nodes)}")
+        logger.debug(f"Nodes {nodes}")
 
         for i, node in enumerate(nodes):
             node.node_number = i
@@ -91,13 +89,11 @@ class Balancer(Blueprint):
                 position = coord - offset
                 x, y = position.round()
                 data[y][x] = entity.name.data['ascii'][entity.direction // 2][i]
-        print()
+        result = "    "
         for line in data:
-            r = ""
-            for char in line:
-                r += char
-            print(r)
-        print()
+            result += ''.join(line)
+            result += '\n    '
+        return f'\n{result}\n'
 
     def _get_nodes(self):
         return [
@@ -118,9 +114,9 @@ class Balancer(Blueprint):
             self._parse_balancer()
 
         if self._verbose:
-            print(f"Inputs: {self._input_belts}")
-            print(f"Outputs: {self._output_belts}")
-            print(f"Splitters: {self._splitters}")
+            logger.debug(f"Inputs: {self._input_belts}")
+            logger.debug(f"Outputs: {self._output_belts}")
+            logger.debug(f"Splitters: {self._splitters}")
         for entity in self._get_nodes():
             if not entity._traversed:
                 raise IllegalConfiguration(
@@ -164,8 +160,7 @@ class Balancer(Blueprint):
         exceptions = self.setup_transport_lines()
         nr_exceptions = len(exceptions)
         if nr_exceptions > 0:
-            if self._verbose:
-                self.print2d()
+            logger.info(self.print2d())
             raise IllegalConfigurations(*exceptions)
 
         self.has_sideloads = self._has_sideloads()
@@ -315,15 +310,13 @@ class Balancer(Blueprint):
         Checks whether all nodes have been traversed. If not, this means the
         graph is not fully connected.
         """
-        if self._verbose:
-            print("All nodes:")
+        logger.debug("All nodes:")
         for node in self._get_nodes():
-            print(f"    {node}")
+            logger.debug(f"    {node}")
             node._traversed = False
 
         start_node = self._inputs[0]
-        if self._verbose:
-            print(f"start node: {start_node}")
+        logger.debug(f"start node: {start_node}")
 
         self._traverse_node(start_node)
         for node in self.nodes:
@@ -332,8 +325,7 @@ class Balancer(Blueprint):
         return True
 
     def _traverse_node(self, node):
-        if self._verbose:
-            print(f"traversing node: {node}")
+        logger.debug(f"traversing node: {node}")
         if node is None or node._traversed:
             return
         node._traversed = True
@@ -348,6 +340,8 @@ class Balancer(Blueprint):
             self._traverse_node(node._output_right)
 
     def make_networkx_graph(self):
+        import networkx as nx
+        import matplotlib.pyplot as plt
         g = nx.DiGraph()
         node_colors = {}
         edge_colors = {}
@@ -384,8 +378,6 @@ class Balancer(Blueprint):
             drained = self.drain()
             supplied = input.supply(amount)
             while not is_close(sum(drained), supplied):
-                if debug:
-                    self.make_networkx_graph()
                 self.cycle()
                 drained = self.drain()
                 supplied = input.supply(amount)
@@ -524,77 +516,72 @@ class Balancer(Blueprint):
              sweep=False, extensive_sweep=False, verbose=False):
         self.clear()
         is_lane_balancer = self.has_sideloads
-        if verbose:
-            print(f"Testing a {len(self._input_belts)} - "
-                  f"{len(self._output_belts)} "
-                  f"{'lane ' if is_lane_balancer else ''}balancer.")
+        logger.info(
+            f"Testing a {len(self._input_belts)} - "
+            f"{len(self._output_belts)} "
+            f"{'lane ' if is_lane_balancer else ''}balancer.")
 
         results = {}
 
         if balance:
-            if verbose:
-                print("\n  Testing balance.")
+            logger.info("\n  Testing balance.")
             output_balanced = self.test_output_balance(verbose=verbose)
             results['output_balanced'] = output_balanced
-            if verbose:
-                print(f"   -- Output is {'' if output_balanced else 'NOT '}"
-                      f"balanced.")
+            logger.info(
+                f"   -- Output is {'' if output_balanced else 'NOT '}balanced.")
 
             input_balanced = self.test_input_balance(verbose=verbose)
             results['input_balanced'] = input_balanced
-            if verbose:
-                print(f"   -- Input is {'' if input_balanced else 'NOT '}"
-                      f"balanced.")
+            logger.info(
+                f"   -- Input is {'' if input_balanced else 'NOT '}balanced.")
         if trickle:
-            if verbose:
-                print("\n  Testing balance using trickle.")
+            logger.info("\n  Testing balance using trickle.")
             output_balanced = self.test_output_balance(
                 verbose=verbose, trickle=True)
             results['output_balanced_trickle'] = output_balanced
-            if verbose:
-                print(f"   -- Output is {'' if output_balanced else 'NOT '}"
-                      f"balanced with a trickle.")
+            logger.info(
+                f"   -- Output is {'' if output_balanced else 'NOT '}"
+                f"balanced with a trickle.")
             input_balanced = self.test_input_balance(
                 verbose=verbose, trickle=True)
             results['input_balanced_trickle'] = input_balanced
-            if verbose:
-                print(f"   -- Input is {'' if input_balanced else 'NOT '}"
-                      f"balanced with a trickle.")
+            logger.info(
+                f"   -- Input is {'' if input_balanced else 'NOT '}"
+                f"balanced with a trickle.")
 
         if throughput:
             full_throughput, worst = self.test_throughput(verbose=verbose)
-            if verbose:
-                print("\n  Testing regular throughput.")
+            logger.info("\n  Testing regular throughput.")
             results['full_throughput'] = full_throughput
             if full_throughput:
-                if verbose:
-                    print("   -- Full throughput on regular use")
+                logger.info("   -- Full throughput on regular use")
             else:
                 results['full_throughput_bottleneck'] = worst
-                if verbose:
-                    print(f"   -- Limited throughput to {worst} on "
-                          f"regular use on at least one of the outputs.")
+                logger.info(
+                    f"   -- Limited throughput to {worst} on "
+                    f"regular use on at least one of the outputs.")
 
         if sweep or extensive_sweep:
-            if verbose:
-                print(f"\n  {'Extensive' if extensive_sweep else 'Regular'} "
-                      f"throughput sweep")
+            logger.info(
+                f"\n  {'Extensive' if extensive_sweep else 'Regular'} "
+                f"throughput sweep")
             unlimited, worst = self.test_throughput_unlimited(
                 extensive=extensive_sweep, verbose=verbose)
             if not unlimited:
-                print(f"   -- At least one bottleneck exists that "
-                      f"limits throughput to {worst}%.")
+                logger.info(
+                    f"   -- At least one bottleneck exists that "
+                    f"limits throughput to {worst}%.")
                 results['largest_bottleneck'] = worst
             else:
-                print(f"   -- No bottlenecks with any combinations of"
-                      f" {'any number of' if extensive_sweep else '1 or 2'} "
-                      f"any number of inputs and outputs.")
+                logger.info(
+                    f"   -- No bottlenecks with any combinations of"
+                    f" {'any number of' if extensive_sweep else '1 or 2'} "
+                    f"any number of inputs and outputs.")
 
             if extensive_sweep:
                 results['throughput_unlimited'] = unlimited
             else:
                 results['throughput_unlimited_candidate'] = unlimited
 
-        if verbose:
-            print("\n")
+        logger.info("\n")
         return results
