@@ -3,7 +3,6 @@
 [![PyPI version fury.io
 ](https://badge.fury.io/py/factorio-balancers.svg)
 ](https://pypi.python.org/pypi/factorio-balancers/)
-
 [![GitHub release
 ](https://img.shields.io/github/release/tzwaan/factorio-balancers.svg)
 ](https://GitHub.com/tzwaan/factorio-balancers/releases/)
