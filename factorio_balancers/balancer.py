@@ -53,7 +53,7 @@ def is_close(a, b, rel_tol=1e-06, abs_tol=0.0):
 class Balancer(Blueprint):
     def __init__(self, *args, **kwargs):
         Blueprint.import_prototype_data(
-            f"{os.path.dirname(__file__)}/../entity_data.json")
+            f"{os.path.dirname(__file__)}/entity_data.json")
         super().__init__(
             *args, custom_entity_prototypes=entity_prototypes, **kwargs)
 

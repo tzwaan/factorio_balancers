@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setup(
     name='factorio_balancers',
     packages=['factorio_balancers'],
-    version='0.2.1',
+    version='0.2.2',
     license='MIT',
     description='A property testing simulator for balancers from the game Factorio',
     long_description=long_description,
