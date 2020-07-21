@@ -1,24 +1,23 @@
 # factorio-balancers
 
+
 ## Description
 This package provides a framework to import and test belt balancers
 from the game factorio.
 
 It is able to check a blueprint for belt input and output balance, full
 throughput on regular use, and throughput unlimitedness.
-It fully supports all vanilla belt types, splitters and priority splitters
+It fully supports all vanilla belt types, sideloading and priority splitters
 (currently ignores filters)
 
 A website for balancers with this program integrated coming soon at
 [factoriobalancers.com](http://factoriobalancers.com)
 
-### Note
-This currently does not support belt sideloading in any form. A blueprint
-containing any kind of sideloading will result in a RuntimeError.
 
 ## Usage
 You can use the ``balancer_test`` command to use the main balancer
 testing tool on the command line.
+
 
 #### The following is the output of:
 > $ balancer_test -h
