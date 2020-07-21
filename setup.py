@@ -22,10 +22,12 @@ setup(
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
-        'Intended Audience :: Factorio players',
+        'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
-        "Operating System :: OS Independent",
+        'Operating System :: OS Independent',
+        'Natural Language :: English'
     ],
     scripts=[
         'bin/balancer_test'
