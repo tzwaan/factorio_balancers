@@ -64,7 +64,10 @@ class Balancer(Blueprint):
         logger.debug("After padding")
         logger.info(self.print2d())
         inputs, outputs = self._get_external_connections()
-        logger.debug(f"Nr of inputs and outputs: {len(inputs)}, {len(outputs)}")
+        self.nr_inputs = len(inputs)
+        self.nr_outputs = len(outputs)
+        logger.debug(f"Nr of inputs and outputs: "
+                     f"{self.nr_inputs}, {self.nr_outputs}")
         logger.debug(f"Inputs: {inputs}")
         logger.debug(f"Outputs: {outputs}")
 
@@ -76,6 +79,8 @@ class Balancer(Blueprint):
             node.node_number = i
 
         self.generate_simulation()
+        self.nr_inputs_sim = len(self._input_belts)
+        self.nr_outputs_sim = len(self._output_belts)
 
     def print2d(self):
         maxx, minx, maxy, miny = self.maximum_values
