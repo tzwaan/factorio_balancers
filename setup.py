@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setup(
     name='factorio_balancers',
     packages=['factorio_balancers'],
-    version='0.2.2',
+    version='0.2.3',
     license='MIT',
     description='A property testing simulator for balancers from the game Factorio',
     long_description=long_description,
@@ -14,7 +14,7 @@ setup(
     author='Tijmen Zwaan',
     author_email='tijmen.zwaan@gmail.com',
     url='https://github.com/tzwaan/factorio_balancers',
-    download_url='https://github.com/tzwaan/factorio_balancers/archive/v0.2.tar.gz',
+    download_url='https://github.com/tzwaan/factorio_balancers/archive/v0.2.3.tar.gz',
     keywords=['factorio', 'balancer', 'blueprint'],
     install_requires=[
         'py_factorio_blueprints',
