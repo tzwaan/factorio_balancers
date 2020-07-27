@@ -517,8 +517,10 @@ class Balancer(Blueprint):
 
         return not limited, worst
 
-    def test(self, balance=True, throughput=True, trickle=False,
-             sweep=False, extensive_sweep=False, verbose=False):
+    def test(self, properties=None, verbose=False):
+        if properties is None:
+            properties = []
+
         self.clear()
         is_lane_balancer = self.has_sideloads
         logger.info(
@@ -528,65 +530,71 @@ class Balancer(Blueprint):
 
         results = {}
 
-        if balance:
+        if 'balance.output' in properties:
             logger.info("\n  Testing balance.")
             output_balanced = self.test_output_balance(verbose=verbose)
-            results['output_balanced'] = output_balanced
+            results['balance.output'] = output_balanced
             logger.info(
                 f"   -- Output is {'' if output_balanced else 'NOT '}balanced.")
 
+        if 'balance.input' in properties:
             input_balanced = self.test_input_balance(verbose=verbose)
-            results['input_balanced'] = input_balanced
+            results['balance.input'] = input_balanced
             logger.info(
                 f"   -- Input is {'' if input_balanced else 'NOT '}balanced.")
-        if trickle:
+
+        if 'balance.output.trickle' in properties:
             logger.info("\n  Testing balance using trickle.")
             output_balanced = self.test_output_balance(
                 verbose=verbose, trickle=True)
-            results['output_balanced_trickle'] = output_balanced
+            results['balance.output.trickle'] = output_balanced
             logger.info(
                 f"   -- Output is {'' if output_balanced else 'NOT '}"
                 f"balanced with a trickle.")
+        if 'balance.input.trickle' in properties:
             input_balanced = self.test_input_balance(
                 verbose=verbose, trickle=True)
-            results['input_balanced_trickle'] = input_balanced
+            results['balance.input.trickle'] = input_balanced
             logger.info(
                 f"   -- Input is {'' if input_balanced else 'NOT '}"
                 f"balanced with a trickle.")
 
-        if throughput:
+        if 'throughput.full' in properties:
             full_throughput, worst = self.test_throughput(verbose=verbose)
             logger.info("\n  Testing regular throughput.")
-            results['full_throughput'] = full_throughput
+            results['throughput.full'] = full_throughput
             if full_throughput:
                 logger.info("   -- Full throughput on regular use")
             else:
-                results['full_throughput_bottleneck'] = worst
+                results['throughput.full.limit'] = worst
                 logger.info(
                     f"   -- Limited throughput to {worst} on "
                     f"regular use on at least one of the outputs.")
 
-        if sweep or extensive_sweep:
+        if 'throughput.unlimited.candidate' in properties \
+                or 'throughput.unlimited' in properties:
+            extensive = 'throughput.unlimited' in properties
             logger.info(
-                f"\n  {'Extensive' if extensive_sweep else 'Regular'} "
+                f"\n  {'Extensive' if extensive else 'Regular'} "
                 f"throughput sweep")
             unlimited, worst = self.test_throughput_unlimited(
-                extensive=extensive_sweep, verbose=verbose)
+                extensive=extensive, verbose=verbose)
+
             if not unlimited:
                 logger.info(
                     f"   -- At least one bottleneck exists that "
                     f"limits throughput to {worst}%.")
-                results['largest_bottleneck'] = worst
+                results['throughput.unlimited.limit'] = worst
             else:
                 logger.info(
                     f"   -- No bottlenecks with any combinations of"
-                    f" {'any number of' if extensive_sweep else '1 or 2'} "
+                    f" {'any number of' if extensive else '1 or 2'} "
                     f"any number of inputs and outputs.")
 
-            if extensive_sweep:
-                results['throughput_unlimited'] = unlimited
+            if extensive:
+                results['throughput.unlimited'] = unlimited
             else:
-                results['throughput_unlimited_candidate'] = unlimited
+                results['throughput.unlimited.candidate'] = unlimited
 
         logger.info("\n")
         return results
