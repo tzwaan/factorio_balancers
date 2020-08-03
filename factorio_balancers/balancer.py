@@ -59,10 +59,10 @@ class Balancer(Blueprint):
 
         self.recompile_entities()
         logger.debug("Before padding")
-        logger.debug(self.print2d())
+        self.print2d(log_level=10)
         self.pad_connections()
         logger.debug("After padding")
-        logger.info(self.print2d())
+        self.print2d(log_level=10)
         inputs, outputs = self._get_external_connections()
         self.nr_inputs = len(inputs)
         self.nr_outputs = len(outputs)
@@ -82,7 +82,9 @@ class Balancer(Blueprint):
         self.nr_inputs_sim = len(self._input_belts)
         self.nr_outputs_sim = len(self._output_belts)
 
-    def print2d(self):
+    def print2d(self, logger=None, log_level=20):
+        if logger is None:
+            logger = logging.getLogger("factorio_balancers.balancer.print2d")
         maxx, minx, maxy, miny = self.maximum_values
         width = maxx - minx + 1
         height = maxy - miny + 1
@@ -96,9 +98,7 @@ class Balancer(Blueprint):
                 data[y][x] = entity.name.data['ascii'][entity.direction // 2][i]
         result = "    "
         for line in data:
-            result += ''.join(line)
-            result += '\n    '
-        return f'\n{result}\n'
+            logger.log(log_level, f"    {''.join(line)}")
 
     def _get_nodes(self):
         return [
@@ -165,7 +165,7 @@ class Balancer(Blueprint):
         exceptions = self.setup_transport_lines()
         nr_exceptions = len(exceptions)
         if nr_exceptions > 0:
-            logger.info(self.print2d())
+            self.print2d(log_level=20)
             raise IllegalConfigurations(*exceptions)
 
         self.has_sideloads = self._has_sideloads()
