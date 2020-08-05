@@ -528,45 +528,59 @@ class Balancer(Blueprint):
             f"{len(self._output_belts)} "
             f"{'lane ' if is_lane_balancer else ''}balancer.")
 
-        results = {}
+        results = {
+            "lane_balancer": {
+                "result": is_lane_balancer,
+            }
+        }
 
         if 'balance.output' in properties:
-            logger.info("\n  Testing balance.")
+            logger.info("  Testing balance.")
             output_balanced = self.test_output_balance(verbose=verbose)
-            results['balance.output'] = output_balanced
+            results['balance.output'] = {
+                "result": output_balanced,
+            }
             logger.info(
                 f"   -- Output is {'' if output_balanced else 'NOT '}balanced.")
 
         if 'balance.input' in properties:
             input_balanced = self.test_input_balance(verbose=verbose)
-            results['balance.input'] = input_balanced
+            results['balance.input'] = {
+                "result": input_balanced,
+            }
             logger.info(
                 f"   -- Input is {'' if input_balanced else 'NOT '}balanced.")
 
         if 'balance.output.trickle' in properties:
-            logger.info("\n  Testing balance using trickle.")
+            logger.info("  Testing balance using trickle.")
             output_balanced = self.test_output_balance(
                 verbose=verbose, trickle=True)
-            results['balance.output.trickle'] = output_balanced
+            results['balance.output.trickle'] = {
+                "result": output_balanced,
+            }
             logger.info(
                 f"   -- Output is {'' if output_balanced else 'NOT '}"
                 f"balanced with a trickle.")
         if 'balance.input.trickle' in properties:
             input_balanced = self.test_input_balance(
                 verbose=verbose, trickle=True)
-            results['balance.input.trickle'] = input_balanced
+            results['balance.input.trickle'] = {
+                "result": input_balanced,
+            }
             logger.info(
                 f"   -- Input is {'' if input_balanced else 'NOT '}"
                 f"balanced with a trickle.")
 
         if 'throughput.full' in properties:
             full_throughput, worst = self.test_throughput(verbose=verbose)
-            logger.info("\n  Testing regular throughput.")
-            results['throughput.full'] = full_throughput
+            logger.info("  Testing regular throughput.")
+            results['throughput.full'] = {
+                "result": full_throughput,
+            }
             if full_throughput:
                 logger.info("   -- Full throughput on regular use")
             else:
-                results['throughput.full.limit'] = worst
+                results['throughput.full']['message'] = worst
                 logger.info(
                     f"   -- Limited throughput to {worst} on "
                     f"regular use on at least one of the outputs.")
@@ -575,26 +589,24 @@ class Balancer(Blueprint):
                 or 'throughput.unlimited' in properties:
             extensive = 'throughput.unlimited' in properties
             logger.info(
-                f"\n  {'Extensive' if extensive else 'Regular'} "
+                f"  {'Extensive' if extensive else 'Regular'} "
                 f"throughput sweep")
             unlimited, worst = self.test_throughput_unlimited(
                 extensive=extensive, verbose=verbose)
+            field = 'throughput.unlimited' if extensive \
+                else 'throughput.unlimited.candidate'
+            results[field] = {
+                "result": unlimited,
+            }
 
             if not unlimited:
                 logger.info(
                     f"   -- At least one bottleneck exists that "
                     f"limits throughput to {worst}%.")
-                results['throughput.unlimited.limit'] = worst
+                results[field]['message'] = worst
             else:
                 logger.info(
                     f"   -- No bottlenecks with any combinations of"
                     f" {'any number of' if extensive else '1 or 2'} "
                     f"any number of inputs and outputs.")
-
-            if extensive:
-                results['throughput.unlimited'] = unlimited
-            else:
-                results['throughput.unlimited.candidate'] = unlimited
-
-        logger.info("\n")
         return results
