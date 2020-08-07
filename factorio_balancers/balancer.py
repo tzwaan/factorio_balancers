@@ -205,11 +205,18 @@ class Balancer(Blueprint):
         self.strip_entities(inputs, inp=True)
         self.strip_entities(outputs, out=True)
 
-
     def pad_entities(self, entities, **kwargs):
         for entity in entities:
             if isinstance(entity, (SplitterMixin, UndergroundMixin)):
                 break
+            elif entity.has_sideloads:
+                break
+            elif kwargs.get('inp', False):
+                if entity.forward.entity.direction != entity.direction:
+                    break
+            elif kwargs.get('out', False):
+                if entity.backward.entities[0].direction != entity.direction:
+                    break
         else:
             return
         for entity in entities:

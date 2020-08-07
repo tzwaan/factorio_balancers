@@ -267,6 +267,8 @@ class Belt(BalancerEntity):
                     self.direction == other.direction:
                 return 1 + other.strip_length(inp=inp, out=out)
             else:
+                if self.direction != other.direction:
+                    return -1
                 return 0
 
     def strip_connection(self, length, inp=False, out=False):
