@@ -102,6 +102,9 @@ class BalancerEntity(BaseMixin):
         return [self.position]
 
     def pad_connection(self, inp=False, out=False):
+        if bool(inp) == bool(out):
+            raise ValueError(
+                "connection can't be input and output at the same time")
         names = {
             1: 'transport-belt',
             2: 'fast-transport-belt',
@@ -125,6 +128,12 @@ class BalancerEntity(BaseMixin):
             connection1 = self.forward
             connection2 = new.backward
             connection1.connect(connection2)
+
+    def strip_length(self, inp=False, out=False):
+        if bool(inp) == bool(out):
+            raise ValueError(
+                "connection can't be input and output at the same time")
+        return 0
 
     def _trace_nodes(self, belt, position, lane=None):
         speed = self.name.data['belt_speed']
@@ -238,6 +247,44 @@ class Belt(BalancerEntity):
         self.forward.connect(
             other.get_connection_for(
                 position, Connection.Type.INPUT))
+
+    def strip_length(self, inp=False, out=False):
+        if bool(inp) == bool(out):
+            raise ValueError(
+                "connection can't be input and output at the same time")
+        if inp:
+            other = self.forward.entity
+            if isinstance(other, Belt) and \
+                    not other.has_sideloads and \
+                    self.direction == other.direction:
+                return 1 + other.strip_length(inp=inp, out=out)
+            else:
+                return 0
+        elif out:
+            other = self.backward.entities[0]
+            if isinstance(other, Belt) and \
+                    not other.has_sideloads and \
+                    self.direction == other.direction:
+                return 1 + other.strip_length(inp=inp, out=out)
+            else:
+                return 0
+
+    def strip_connection(self, length, inp=False, out=False):
+        if length == 0:
+            return
+        if bool(inp) == bool(out):
+            raise ValueError(
+                "connection can't be input and output at the same time")
+        if inp:
+            other = self.forward.entity
+            self.forward.disconnect(other.backward)
+            self.blueprint.entities.remove(self)
+            other.strip_connection(length - 1, inp=inp, out=out)
+        elif out:
+            other = self.backward.entities[0]
+            self.backward.disconnect(other.forward)
+            self.blueprint.entities.remove(self)
+            other.strip_connection(length - 1, inp=inp, out=out)
 
 
 class Splitter(BalancerEntity):

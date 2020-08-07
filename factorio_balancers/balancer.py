@@ -61,6 +61,7 @@ class Balancer(Blueprint):
         logger.debug("Before padding")
         self.print2d(log_level=10)
         self.pad_connections()
+        self.strip_connections()
         logger.debug("After padding")
         self.print2d(log_level=10)
         inputs, outputs = self._get_external_connections()
@@ -199,14 +200,27 @@ class Balancer(Blueprint):
         self.pad_entities(inputs, inp=True)
         self.pad_entities(outputs, out=True)
 
+    def strip_connections(self):
+        inputs, outputs = self._get_external_connections()
+        self.strip_entities(inputs, inp=True)
+        self.strip_entities(outputs, out=True)
+
+
     def pad_entities(self, entities, **kwargs):
         for entity in entities:
-            if isinstance(entity, SplitterMixin):
+            if isinstance(entity, (SplitterMixin, UndergroundMixin)):
                 break
         else:
             return
         for entity in entities:
             entity.pad_connection(**kwargs)
+
+    def strip_entities(self, entities, **kwargs):
+        strip_length = min(
+            [entity.strip_length(**kwargs)
+             for entity in entities])
+        for entity in entities:
+            entity.strip_connection(strip_length, **kwargs)
 
     def setup_transport_lines(self):
         exceptions = []
