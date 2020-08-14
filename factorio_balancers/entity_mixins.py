@@ -363,6 +363,7 @@ class Splitter(BalancerEntity):
     def setup_transport_lines(self):
         positions = [coordinate + self.direction.vector
                      for coordinate in self.coordinates]
+        dead_end = False
         for position in positions:
             other = self.blueprint.entities[position]
             if not other:
@@ -373,8 +374,17 @@ class Splitter(BalancerEntity):
                     message="More than one entity occupying the same space")
             other = other[0]
             if other.direction == self.direction.rotate(2):
-                raise IllegalConfiguration(
-                    self, other, message="Entities facing each other")
+                if isinstance(other, Underground) and other.type == 'input':
+                    if dead_end:
+                        raise IllegalConfiguration(
+                            self, other, last_other,
+                            message="Splitter is unable to output")
+                    dead_end = True
+                    last_other = other
+                    continue
+                else:
+                    raise IllegalConfiguration(
+                        self, other, message="Entities facing each other")
             if other.direction != self.direction and isinstance(other, Splitter):
                 raise IllegalConfiguration(
                     self, other, message="Sideloading onto a splitter")

@@ -8,12 +8,17 @@ class EntityError(Exception):
 
     def __repr__(self):
         result = f"<{type(self).__name__} ("
-        if self.message != "":
-            result += f"{self.message}: "
-        for arg in self.args:
-            result += f"{arg}, "
-        result += ")>"
-        return result
+        if self.message:
+            result = f"{result}message={self.message}, "
+        result = f"{result}{', '.join(self.args)}"
+        return f"{result})>"
+
+    def __str__(self):
+        result = f"<{type(self).__name__} ("
+        if self.message:
+            result = f"{result}message={self.message}, "
+        result = f"{result}{', '.join(self.args)}"
+        return f"{result})>"
 
     def __eq__(self, other):
         if len(self.args) != len(other.args):

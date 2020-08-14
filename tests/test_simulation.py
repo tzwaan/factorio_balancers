@@ -284,6 +284,13 @@ class TestBalancerSimulation(TestBalancerBase):
         self.assertFullThroughput(string)
         self.assertThroughputLimited(string)
 
+    def test_4x3_balancer_splitter_to_underground(self):
+        string = 'blueprint_strings/4x3_balancer_splitter_underground.blueprint'
+        self.assertOutputBalance(string)
+        self.assertInputBalance(string)
+        self.assertFullThroughput(string)
+        self.assertThroughputLimited(string)
+
 
 class TestNetworkxGraph(TestBalancerBase):
     def test_4x4_balancer(self):
