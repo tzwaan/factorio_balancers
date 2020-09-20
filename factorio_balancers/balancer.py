@@ -629,5 +629,5 @@ class Balancer(Blueprint):
                 logger.info(
                     f"   -- No bottlenecks with any combinations of"
                     f" {'any number of' if extensive else '1 or 2'} "
-                    f"any number of inputs and outputs.")
+                    f"inputs and outputs.")
         return results
