@@ -498,7 +498,7 @@ class Balancer(Blueprint):
         if extensive:
             i_range = range(
                 1,
-                min(
+                1 + min(
                     len(self._input_belts),
                     len(self._output_belts)))
             nr_of_permutations = get_nr_of_permutations(
