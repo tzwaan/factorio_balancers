@@ -29,8 +29,10 @@ setup(
         'Operating System :: OS Independent',
         'Natural Language :: English'
     ],
-    scripts=[
-        'bin/balancer_test'
-    ],
+    entry_points = {
+        'console_scripts': [
+            'balancer_test = bin.balancer_test'
+        ]
+    },
     include_package_data=True,
     zip_safe=False)
